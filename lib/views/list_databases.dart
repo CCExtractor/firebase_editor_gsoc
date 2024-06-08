@@ -1,3 +1,4 @@
+import 'package:firebase_editor_gsoc/views/database_overview.dart';
 import 'package:firebase_editor_gsoc/views/define_schema.dart';
 import 'package:flutter/material.dart';
 
@@ -28,7 +29,7 @@ class DatabaseList extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => DefineSchema(),
+                    builder: (context) => DatabaseOverview(),
                   ),
                 );
                 print('Tapped on ${database.databaseName}');
