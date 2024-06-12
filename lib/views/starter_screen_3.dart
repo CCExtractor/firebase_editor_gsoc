@@ -1,6 +1,7 @@
 // lib/my_screen.dart
 
 import 'package:firebase_editor_gsoc/home_screen.dart';
+import 'package:firebase_editor_gsoc/views/sigin.dart';
 import 'package:flutter/material.dart';
 
 class StarterScreen3 extends StatelessWidget {
@@ -61,7 +62,7 @@ class StarterScreen3 extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => HomeScreen(),
+                    builder: (context) => SignInScreen(),
                   ),
                 );
               },
