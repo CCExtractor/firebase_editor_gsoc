@@ -29,6 +29,13 @@
             {
               "client_id": "211384953661-sac152s9j9uif0asf1772jkc9nr5le8t.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "211384953661-9hkosute6of7qapl18kjacl04m6f14ko.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.firebaseEditorGsoc"
+              }
             }
           ]
         }
