@@ -1,35 +1,52 @@
-import 'package:flutter/material.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_editor_gsoc/controllers/controllers.dart';
+import 'package:firebase_editor_gsoc/controllers/user_controller.dart';
+import 'package:firebase_editor_gsoc/views/circle_widget.dart';
+import 'package:firebase_editor_gsoc/views/custom_drawer.dart';
+import 'package:firebase_editor_gsoc/views/define_schema.dart';
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'user_profile.dart';
 
 class HomeScreen extends StatelessWidget {
-  final GoogleSignIn googleSignIn = GoogleSignIn();
 
-  void _handleSignOut(BuildContext context) async {
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final userController = Get.put(UserController());
+  final accessController = Get.put(AccessController());
+
+
+  // handle logout
+  void _handleLogout() {
     try {
-      await googleSignIn.signOut();
-      // Navigate to the sign-in screen after signing out
-      Navigator.pop(context);
+      _auth.signOut();
     } catch (error) {
-      print('Error signing out: $error');
-      // Handle sign-out error
+      print(error);
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      drawer: CustomDrawer(),
       appBar: AppBar(
         title: Text('Home'),
-        actions: <Widget>[
-          IconButton(
-            icon: Icon(Icons.exit_to_app),
-            onPressed: () => _handleSignOut(context),
-          ),
-        ],
+        backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
       ),
       body: Center(
-        child: Text('Welcome to Home Screen'),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+
+            Icon(Icons.handyman),
+            Text("Under Development",
+              style: Theme.of(context).textTheme.displayLarge?.copyWith(
+                  color: Colors.grey,
+                  fontSize: 30.0
+              ),
+            ),
+                      ],
+        ),
       ),
     );
   }

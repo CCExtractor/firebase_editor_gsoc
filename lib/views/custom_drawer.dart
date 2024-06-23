@@ -2,6 +2,7 @@ import 'package:firebase_editor_gsoc/home_screen.dart';
 import 'package:firebase_editor_gsoc/views/database_overview.dart';
 import 'package:firebase_editor_gsoc/views/define_schema.dart';
 import 'package:firebase_editor_gsoc/views/list_databases.dart';
+import 'package:firebase_editor_gsoc/views/list_projects.dart';
 import 'package:firebase_editor_gsoc/views/list_schemas.dart';
 import 'package:flutter/material.dart';
 
@@ -100,17 +101,31 @@ class CustomDrawer extends StatelessWidget {
           Divider(),
           ListTile(
             leading: Icon(Icons.storage_rounded),
-            title: Text('Your Databases'),
+            title: Text('Your Projects'),
             onTap: () {
               // Handle tap
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => DatabaseList(),
+                  builder: (context) => ProjectsPage(),
                 ),
               );
             },
           ),
+          // Divider(),
+          // ListTile(
+          //   leading: Icon(Icons.storage_rounded),
+          //   title: Text('Your Databases'),
+          //   onTap: () {
+          //     // Handle tap
+          //     Navigator.push(
+          //       context,
+          //       MaterialPageRoute(
+          //         builder: (context) => ProjectDetailsScreen(),
+          //       ),
+          //     );
+          //   },
+          // ),
           Divider(),
           ListTile(
             leading: Icon(Icons.format_align_left_rounded),
