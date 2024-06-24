@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:firebase_editor_gsoc/API/fetch_databases.dart';
+import 'package:firebase_editor_gsoc/views/user_collections.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
@@ -85,6 +86,19 @@ class _ProjectDetailsScreenState extends State<ProjectDetailsScreen> {
       trailing: ElevatedButton(
         onPressed: () {
           // Add your onPressed functionality here
+
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => UserCollectionsPage(
+                  projectId: widget.projectId,
+                  displayName: _databaseInfo!['displayName'],
+                  accessToken: widget.accessToken,
+
+                )
+            ),
+          );
+
           print('Button tapped');
         },
         child: Text('Action'),
