@@ -143,18 +143,39 @@ class _UserCollectionsPageState extends State<UserCollectionsPage> {
             return Center(
               child: ElevatedButton(
                 onPressed: _showAddCollectionDialog,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.amber, // Set the background color
+                ),
                 child: Text('Add Collection'),
               ),
             );
           }
-          return ListTile(
-            title: Text(collections[index]),
-            trailing: ElevatedButton(
-              onPressed: () {
-                // Define your button action here
-                _showDocuments(collections[index]);
-              },
-              child: Text('Button'),
+          return Container(
+            margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(15.0),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.grey.withOpacity(0.5),
+                  spreadRadius: 2,
+                  blurRadius: 5,
+                  offset: Offset(0, 3), // changes position of shadow
+                ),
+              ],
+            ),
+            child: ListTile(
+              title: Text("Collection: ${collections[index]}"),
+              trailing: ElevatedButton(
+                onPressed: () {
+                  // Define your button action here
+                  _showDocuments(collections[index]);
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.amber, // Set the background color
+                ),
+                child: Text('Documents'),
+              ),
             ),
           );
         },

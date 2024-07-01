@@ -67,43 +67,56 @@ class _ProjectDetailsScreenState extends State<ProjectDetailsScreen> {
           : _databaseInfo != null
           ? ListView(
         children: [
-      ListTile(
-      title: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text('Name: ${_databaseInfo!['displayName']}'),
-          SizedBox(height: 4), // Adjust spacing as needed
-          Text('Created Time: ${_databaseInfo!['createTime']}'),
-        ],
-      ),
-      subtitle: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SizedBox(height: 8), // Adjust spacing between title and subtitle
-          Text('Updated Time: ${_databaseInfo!['updateTime']}'),
-        ],
-      ),
-      trailing: ElevatedButton(
-        onPressed: () {
-          // Add your onPressed functionality here
-
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => UserCollectionsPage(
-                  projectId: widget.projectId,
-                  displayName: _databaseInfo!['displayName'],
-                  accessToken: widget.accessToken,
-
-                )
+      Container(
+        margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(15.0),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.5),
+              spreadRadius: 2,
+              blurRadius: 5,
+              offset: Offset(0, 3), // changes position of shadow
             ),
-          );
+          ],
+        ),
+        child: ListTile(
+        title: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Name: ${_databaseInfo!['displayName']}'),
+            SizedBox(height: 4), // Adjust spacing as needed
+            Text('Created Time: ${_databaseInfo!['formattedCreateTime']}'),
+            Text('Updated Time: ${_databaseInfo!['formattedUpdateTime']}'),
 
-          print('Button tapped');
-        },
-        child: Text('Action'),
+            ElevatedButton(
+              onPressed: () {
+                // Add your onPressed functionality here
+
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => UserCollectionsPage(
+                        projectId: widget.projectId,
+                        displayName: _databaseInfo!['displayName'],
+                        accessToken: widget.accessToken,
+
+                      )
+                  ),
+                );
+
+                print('Button tapped');
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.amber, // Set the background color
+              ),
+              child: Text('View Collections', style: TextStyle(fontSize: 14.0),),
+            ),
+          ],
+        ),
+        ),
       ),
-    ),
           // Add more ListTile widgets for other fields as needed
         ],
       )

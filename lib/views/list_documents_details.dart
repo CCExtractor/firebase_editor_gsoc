@@ -1,18 +1,21 @@
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
 
 class DocumentDetailsPage extends StatefulWidget {
   final String accessToken;
   final String documentPath;
   final String projectId;
   final String databaseId;
+  final String collectionId;
 
   DocumentDetailsPage({
     required this.accessToken,
     required this.documentPath,
     required this.projectId,
     required this.databaseId,
+    required this.collectionId,
   });
 
   @override
@@ -42,6 +45,7 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
 
       if (response.statusCode == 200) {
         var data = json.decode(response.body);
+        print(data);
         setState(() {
           _documentDetails = data;
           _isLoading = false;
@@ -143,6 +147,141 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
     }
   }
 
+  void _showViewDialog(String fieldName, dynamic fieldValue) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text('View Field'),
+          content: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('Field Name: $fieldName'),
+                SizedBox(height: 8),
+                Text('Field Value:'),
+                SizedBox(height: 8),
+                if (fieldValue is Map) ...[
+                  for (var entry in fieldValue.entries)
+                    // print('${entry.key}: ${entry.value}')
+                    Text('${entry.key}: ${entry.value}')
+                ] else if (fieldValue is List) ...[
+                  for (var item in fieldValue) Text(item.toString())
+                ] else
+                  Text(fieldValue.toString()),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('Close'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _showMapDialog(String fieldName, Map<String, dynamic> fieldValue) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text('Field: $fieldName'),
+          content: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: _buildMapEntries(fieldValue['fields']),
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('Close'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  List<Widget> _buildMapEntries(Map<String, dynamic> mapValue) {
+    List<Widget> widgets = [];
+
+    mapValue.entries.forEach((entry) {
+      String key = entry.key;
+      dynamic value = entry.value;
+
+      if (value is Map<String, dynamic>) {
+        widgets.add(ListTile(
+          title: Text('$key:'),
+          subtitle: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: _buildMapEntries(value),
+          ),
+        ));
+      } else {
+        widgets.add(ListTile(
+          title: Text('$key: $value'),
+        ));
+      }
+    });
+
+    return widgets;
+  }
+
+
+  void _showArrayDialog(String fieldName, List<dynamic> arrayValue) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text('Field: $fieldName'),
+          content: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: arrayValue.map((item) {
+                String itemType = item.keys.first;
+                dynamic itemValue = item[itemType];
+
+                return ListTile(
+                  title: Text('Type: $itemType'),
+                  subtitle: Text('Value: $itemValue'),
+                );
+              }).toList(),
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('Close'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+
+
+  String _formatDateTime(String dateTimeString) {
+    DateTime dateTime = DateTime.parse(dateTimeString);
+    return DateFormat('dd-MM-yyyy HH:mm').format(dateTime);
+  }
+
+  String extractDisplayName(String documentName) {
+    List<String> parts = documentName.split("${widget.collectionId}/");
+    String displayName = parts.last;
+    return displayName;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -165,45 +304,129 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
           : _documentDetails != null
           ? Padding(
         padding: const EdgeInsets.all(8.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('Name: ${_documentDetails!['name']}',
-                style: TextStyle(fontWeight: FontWeight.bold)),
-            SizedBox(height: 8),
-            Text('Created Time: ${_documentDetails!['createTime']}'),
-            Text('Updated Time: ${_documentDetails!['updateTime']}'),
-            SizedBox(height: 16),
-            Text('Fields:', style: TextStyle(fontWeight: FontWeight.bold)),
-            SizedBox(height: 8),
-            if (_documentDetails!['fields'] != null)
-              ..._documentDetails!['fields'].entries.map((entry) {
-                String fieldName = entry.key;
-                Map<String, dynamic> fieldData = entry.value;
-                String fieldType = fieldData.keys.first;
-                String fieldValue = fieldData[fieldType];
-                return ListTile(
-                  title: Text('$fieldName ($fieldType): $fieldValue'),
-                  trailing: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      IconButton(
-                        icon: Icon(Icons.edit),
-                        onPressed: () {
-                          _showEditDialog(fieldName, fieldType, fieldValue);
-                        },
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('Document ID: ${extractDisplayName(_documentDetails!['name'])}',
+                  style: TextStyle(fontWeight: FontWeight.bold)),
+              Text("Collection Name: ${widget.collectionId}"),
+              SizedBox(height: 8),
+              Text('Created Time: ${_formatDateTime(_documentDetails!['createTime'])}'),
+              Text('Updated Time: ${_formatDateTime(_documentDetails!['updateTime'])}'),
+              SizedBox(height: 16),
+              Text('Fields:', style: TextStyle(fontWeight: FontWeight.bold)),
+              SizedBox(height: 8),
+              if (_documentDetails!['fields'] != null)
+                ..._documentDetails!['fields'].entries.map((entry) {
+                  String fieldName = entry.key;
+                  Map<String, dynamic> fieldData = entry.value;
+                  String fieldType;
+                  dynamic displayValue;
+                  dynamic fieldValue;
+
+                  if (fieldData.containsKey('stringValue')) {
+                    fieldType = 'stringValue';
+                    fieldValue = fieldData['stringValue'];
+                    displayValue = fieldValue;
+                  } else if (fieldData.containsKey('integerValue')) {
+                    fieldType = 'integerValue';
+                    fieldValue = fieldData['integerValue'];
+                    displayValue = fieldValue;
+                  } else if (fieldData.containsKey('timestampValue')) {
+                    fieldType = 'timestampValue';
+                    fieldValue = fieldData['timestampValue'];
+                    displayValue = fieldValue;
+                  } else if (fieldData.containsKey('mapValue')) {
+                    fieldType = 'mapValue';
+                    fieldValue = fieldData['mapValue'];
+                    displayValue = 'Map';
+                  } else if (fieldData.containsKey('arrayValue')) {
+                    fieldType = 'arrayValue';
+                    fieldValue = fieldData['arrayValue'];
+                    displayValue = 'Array';
+                    print(fieldValue);
+                  } else if (fieldData.containsKey('geoPointValue')) {
+                    fieldType = 'geoPointValue';
+                    fieldValue = fieldData['geoPointValue'];
+                    displayValue = 'GeoPoint';
+                  } else if (fieldData.containsKey('nullValue')) {
+                    fieldType = 'nullValue';
+                    fieldValue = fieldData['nullValue'];
+                    displayValue = fieldValue;
+                  } else if (fieldData.containsKey("booleanValue")) {
+                    fieldType = 'booleanValue';
+                    fieldValue = fieldData['booleanValue'];
+                    displayValue = fieldValue;
+                  } else if (fieldData.containsKey("referenceValue")) {
+                    fieldType = 'referenceValue';
+                    fieldValue = fieldData['referenceValue'];
+                    displayValue = fieldValue;
+                  } else {
+                    // Handle unsupported types or unexpected data structure
+                    fieldType = 'unsupported';
+                    fieldValue = 'Unsupported';
+                    displayValue = fieldValue;
+                  }
+                  return Container(
+                    margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(15.0),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey.withOpacity(0.5),
+                          spreadRadius: 2,
+                          blurRadius: 5,
+                          offset: Offset(0, 3), // changes position of shadow
+                        ),
+                      ],
+                    ),
+                    child: ListTile(
+                      title: Text('$fieldName ($fieldType): $displayValue'),
+                      trailing: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          if (fieldType == 'mapValue')
+                            IconButton(onPressed: () {
+                              _showMapDialog(fieldName, fieldValue);
+                            }, icon: Icon(Icons.remove_red_eye)),
+                          if (fieldType == 'arrayValue')
+                            IconButton(
+                              icon: Icon(Icons.remove_red_eye),
+                              onPressed: () {
+                                _showViewDialog(fieldName, fieldValue);
+                              },
+                            ),
+                          if (fieldType == 'geoPointValue')
+                            IconButton(
+                              icon: Icon(Icons.remove_red_eye),
+                              onPressed: () {
+                                _showViewDialog(fieldName, fieldValue);
+                              },
+                            ),
+                          if (fieldType != 'mapValue' &&
+                              fieldType != 'arrayValue' &&
+                              fieldType != 'geoPointValue')
+                            IconButton(
+                              icon: Icon(Icons.edit),
+                              onPressed: () {
+                                _showEditDialog(fieldName, fieldType, fieldValue);
+                              },
+                            ),
+                          IconButton(
+                            icon: Icon(Icons.delete),
+                            onPressed: () {
+                              // Define your delete action here
+                            },
+                          ),
+                        ],
                       ),
-                      IconButton(
-                        icon: Icon(Icons.delete),
-                        onPressed: () {
-                          // Define your delete action here
-                        },
-                      ),
-                    ],
-                  ),
-                );
-              }).toList(),
-          ],
+                    ),
+                  );
+                }).toList(),
+            ],
+          ),
         ),
       )
           : Center(child: Text('No document details found.')),

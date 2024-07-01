@@ -19,15 +19,10 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  final _model = LoginModel();
-  final _formKey = GlobalKey<FormState>();
   final accessController = Get.put(AccessController());
   final userController = Get.put(UserController()); // Initialize UserController
-
-
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final String googleAccessToken = "";
-
   User? _user;
 
   @override
@@ -36,7 +31,6 @@ class _LoginScreenState extends State<LoginScreen> {
     _auth.authStateChanges().listen((event) {
       setState(() {
         _user = event;
-        // userController.user = event as Rx<User?>;
       });
     });
   }
@@ -111,48 +105,6 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  //
-
-
-  // void _handleGoogleSignIn() async {
-  //   try {
-  //     GoogleAuthProvider googleProvider = GoogleAuthProvider();
-  //     // Add the additional scopes
-  //     googleProvider.addScope('https://www.googleapis.com/auth/cloud-platform');
-  //     googleProvider.addScope('https://www.googleapis.com/auth/datastore');
-  //
-  //     final UserCredential userCredential = await _auth.signInWithProvider(googleProvider);
-  //
-  //     final OAuthCredential googleCredential = GoogleAuthProvider.credential(accessToken: userCredential.credential!.accessToken);
-  //     final User user = userCredential.user!;
-  //
-  //     // Now you can use the googleCredential.accessToken to call Google APIs
-  //     String googleAccessToken = googleCredential.accessToken!;
-  //
-  //
-  //     if (googleAccessToken != null) {
-  //       print('Google Access Token: $googleAccessToken');
-  //       if (await isTokenValid(googleAccessToken)) {
-  //         print('Token is valid');
-  //         callFirestoreAPI(googleAccessToken);
-  //       } else {
-  //         print('Invalid access token');
-  //       }
-  //     } else {
-  //       print('Google Access Token is null');
-  //     }
-  //
-  //     print('Google Access Token: $googleAccessToken');
-  //     // callFirestoreAPI(googleAccessToken);
-  //     // fetchDocuments();
-  //
-  //     // Call Google APIs using the access token
-  //       } catch (error) {
-  //     print(error);
-  //   }
-  // }
-
-
   void _handleGoogleSignIn() async {
     try {
       final GoogleSignIn googleSignIn = GoogleSignIn(scopes: [
@@ -177,18 +129,14 @@ class _LoginScreenState extends State<LoginScreen> {
       final String? googleAccessToken = googleAuth.accessToken;
       accessController.accessToken.text = googleAccessToken!;
 
-      if (googleAccessToken != null) {
-        print('Google Access Token: $googleAccessToken');
-        if (await isTokenValid(googleAccessToken)) {
-          print('Token is valid');
-          // callFirestoreAPI(googleAccessToken);
-        } else {
-          print('Invalid access token');
-        }
+      print('Google Access Token: $googleAccessToken');
+      if (await isTokenValid(googleAccessToken)) {
+        print('Token is valid');
+        // callFirestoreAPI(googleAccessToken);
       } else {
-        print('Google Access Token is null');
+        print('Invalid access token');
       }
-    } catch (error) {
+        } catch (error) {
       print(error);
       print('Error during Google sign-in: $error');
       // Handle sign-in errors here, such as showing an alert dialog
@@ -196,25 +144,6 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
-  // Future<bool> isTokenValid(String accessToken) async {
-  //   final String url = 'https://oauth2.googleapis.com/tokeninfo?access_token=$accessToken';
-  //
-  //   try {
-  //     final response = await http.get(Uri.parse(url));
-  //
-  //     if (response.statusCode == 200) {
-  //       final Map<String, dynamic> tokenInfo = json.decode(response.body);
-  //       print('Token Info: $tokenInfo');
-  //       return true; // You can add additional checks here if needed
-  //     } else {
-  //       print('Invalid token. Status Code: ${response.statusCode}');
-  //       return false;
-  //     }
-  //   } catch (error) {
-  //     print('Error validating token: $error');
-  //     return false;
-  //   }
-  // }
 
   Future<bool> isTokenValid(String accessToken) async {
     final String url = 'https://oauth2.googleapis.com/tokeninfo?access_token=$accessToken';
@@ -235,53 +164,6 @@ class _LoginScreenState extends State<LoginScreen> {
       return false;
     }
   }
-
-  void callFirestoreAPI(String accessToken) async {
-    String parent = 'projects/car-rentals-f10a5/databases/(default)/documents';
-    String collectionId = 'bookings';
-    String url = 'https://firestore.googleapis.com/v1/$parent/$collectionId';
-
-    Map<String, String> headers = {
-      'Authorization': 'Bearer $accessToken',
-      'Accept': 'application/json',
-    };
-
-    try {
-      final response = await http.get(Uri.parse(url), headers: headers);
-
-      if (response.statusCode == 200) {
-        print('Firestore API Response: ${response.body}');
-      } else {
-        print('Failed to call Firestore API. Status Code: ${response.statusCode}');
-      }
-    } catch (error) {
-      print('Error calling Firestore API: $error');
-    }
-  }
-
-  // void callFirestoreAPI(String accessToken) async {
-  //   String parent = 'projects/car-rentals-f10a5/databases/(default)';
-  //   String collectionId = 'bookings';
-  //   String apiKey = 'AIzaSyAO1F8fTW1EG88fnnTTFRJiKXH4I-MHlbI';
-  //
-  //   String url = 'https://firestore.googleapis.com/v1/$parent/$collectionId';
-  //   Map<String, String> headers = {
-  //     'Authorization': 'Bearer $accessToken',
-  //     'Accept': 'application/json',
-  //   };
-  //
-  //   try {
-  //     final response = await http.get(Uri.parse(url), headers: headers);
-  //
-  //     if (response.statusCode == 200) {
-  //       print('Firestore API Response: ${response.body}');
-  //     } else {
-  //       print('Failed to call Firestore API. Status Code: ${response.statusCode}');
-  //     }
-  //   } catch (error) {
-  //     print('Error calling Firestore API: $error');
-  //   }
-  // }
 
   // handle logout
   void _handleLogout() {

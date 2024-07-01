@@ -2,13 +2,27 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_editor_gsoc/firebase_options.dart';
 import 'package:firebase_editor_gsoc/home_screen.dart';
 import 'package:firebase_editor_gsoc/views/starter_screen_1.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 
 void main() async{
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform,);
-  runApp(const MyApp());
+
+  // Request permission to receive notifications
+  NotificationSettings settings = await FirebaseMessaging.instance.requestPermission(
+    alert: true,
+    badge: true,
+    sound: true,
+    provisional: false, // iOS only
+  );
+
+  print('User granted permission: ${settings.authorizationStatus}');
+
+
+  runApp(const ProviderScope(child: MyApp()));
 }
 
 class MyApp extends StatelessWidget {

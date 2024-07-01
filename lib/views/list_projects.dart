@@ -6,11 +6,6 @@ import 'package:get/get.dart';
 
 
 class ProjectsPage extends StatefulWidget {
-  // final String accessToken;
-
-//   ProjectsPage({
-//
-// });
 
   @override
   _ProjectsPageState createState() => _ProjectsPageState();
@@ -54,24 +49,42 @@ class _ProjectsPageState extends State<ProjectsPage> {
               itemCount: results.length,
               itemBuilder: (context, index) {
                 var project = results[index];
-                return ListTile(
-                  title: Text(project['displayName']),
-                  subtitle: Text(project['projectId']),
-                  trailing: ElevatedButton(
-                    onPressed: () {
-                      // Add your on tap function here
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => ProjectDetailsScreen(
-                            projectId: project['projectId'],
-                            accessToken: _accessController.accessToken.text,
+                return Container(
+                  margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(15.0),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey.withOpacity(0.5),
+                        spreadRadius: 2,
+                        blurRadius: 5,
+                        offset: Offset(0, 3), // changes position of shadow
+                      ),
+                    ],
+                  ),
+                  child: ListTile(
+                    title: Text("Project Name: ${project['displayName']}"),
+                    subtitle: Text("Project Id: ${project['projectId']}"),
+                    trailing: ElevatedButton(
+                      onPressed: () {
+                        // Add your on tap function here
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => ProjectDetailsScreen(
+                              projectId: project['projectId'],
+                              accessToken: _accessController.accessToken.text,
+                            ),
                           ),
-                        ),
-                      );
-                      print('Button tapped for project ${project['projectId']}');
-                    },
-                    child: Text('Details'),
+                        );
+                        print('Button tapped for project ${project['projectId']}');
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.amber, // Set the background color
+                      ),
+                      child: Text('Details'),
+                    ),
                   ),
                 );
               },
