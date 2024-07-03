@@ -6,7 +6,8 @@ import 'package:get/get.dart';
 
 
 class ProjectsPage extends StatefulWidget {
-
+  // route for notification purpose
+  static const route = '/list-projects';
   @override
   _ProjectsPageState createState() => _ProjectsPageState();
 }
@@ -14,6 +15,8 @@ class ProjectsPage extends StatefulWidget {
 class _ProjectsPageState extends State<ProjectsPage> {
   late Future<Map<String, dynamic>> _projectsFuture;
   final _accessController = Get.put(AccessController());
+
+
 
   @override
   void initState() {
