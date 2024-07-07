@@ -14,6 +14,6 @@ class UserProfile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return UserProfileView(user: user);
+    return UserProfileView();
   }
 }

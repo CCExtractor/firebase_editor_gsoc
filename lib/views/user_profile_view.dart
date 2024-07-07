@@ -1,12 +1,13 @@
+import 'package:firebase_editor_gsoc/controllers/user_controller.dart';
 import 'package:flutter/material.dart';
-import '../models/user.dart';
+import 'package:get/get.dart';
 
 
 class UserProfileView extends StatelessWidget {
-  final User user;
 
-  const UserProfileView({super.key, required this.user});
 
+ UserProfileView({super.key});
+  final userController = Get.put(UserController());
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -22,21 +23,21 @@ class UserProfileView extends StatelessWidget {
               children: [
                 CircleAvatar(
                   radius: 40,
-                  backgroundImage: NetworkImage(user.imageUrl),
+                  backgroundImage: NetworkImage(userController.user!.photoURL ?? ""),
                 ),
                 const SizedBox(width: 16.0),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      user.name,
+                      userController.user!.displayName ?? "",
                       style: const TextStyle(
                         fontSize: 24.0,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                     Text(
-                      user.email,
+                      userController.user!.email ?? "",
                       style: TextStyle(
                         fontSize: 16.0,
                         color: Colors.grey[600],
@@ -60,20 +61,21 @@ class UserProfileView extends StatelessWidget {
                 children: [
                   ListTile(
                     leading: const Icon(Icons.storage_rounded),
-                    title: const Text('Your Databases'),
+                    title: const Text('Your Projects'),
                     onTap: () {
                       // Handle tap
-                      print('Service 1 tapped');
+
                     },
                   ),
+                  Divider(),
                   ListTile(
-                    leading: const Icon(Icons.format_align_center_rounded),
-                    title: const Text('Your Schemas'),
+                    leading: const Icon(Icons.account_circle_rounded),
+                    title: const Text('Switch Accounts'),
                     onTap: () {
                       // Handle tap
-                      print('Service 2 tapped');
                     },
                   ),
+                  Divider(),
                   ListTile(
                     leading: const Icon(Icons.history_rounded),
                     title: const Text('Edit History'),
@@ -82,14 +84,16 @@ class UserProfileView extends StatelessWidget {
                       print('Service 3 tapped');
                     },
                   ),
+                  Divider(),
                   ListTile(
                     leading: const Icon(Icons.logout),
                     title: const Text('Logout'),
                     onTap: () {
                       // Handle tap
-                      print('Service 4 tapped');
+                      userController.handleLogout();
                     },
                   ),
+                  Divider(),
                 ],
               ),
             ),

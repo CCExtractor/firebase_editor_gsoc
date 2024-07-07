@@ -21,15 +21,16 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final accessController = Get.put(AccessController());
   final userController = Get.put(UserController()); // Initialize UserController
-  final FirebaseAuth _auth = FirebaseAuth.instance;
+  // final FirebaseAuth _auth = FirebaseAuth.instance;
   final String googleAccessToken = "";
   User? _user;
 
   @override
   void initState(){
     super.initState();
-    _auth.authStateChanges().listen((event) {
+    userController.auth.authStateChanges().listen((event) {
       setState(() {
+        userController.user = event;
         _user = event;
       });
     });
@@ -41,13 +42,15 @@ class _LoginScreenState extends State<LoginScreen> {
       appBar: AppBar(
         title: const Text('Login'),
         actions: <Widget>[
-          _user != null ? IconButton(
+          userController.user != null ? IconButton(
             icon: const Icon(Icons.exit_to_app),
-            onPressed: _handleLogout,
+            onPressed: () {
+              userController.handleLogout();
+            },
           ) : Container(),
         ],
       ),
-      body: _user != null ? _userInfo() : _googleSignInButton(),
+      body: userController.user != null ? _userInfo() : _googleSignInButton(),
     );
   }
 
@@ -81,15 +84,15 @@ class _LoginScreenState extends State<LoginScreen> {
                     width: 100,
                     decoration: BoxDecoration(
                       image: DecorationImage(
-                        image: NetworkImage(_user!.photoURL!),
+                        image: NetworkImage(userController.user!.photoURL!),
                       ),
                     ),
                     child: const Text(""),
                   ),
           const SizedBox(height: 20,),
 
-          Text(_user!.email!),
-          Text(_user!.displayName ?? ""),
+          Text(userController.user!.email!),
+          Text(userController.user!.displayName ?? ""),
 
           ElevatedButton(onPressed: () {
 
@@ -124,8 +127,8 @@ class _LoginScreenState extends State<LoginScreen> {
         idToken: googleAuth.idToken,
       );
 
-      final UserCredential userCredential = await _auth.signInWithCredential(credential);
-      final User user = userCredential.user!;
+      final UserCredential userCredential = await userController.auth.signInWithCredential(credential);
+      // final User user = userCredential.user!;
       final String? googleAccessToken = googleAuth.accessToken;
       accessController.accessToken.text = googleAccessToken!;
 
@@ -165,14 +168,7 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
-  // handle logout
-  void _handleLogout() {
-    try {
-      _auth.signOut();
-    } catch (error) {
-      print(error);
-    }
-  }
+
 
 
 }

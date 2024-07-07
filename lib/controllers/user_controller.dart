@@ -1,10 +1,27 @@
 import 'package:get/get.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
+import '../user_login.dart';
+
 class UserController extends GetxController {
-  Rx<User?> user = Rx<User?>(null);
+  User? user;
+
+  final FirebaseAuth auth = FirebaseAuth.instance;
 
   void setUser(User? user) {
-    this.user.value = user;
+    this.user = user;
   }
+
+
+  // handle logout
+  void handleLogout() {
+    try {
+     auth.signOut();
+     Get.offAll(const LoginScreen()); // Replace LoginScreen with your desired screen
+    } catch (error) {
+      print(error);
+    }
+  }
+
+
 }

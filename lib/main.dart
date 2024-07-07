@@ -1,9 +1,11 @@
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_editor_gsoc/controllers/user_controller.dart';
 import 'package:firebase_editor_gsoc/firebase_options.dart';
 import 'package:firebase_editor_gsoc/views/list_projects.dart';
 import 'package:firebase_editor_gsoc/views/starter_screen_1.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 // navigator key for navigation purposes
 // This key is crucial for navigating without direct access to BuildContext.
@@ -31,6 +33,9 @@ void main() async{
 
   /// to handle firebase background notifications
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+
+  /// Initialize the UserController
+  Get.put(UserController());
   runApp(const MyApp());
 }
 
@@ -40,7 +45,7 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return GetMaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(

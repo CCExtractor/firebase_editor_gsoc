@@ -1,13 +1,17 @@
+import 'package:firebase_editor_gsoc/controllers/user_controller.dart';
 import 'package:firebase_editor_gsoc/home_screen.dart';
 import 'package:firebase_editor_gsoc/views/define_schema.dart';
 import 'package:firebase_editor_gsoc/views/list_projects.dart';
 import 'package:firebase_editor_gsoc/views/list_schemas.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 import '../user_profile.dart';
 
 class CustomDrawer extends StatelessWidget {
-  const CustomDrawer({super.key});
+  CustomDrawer({super.key});
+
+  final userController = Get.put(UserController());
 
   @override
   Widget build(BuildContext context) {
@@ -15,8 +19,8 @@ class CustomDrawer extends StatelessWidget {
       child: ListView(
         padding: EdgeInsets.zero,
         children: <Widget>[
-          const DrawerHeader(
-            decoration: BoxDecoration(
+          DrawerHeader(
+            decoration: const BoxDecoration(
               color: Colors.amber,
             ),
             child: Row(
@@ -29,27 +33,27 @@ class CustomDrawer extends StatelessWidget {
                   children: [
                     CircleAvatar(
                       radius: 40,
-                      backgroundImage: NetworkImage('https://i.pinimg.com/564x/be/45/87/be45870b11faa9d507a7e9eeb557bc28.jpg'), // User image URL
+                      backgroundImage: NetworkImage(userController.user!.photoURL  ?? ""), // User image URL
                     ),
                   ],
                 ),
 
-                SizedBox(width: 20.0,),
+                const SizedBox(width: 20.0,),
                 Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      'John Doe', // User name
-                      style: TextStyle(
+                      userController.user!.displayName ?? "", // User name
+                      style: const TextStyle(
                         color: Colors.white,
                         fontSize: 16,
                       ),
                     ),
                     Text(
-                      'john.doe@example.com', // User email
-                      style: TextStyle(
+                      userController.user!.email ?? "", // User email
+                      style: const TextStyle(
                         color: Colors.white,
-                        fontSize: 14,
+                        fontSize: 12,
                       ),
                     ),
                   ],
@@ -166,12 +170,7 @@ class CustomDrawer extends StatelessWidget {
             title: const Text('Logout'),
             onTap: () {
               // Handle tap
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const DefineSchema(),
-                ),
-              );
+                  userController.handleLogout();
             },
           ),
         ],
