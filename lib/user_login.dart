@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_editor_gsoc/controllers/controllers.dart';
+import 'package:firebase_editor_gsoc/controllers/token_controller.dart';
 import 'package:firebase_editor_gsoc/home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -20,7 +21,9 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   final accessController = Get.put(AccessController());
-  final userController = Get.put(UserController()); // Initialize UserController
+  final userController = Get.put(UserController());// Initialize UserController
+  final tokenController = Get.put(TokenController());
+
   // final FirebaseAuth _auth = FirebaseAuth.instance;
   final String googleAccessToken = "";
   User? _user;
@@ -130,7 +133,10 @@ class _LoginScreenState extends State<LoginScreen> {
       final UserCredential userCredential = await userController.auth.signInWithCredential(credential);
       // final User user = userCredential.user!;
       final String? googleAccessToken = googleAuth.accessToken;
-      accessController.accessToken.text = googleAccessToken!;
+      // accessController.accessToken.text = googleAccessToken!;
+
+      // save/update google access token to database for persistence of sessions
+      await tokenController.saveTokenData('accessToken', googleAccessToken!);
 
       print('Google Access Token: $googleAccessToken');
       if (await isTokenValid(googleAccessToken)) {
