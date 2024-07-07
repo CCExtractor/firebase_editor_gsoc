@@ -1,16 +1,16 @@
 
 import 'package:firebase_editor_gsoc/views/circle_widget.dart';
-import 'package:firebase_editor_gsoc/views/custom_drawer.dart';
-import 'package:firebase_editor_gsoc/views/define_schema.dart';
 import 'package:firebase_editor_gsoc/views/two_circle_row.dart';
 import 'package:flutter/material.dart';
 
 class DatabaseOverview extends StatelessWidget {
+  const DatabaseOverview({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Database Overview'),
+        title: const Text('Database Overview'),
         backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
       ),
       body: Center(
@@ -23,7 +23,7 @@ class DatabaseOverview extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text("CRUD operations", style: Theme.of(context).textTheme.titleMedium,),
-                  SizedBox(height: 20.0,),
+                  const SizedBox(height: 20.0,),
 
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -78,8 +78,8 @@ class DatabaseOverview extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Padding(
-                    padding: const EdgeInsets.all(16.0),
+                  const Padding(
+                    padding: EdgeInsets.all(16.0),
                     child: Row(
                       children: [
                         Icon(
@@ -111,7 +111,7 @@ class DatabaseOverview extends StatelessWidget {
                       ],
                     ),
                   ),
-                  Spacer(), // Adds space between text and button
+                  const Spacer(), // Adds space between text and button
                   Align(
                     alignment: Alignment.bottomRight,
                     child: Padding(
@@ -121,7 +121,7 @@ class DatabaseOverview extends StatelessWidget {
                           // Button action
                           print('Button pressed');
                         },
-                        child: Text('Edit'),
+                        child: const Text('Edit'),
                       ),
                     ),
                   ),

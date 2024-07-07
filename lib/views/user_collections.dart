@@ -8,7 +8,7 @@ class UserCollectionsPage extends StatefulWidget {
   final String displayName;
   final String accessToken;
 
-  UserCollectionsPage({
+  const UserCollectionsPage({super.key,
     required this.projectId,
     required this.displayName,
     required this.accessToken,});
@@ -89,26 +89,26 @@ class _UserCollectionsPageState extends State<UserCollectionsPage> {
       builder: (context) {
         String collectionName = '';
         return AlertDialog(
-          title: Text('Add Collection'),
+          title: const Text('Add Collection'),
           content: TextField(
             onChanged: (value) {
               collectionName = value;
             },
-            decoration: InputDecoration(hintText: 'Collection Name/ID'),
+            decoration: const InputDecoration(hintText: 'Collection Name/ID'),
           ),
           actions: [
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              child: Text('Cancel'),
+              child: const Text('Cancel'),
             ),
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
                 _addCollection(collectionName);
               },
-              child: Text('OK'),
+              child: const Text('OK'),
             ),
           ],
         );
@@ -127,11 +127,11 @@ class _UserCollectionsPageState extends State<UserCollectionsPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text('No Data'),
-            SizedBox(height: 20),
+            const Text('No Data'),
+            const SizedBox(height: 20),
             ElevatedButton(
               onPressed: _showAddCollectionDialog,
-              child: Text('Add Collection'),
+              child: const Text('Add Collection'),
             ),
           ],
         ),
@@ -146,7 +146,7 @@ class _UserCollectionsPageState extends State<UserCollectionsPage> {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.amber, // Set the background color
                 ),
-                child: Text('Add Collection'),
+                child: const Text('Add Collection'),
               ),
             );
           }
@@ -160,7 +160,7 @@ class _UserCollectionsPageState extends State<UserCollectionsPage> {
                   color: Colors.grey.withOpacity(0.5),
                   spreadRadius: 2,
                   blurRadius: 5,
-                  offset: Offset(0, 3), // changes position of shadow
+                  offset: const Offset(0, 3), // changes position of shadow
                 ),
               ],
             ),
@@ -174,7 +174,7 @@ class _UserCollectionsPageState extends State<UserCollectionsPage> {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.amber, // Set the background color
                 ),
-                child: Text('Documents'),
+                child: const Text('Documents'),
               ),
             ),
           );

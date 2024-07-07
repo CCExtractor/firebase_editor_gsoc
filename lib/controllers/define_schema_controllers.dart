@@ -14,8 +14,12 @@ class SchemaControllers {
     dbNameController.dispose();
     primaryKeyNameController.dispose();
     primaryKeyTypeController.dispose();
-    attributeNameControllers.forEach((controller) => controller.dispose());
-    attributeTypeControllers.forEach((controller) => controller.dispose());
+    for (var controller in attributeNameControllers) {
+      controller.dispose();
+    }
+    for (var controller in attributeTypeControllers) {
+      controller.dispose();
+    }
   }
 
   void addAttributeControllers() {

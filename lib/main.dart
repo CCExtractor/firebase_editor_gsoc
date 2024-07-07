@@ -1,12 +1,9 @@
 import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_editor_gsoc/API/firebase_notifications.dart';
 import 'package:firebase_editor_gsoc/firebase_options.dart';
-import 'package:firebase_editor_gsoc/home_screen.dart';
 import 'package:firebase_editor_gsoc/views/list_projects.dart';
 import 'package:firebase_editor_gsoc/views/starter_screen_1.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 // navigator key for navigation purposes
 // This key is crucial for navigating without direct access to BuildContext.
@@ -66,7 +63,7 @@ class MyApp extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
           ),
         ),
-        appBarTheme: AppBarTheme(
+        appBarTheme: const AppBarTheme(
           backgroundColor: Colors.blue,
           titleTextStyle: TextStyle(
             color: Colors.white,

@@ -1,7 +1,5 @@
 import 'package:firebase_editor_gsoc/home_screen.dart';
-import 'package:firebase_editor_gsoc/views/database_overview.dart';
 import 'package:firebase_editor_gsoc/views/define_schema.dart';
-import 'package:firebase_editor_gsoc/views/list_databases.dart';
 import 'package:firebase_editor_gsoc/views/list_projects.dart';
 import 'package:firebase_editor_gsoc/views/list_schemas.dart';
 import 'package:flutter/material.dart';
@@ -9,13 +7,15 @@ import 'package:flutter/material.dart';
 import '../user_profile.dart';
 
 class CustomDrawer extends StatelessWidget {
+  const CustomDrawer({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Drawer(
       child: ListView(
         padding: EdgeInsets.zero,
         children: <Widget>[
-          DrawerHeader(
+          const DrawerHeader(
             decoration: BoxDecoration(
               color: Colors.amber,
             ),
@@ -58,22 +58,22 @@ class CustomDrawer extends StatelessWidget {
             ),
           ),
           ListTile(
-            leading: Icon(Icons.home),
-            title: Text('Home'),
+            leading: const Icon(Icons.home),
+            title: const Text('Home'),
             onTap: () {
               // Handle tap
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => HomeScreen(),
+                  builder: (context) => const HomeScreen(),
                 ),
               );
             },
           ),
-          Divider(),
+          const Divider(),
           ListTile(
-            leading: Icon(Icons.account_circle_rounded),
-            title: Text('My Account'),
+            leading: const Icon(Icons.account_circle_rounded),
+            title: const Text('My Account'),
             onTap: () {
               // Handle tap
               Navigator.push(
@@ -84,30 +84,30 @@ class CustomDrawer extends StatelessWidget {
               );
             },
           ),
-          Divider(),
+          const Divider(),
           ListTile(
-            leading: Icon(Icons.format_align_center_outlined),
-            title: Text('New Schema'),
+            leading: const Icon(Icons.format_align_center_outlined),
+            title: const Text('New Schema'),
             onTap: () {
               // Handle tap
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => DefineSchema(),
+                  builder: (context) => const DefineSchema(),
                 ),
               );
             },
           ),
-          Divider(),
+          const Divider(),
           ListTile(
-            leading: Icon(Icons.storage_rounded),
-            title: Text('Your Projects'),
+            leading: const Icon(Icons.storage_rounded),
+            title: const Text('Your Projects'),
             onTap: () {
               // Handle tap
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => ProjectsPage(),
+                  builder: (context) => const ProjectsPage(),
                 ),
               );
             },
@@ -126,50 +126,50 @@ class CustomDrawer extends StatelessWidget {
           //     );
           //   },
           // ),
-          Divider(),
+          const Divider(),
           ListTile(
-            leading: Icon(Icons.format_align_left_rounded),
-            title: Text('Your Schemas'),
+            leading: const Icon(Icons.format_align_left_rounded),
+            title: const Text('Your Schemas'),
             onTap: () {
               // Handle tap
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) =>SchemaList(),
+                  builder: (context) =>const SchemaList(),
                 ),
               );
             },
           ),
-          Divider(),
+          const Divider(),
           ListTile(
-            leading: Icon(Icons.settings),
-            title: Text('Settings'),
+            leading: const Icon(Icons.settings),
+            title: const Text('Settings'),
             onTap: () {
               // Handle tap
               Navigator.pop(context); // Close the drawer
               // Navigate to settings screen or perform any other action
             },
           ),
-          Divider(),
+          const Divider(),
           ListTile(
-            leading: Icon(Icons.help),
-            title: Text('Help'),
+            leading: const Icon(Icons.help),
+            title: const Text('Help'),
             onTap: () {
               // Handle tap
               Navigator.pop(context); // Close the drawer
               // Navigate to help screen or perform any other action
             },
           ),
-          Divider(),
+          const Divider(),
           ListTile(
-            leading: Icon(Icons.logout_rounded),
-            title: Text('Logout'),
+            leading: const Icon(Icons.logout_rounded),
+            title: const Text('Logout'),
             onTap: () {
               // Handle tap
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => DefineSchema(),
+                  builder: (context) => const DefineSchema(),
                 ),
               );
             },

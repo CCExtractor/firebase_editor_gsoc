@@ -4,6 +4,8 @@ import 'package:firebase_editor_gsoc/views/starter_screen_2.dart';
 import 'package:flutter/material.dart';
 
 class StarterScreen1 extends StatelessWidget {
+  const StarterScreen1({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -47,14 +49,14 @@ class StarterScreen1 extends StatelessWidget {
               ],
             ),
 
-            SizedBox(height: 50.0,),
+            const SizedBox(height: 50.0,),
             ElevatedButton(
               onPressed: () {
                 // Handle the "Next" button press
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => StarterScreen2(),
+                    builder: (context) => const StarterScreen2(),
                   ),
                 );
               },
@@ -63,9 +65,9 @@ class StarterScreen1 extends StatelessWidget {
                   Colors.white.withOpacity(0.9),
                 ),
               ),
-              child: Text('Next'),
+              child: const Text('Next'),
             ),
-            SizedBox(height: 2.0),
+            const SizedBox(height: 2.0),
 
             Image.asset('assets/welcome.png'),
 

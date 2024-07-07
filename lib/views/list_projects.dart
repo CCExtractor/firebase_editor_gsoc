@@ -8,6 +8,8 @@ import 'package:get/get.dart';
 class ProjectsPage extends StatefulWidget {
   // route for notification purpose
   static const route = '/list-projects';
+
+  const ProjectsPage({super.key});
   @override
   _ProjectsPageState createState() => _ProjectsPageState();
 }
@@ -28,13 +30,13 @@ class _ProjectsPageState extends State<ProjectsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Projects'),
+        title: const Text('Projects'),
       ),
       body: FutureBuilder<Map<String, dynamic>>(
         future: _projectsFuture,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(
+            return const Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -62,7 +64,7 @@ class _ProjectsPageState extends State<ProjectsPage> {
                         color: Colors.grey.withOpacity(0.5),
                         spreadRadius: 2,
                         blurRadius: 5,
-                        offset: Offset(0, 3), // changes position of shadow
+                        offset: const Offset(0, 3), // changes position of shadow
                       ),
                     ],
                   ),
@@ -86,14 +88,14 @@ class _ProjectsPageState extends State<ProjectsPage> {
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.amber, // Set the background color
                       ),
-                      child: Text('Details'),
+                      child: const Text('Details'),
                     ),
                   ),
                 );
               },
             );
           } else {
-            return Center(child: Text('No projects found'));
+            return const Center(child: Text('No projects found'));
           }
         },
       ),

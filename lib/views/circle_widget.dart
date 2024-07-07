@@ -7,11 +7,11 @@ class CircleWidget extends StatelessWidget {
   final VoidCallback onTap;
 
   const CircleWidget({
-    Key? key,
+    super.key,
     required this.icon,
     required this.text,
     required this.onTap,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -28,10 +28,10 @@ class CircleWidget extends StatelessWidget {
               size: 30,
             ),
           ),
-          SizedBox(height: 8),
+          const SizedBox(height: 8),
           Text(
             text,
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 12,
             ),
           ),

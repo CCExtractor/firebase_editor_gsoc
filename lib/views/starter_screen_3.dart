@@ -1,11 +1,11 @@
 // lib/my_screen.dart
 
-import 'package:firebase_editor_gsoc/home_screen.dart';
 import 'package:firebase_editor_gsoc/user_login.dart';
-import 'package:firebase_editor_gsoc/views/sigin.dart';
 import 'package:flutter/material.dart';
 
 class StarterScreen3 extends StatelessWidget {
+  const StarterScreen3({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -15,7 +15,7 @@ class StarterScreen3 extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Image.asset('assets/mobile.png'),
-            SizedBox(height: 20.0),
+            const SizedBox(height: 20.0),
 
             Padding(
               padding: const EdgeInsets.all(30.0),
@@ -63,13 +63,13 @@ class StarterScreen3 extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => LoginScreen(),
+                    builder: (context) => const LoginScreen(),
                   ),
                 );
               },
-              child: Text('Next'),
+              child: const Text('Next'),
             ),
-            SizedBox(height: 20.0),
+            const SizedBox(height: 20.0),
 
 
           ],

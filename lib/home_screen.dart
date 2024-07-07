@@ -1,16 +1,13 @@
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_editor_gsoc/controllers/controllers.dart';
 import 'package:firebase_editor_gsoc/controllers/notification_services.dart';
 import 'package:firebase_editor_gsoc/controllers/user_controller.dart';
-import 'package:firebase_editor_gsoc/views/circle_widget.dart';
 import 'package:firebase_editor_gsoc/views/custom_drawer.dart';
-import 'package:firebase_editor_gsoc/views/define_schema.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'user_profile.dart';
 
 class HomeScreen extends StatefulWidget {
+  const HomeScreen({super.key});
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -35,13 +32,13 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   @override
-  void initState(){
+  void initState() {
     super.initState();
     notificationServices.requestNotificationPermission();
     notificationServices.firebaseInit(context);
     notificationServices.setUpInteractMessage(context);
     // notificationServices.isTokenRefresh();
-    notificationServices.getDeviceToken().then((value){
+    notificationServices.getDeviceToken().then((value) {
       print("DEVICE TOKEN: ");
       print(value);
     });
@@ -52,22 +49,22 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       drawer: CustomDrawer(),
       appBar: AppBar(
-        title: Text('Home'),
+        title: const Text('Home'),
         backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
       ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-
-            Icon(Icons.handyman),
-            Text("Under Development",
-              style: Theme.of(context).textTheme.displayLarge?.copyWith(
-                  color: Colors.grey,
-                  fontSize: 30.0
-              ),
+            const Icon(Icons.handyman),
+            Text(
+              "Under Development",
+              style: Theme.of(context)
+                  .textTheme
+                  .displayLarge
+                  ?.copyWith(color: Colors.grey, fontSize: 30.0),
             ),
-                      ],
+          ],
         ),
       ),
     );

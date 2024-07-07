@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 Future<Map<String, dynamic>> callFirebaseProjectsAPI(String accessToken) async {
-  final String url = 'https://firebase.googleapis.com/v1beta1/projects?pageSize=10';
+  const String url = 'https://firebase.googleapis.com/v1beta1/projects?pageSize=10';
 
   Map<String, String> headers = {
     'Authorization': 'Bearer $accessToken',

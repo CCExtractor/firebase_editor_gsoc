@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class DualCircleRow extends StatelessWidget {
   final List<CircleData> circleDataList;
 
-  const DualCircleRow({Key? key, required this.circleDataList}) : super(key: key);
+  const DualCircleRow({super.key, required this.circleDataList});
 
   @override
   Widget build(BuildContext context) {
@@ -26,11 +26,11 @@ class CircleWidget2 extends StatelessWidget {
   final String text;
 
   const CircleWidget2({
-    Key? key,
+    super.key,
     required this.color,
     required this.icon,
     required this.text,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -52,10 +52,10 @@ class CircleWidget2 extends StatelessWidget {
                   color: Colors.white,
                   size: 32,
                 ),
-                SizedBox(height: 4),
+                const SizedBox(height: 4),
                 Text(
                   text,
-                  style: TextStyle(
+                  style: const TextStyle(
                     color: Colors.white,
                     fontSize: 12,
                   ),

@@ -10,6 +10,8 @@ class UserProfile extends StatelessWidget {
     services: ['Service 1', 'Service 2', 'Service 3'],
   );
 
+  UserProfile({super.key});
+
   @override
   Widget build(BuildContext context) {
     return UserProfileView(user: user);

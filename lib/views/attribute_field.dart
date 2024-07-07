@@ -4,7 +4,7 @@ class AttributeField extends StatelessWidget {
   final TextEditingController attributeNameController;
   final TextEditingController attributeTypeController;
 
-  AttributeField({
+  const AttributeField({super.key,
     required this.attributeNameController,
     required this.attributeTypeController,
   });
@@ -32,14 +32,14 @@ class AttributeField extends StatelessWidget {
               ),
             ),
           ),
-          SizedBox(width: 10.0),
+          const SizedBox(width: 10.0),
           Expanded(
             child: DropdownButtonFormField<String>(
               value: attributeTypeController.text.isNotEmpty && dataTypes.contains(attributeTypeController.text.toLowerCase()) ? attributeTypeController.text.toLowerCase() : defaultValue,
               items: dataTypes.map((String value) {
                 return DropdownMenuItem<String>(
                   value: value,
-                  child: Text(value, style: TextStyle(fontSize: 14.0),),
+                  child: Text(value, style: const TextStyle(fontSize: 14.0),),
                 );
               }).toList(),
               onChanged: (String? newValue) {

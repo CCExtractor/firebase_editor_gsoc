@@ -10,7 +10,7 @@ class DocumentDetailsPage extends StatefulWidget {
   final String databaseId;
   final String collectionId;
 
-  DocumentDetailsPage({
+  const DocumentDetailsPage({super.key,
     required this.accessToken,
     required this.documentPath,
     required this.projectId,
@@ -72,28 +72,28 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: Text('Edit Field'),
+          title: const Text('Edit Field'),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               TextField(
                 controller: TextEditingController(text: fieldName),
                 readOnly: true,
-                decoration: InputDecoration(labelText: 'Field Name'),
+                decoration: const InputDecoration(labelText: 'Field Name'),
               ),
               TextField(
                 controller: TextEditingController(text: newFieldType),
                 onChanged: (value) {
                   newFieldType = value;
                 },
-                decoration: InputDecoration(labelText: 'Field Type'),
+                decoration: const InputDecoration(labelText: 'Field Type'),
               ),
               TextField(
                 controller: TextEditingController(text: newFieldValue),
                 onChanged: (value) {
                   newFieldValue = value;
                 },
-                decoration: InputDecoration(labelText: 'Field Value'),
+                decoration: const InputDecoration(labelText: 'Field Value'),
               ),
             ],
           ),
@@ -102,14 +102,14 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              child: Text('Cancel'),
+              child: const Text('Cancel'),
             ),
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
                 _updateField(fieldName, newFieldType, newFieldValue);
               },
-              child: Text('OK'),
+              child: const Text('OK'),
             ),
           ],
         );
@@ -152,15 +152,15 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: Text('View Field'),
+          title: const Text('View Field'),
           content: SingleChildScrollView(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text('Field Name: $fieldName'),
-                SizedBox(height: 8),
-                Text('Field Value:'),
-                SizedBox(height: 8),
+                const SizedBox(height: 8),
+                const Text('Field Value:'),
+                const SizedBox(height: 8),
                 if (fieldValue is Map) ...[
                   for (var entry in fieldValue.entries)
                     // print('${entry.key}: ${entry.value}')
@@ -177,7 +177,7 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              child: Text('Close'),
+              child: const Text('Close'),
             ),
           ],
         );
@@ -202,7 +202,7 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              child: Text('Close'),
+              child: const Text('Close'),
             ),
           ],
         );
@@ -213,7 +213,7 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
   List<Widget> _buildMapEntries(Map<String, dynamic> mapValue) {
     List<Widget> widgets = [];
 
-    mapValue.entries.forEach((entry) {
+    for (var entry in mapValue.entries) {
       String key = entry.key;
       dynamic value = entry.value;
 
@@ -230,7 +230,7 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
           title: Text('$key: $value'),
         ));
       }
-    });
+    }
 
     return widgets;
   }
@@ -261,7 +261,7 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              child: Text('Close'),
+              child: const Text('Close'),
             ),
           ],
         );
@@ -286,10 +286,10 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Document Details'),
+        title: const Text('Document Details'),
       ),
       body: _isLoading
-          ? Center(
+          ? const Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -309,14 +309,14 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text('Document ID: ${extractDisplayName(_documentDetails!['name'])}',
-                  style: TextStyle(fontWeight: FontWeight.bold)),
+                  style: const TextStyle(fontWeight: FontWeight.bold)),
               Text("Collection Name: ${widget.collectionId}"),
-              SizedBox(height: 8),
+              const SizedBox(height: 8),
               Text('Created Time: ${_formatDateTime(_documentDetails!['createTime'])}'),
               Text('Updated Time: ${_formatDateTime(_documentDetails!['updateTime'])}'),
-              SizedBox(height: 16),
-              Text('Fields:', style: TextStyle(fontWeight: FontWeight.bold)),
-              SizedBox(height: 8),
+              const SizedBox(height: 16),
+              const Text('Fields:', style: TextStyle(fontWeight: FontWeight.bold)),
+              const SizedBox(height: 8),
               if (_documentDetails!['fields'] != null)
                 ..._documentDetails!['fields'].entries.map((entry) {
                   String fieldName = entry.key;
@@ -378,7 +378,7 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
                           color: Colors.grey.withOpacity(0.5),
                           spreadRadius: 2,
                           blurRadius: 5,
-                          offset: Offset(0, 3), // changes position of shadow
+                          offset: const Offset(0, 3), // changes position of shadow
                         ),
                       ],
                     ),
@@ -390,17 +390,17 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
                           if (fieldType == 'mapValue')
                             IconButton(onPressed: () {
                               _showMapDialog(fieldName, fieldValue);
-                            }, icon: Icon(Icons.remove_red_eye)),
+                            }, icon: const Icon(Icons.remove_red_eye)),
                           if (fieldType == 'arrayValue')
                             IconButton(
-                              icon: Icon(Icons.remove_red_eye),
+                              icon: const Icon(Icons.remove_red_eye),
                               onPressed: () {
                                 _showViewDialog(fieldName, fieldValue);
                               },
                             ),
                           if (fieldType == 'geoPointValue')
                             IconButton(
-                              icon: Icon(Icons.remove_red_eye),
+                              icon: const Icon(Icons.remove_red_eye),
                               onPressed: () {
                                 _showViewDialog(fieldName, fieldValue);
                               },
@@ -409,13 +409,13 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
                               fieldType != 'arrayValue' &&
                               fieldType != 'geoPointValue')
                             IconButton(
-                              icon: Icon(Icons.edit),
+                              icon: const Icon(Icons.edit),
                               onPressed: () {
                                 _showEditDialog(fieldName, fieldType, fieldValue);
                               },
                             ),
                           IconButton(
-                            icon: Icon(Icons.delete),
+                            icon: const Icon(Icons.delete),
                             onPressed: () {
                               // Define your delete action here
                             },
@@ -429,7 +429,7 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
           ),
         ),
       )
-          : Center(child: Text('No document details found.')),
+          : const Center(child: Text('No document details found.')),
     );
   }
 }

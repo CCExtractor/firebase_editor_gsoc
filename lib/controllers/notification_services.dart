@@ -4,7 +4,6 @@ import 'dart:math';
 import 'package:firebase_editor_gsoc/controllers/controllers.dart';
 import 'package:firebase_editor_gsoc/views/list_documents_details.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/get.dart';
@@ -102,7 +101,7 @@ class NotificationServices {
 
     /// SET IOS NOTIFICATIONS AND CHANNEL DETAILS
     /// ios handles it by itself, firebase doesn't uses this
-    DarwinNotificationDetails darwinNotificationDetails = DarwinNotificationDetails(
+    DarwinNotificationDetails darwinNotificationDetails = const DarwinNotificationDetails(
       presentAlert: true,
       presentBadge: true,
       presentSound: true
@@ -161,7 +160,7 @@ class NotificationServices {
   void isTokenRefresh() {
     messaging.onTokenRefresh.listen((event) {
       event.toString();
-      print("refreshed token: ${event}");
+      print("refreshed token: $event");
   });
 }
 

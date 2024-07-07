@@ -1,15 +1,13 @@
-import 'dart:convert';
 import 'package:firebase_editor_gsoc/API/fetch_databases.dart';
 import 'package:firebase_editor_gsoc/views/user_collections.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 
 
 class ProjectDetailsScreen extends StatefulWidget {
   final String projectId;
   final String accessToken;
 
-  ProjectDetailsScreen({required this.projectId, required this.accessToken});
+  const ProjectDetailsScreen({super.key, required this.projectId, required this.accessToken});
 
   @override
   _ProjectDetailsScreenState createState() => _ProjectDetailsScreenState();
@@ -51,10 +49,10 @@ class _ProjectDetailsScreenState extends State<ProjectDetailsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Database Details'),
+        title: const Text('Database Details'),
       ),
       body: _isLoading
-          ? Center(
+          ? const Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -77,7 +75,7 @@ class _ProjectDetailsScreenState extends State<ProjectDetailsScreen> {
               color: Colors.grey.withOpacity(0.5),
               spreadRadius: 2,
               blurRadius: 5,
-              offset: Offset(0, 3), // changes position of shadow
+              offset: const Offset(0, 3), // changes position of shadow
             ),
           ],
         ),
@@ -86,7 +84,7 @@ class _ProjectDetailsScreenState extends State<ProjectDetailsScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text('Name: ${_databaseInfo!['displayName']}'),
-            SizedBox(height: 4), // Adjust spacing as needed
+            const SizedBox(height: 4), // Adjust spacing as needed
             Text('Created Time: ${_databaseInfo!['formattedCreateTime']}'),
             Text('Updated Time: ${_databaseInfo!['formattedUpdateTime']}'),
 
@@ -111,7 +109,7 @@ class _ProjectDetailsScreenState extends State<ProjectDetailsScreen> {
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.amber, // Set the background color
               ),
-              child: Text('View Collections', style: TextStyle(fontSize: 14.0),),
+              child: const Text('View Collections', style: TextStyle(fontSize: 14.0),),
             ),
           ],
         ),

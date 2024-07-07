@@ -10,7 +10,7 @@ class DocumentsPage extends StatefulWidget {
   final String databaseId;
   final String collectionId;
 
-  DocumentsPage({
+  const DocumentsPage({super.key,
     required this.accessToken,
     required this.projectId,
     required this.databaseId,
@@ -96,10 +96,10 @@ class _DocumentsPageState extends State<DocumentsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Documents'),
+        title: const Text('Documents'),
       ),
       body: _isLoading
-          ? Center(
+          ? const Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -125,7 +125,7 @@ class _DocumentsPageState extends State<DocumentsPage> {
                   color: Colors.grey.withOpacity(0.5),
                   spreadRadius: 2,
                   blurRadius: 5,
-                  offset: Offset(0, 3), // changes position of shadow
+                  offset: const Offset(0, 3), // changes position of shadow
                 ),
               ],
             ),
@@ -146,7 +146,7 @@ class _DocumentsPageState extends State<DocumentsPage> {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.amber, // Set the background color
                     ),
-                    child: Text('View Fields'),
+                    child: const Text('View Fields'),
                   ),
                 ],
               ),

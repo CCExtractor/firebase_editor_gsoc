@@ -31,7 +31,7 @@ class _DefineSchemaState extends State<DefineSchema> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Define Schema'),
+        title: const Text('Define Schema'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -46,7 +46,7 @@ class _DefineSchemaState extends State<DefineSchema> {
                 ),
               ),
             ),
-            SizedBox(height: 15.0,),
+            const SizedBox(height: 15.0,),
             TextField(
               controller: _schemaControllers.primaryKeyNameController,
               decoration: InputDecoration(
@@ -62,13 +62,13 @@ class _DefineSchemaState extends State<DefineSchema> {
             //     labelText: 'Primary Key Data Type',
             //   ),
             // ),
-            SizedBox(height: 15.0,),
+            const SizedBox(height: 15.0,),
             DropdownButtonFormField<String>(
               value: _schemaControllers.primaryKeyType,
               items: ['string', 'number', 'boolean'].map((String value) {
                 return DropdownMenuItem<String>(
                   value: value,
-                  child: Text(value, style: TextStyle(fontSize: 18.0),),
+                  child: Text(value, style: const TextStyle(fontSize: 18.0),),
                 );
               }).toList(),
               onChanged: (String? newValue) {
@@ -81,20 +81,20 @@ class _DefineSchemaState extends State<DefineSchema> {
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10.0),
                 ),
-                contentPadding: EdgeInsets.fromLTRB(12, 20, 12, 20),
+                contentPadding: const EdgeInsets.fromLTRB(12, 20, 12, 20),
               ),
             ),
-            SizedBox(height: 20.0),
+            const SizedBox(height: 20.0),
             ...List.generate(_schemaControllers.attributeNameControllers.length, (index) {
               return AttributeField(
                 attributeNameController: _schemaControllers.attributeNameControllers[index],
                 attributeTypeController: _schemaControllers.attributeTypeControllers[index],
               );
             }),
-            SizedBox(height: 20.0),
+            const SizedBox(height: 20.0),
             ElevatedButton(
               onPressed: _addAttribute,
-              child: Text('Add Field +'),
+              child: const Text('Add Field +'),
             ),
           ],
         ),

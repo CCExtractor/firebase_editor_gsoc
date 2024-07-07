@@ -1,10 +1,8 @@
 import 'dart:convert';
 
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_editor_gsoc/controllers/controllers.dart';
 import 'package:firebase_editor_gsoc/home_screen.dart';
-import 'package:firebase_editor_gsoc/models/login.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -14,6 +12,8 @@ import 'package:http/http.dart' as http;
 import 'controllers/user_controller.dart';
 
 class LoginScreen extends StatefulWidget {
+  const LoginScreen({super.key});
+
   @override
   _LoginScreenState createState() => _LoginScreenState();
 }
@@ -39,10 +39,10 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Login'),
+        title: const Text('Login'),
         actions: <Widget>[
           _user != null ? IconButton(
-            icon: Icon(Icons.exit_to_app),
+            icon: const Icon(Icons.exit_to_app),
             onPressed: _handleLogout,
           ) : Container(),
         ],
@@ -79,14 +79,14 @@ class _LoginScreenState extends State<LoginScreen> {
                   Container(
                     height: 100,
                     width: 100,
-                    child: Text(""),
                     decoration: BoxDecoration(
                       image: DecorationImage(
                         image: NetworkImage(_user!.photoURL!),
                       ),
                     ),
+                    child: const Text(""),
                   ),
-          SizedBox(height: 20,),
+          const SizedBox(height: 20,),
 
           Text(_user!.email!),
           Text(_user!.displayName ?? ""),
@@ -96,10 +96,10 @@ class _LoginScreenState extends State<LoginScreen> {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => HomeScreen(),
+                builder: (context) => const HomeScreen(),
               ),
             );
-          }, child: Text("Go to Home")),
+          }, child: const Text("Go to Home")),
         ],
       ),
     );

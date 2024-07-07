@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:firebase_editor_gsoc/views/define_schema.dart';
 
 class SchemaList extends StatelessWidget {
+  const SchemaList({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Schema List'),
+        title: const Text('Schema List'),
       ),
       body: Column(
         children: [
@@ -16,13 +18,13 @@ class SchemaList extends StatelessWidget {
               itemBuilder: (context, index) {
                 final schema = schemaList[index];
                 return Container(
-                  margin: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                  margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                   decoration: BoxDecoration(
                     color: Colors.amber[300],
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: ListTile(
-                    leading: Icon(Icons.remove_red_eye, color: Colors.white),
+                    leading: const Icon(Icons.remove_red_eye, color: Colors.white),
                     title: Text(schema.schemaName),
                     subtitle: Text(schema.projectName),
                     trailing: Text('Last Edited: ${schema.lastEdited}'),
@@ -31,7 +33,7 @@ class SchemaList extends StatelessWidget {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => DefineSchema(),
+                          builder: (context) => const DefineSchema(),
                         ),
                       );
                       print('Tapped on ${schema.schemaName}');
@@ -49,13 +51,13 @@ class SchemaList extends StatelessWidget {
                 Navigator.push(
                     context,
                     MaterialPageRoute(
-                    builder: (context) => DefineSchema(),
+                    builder: (context) => const DefineSchema(),
                 )
                 );
                 print('Button Pressed');
               },
 
-              child: Text('Add New Schema'),
+              child: const Text('Add New Schema'),
             ),
           ),
         ],
