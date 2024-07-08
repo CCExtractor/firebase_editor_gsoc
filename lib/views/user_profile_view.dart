@@ -1,4 +1,5 @@
 import 'package:firebase_editor_gsoc/controllers/user_controller.dart';
+import 'package:firebase_editor_gsoc/views/list_projects.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -64,6 +65,12 @@ class UserProfileView extends StatelessWidget {
                     title: const Text('Your Projects'),
                     onTap: () {
                       // Handle tap
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const ProjectsPage(),
+                        ),
+                      );
 
                     },
                   ),
@@ -72,7 +79,7 @@ class UserProfileView extends StatelessWidget {
                     leading: const Icon(Icons.account_circle_rounded),
                     title: const Text('Switch Accounts'),
                     onTap: () {
-                      // Handle tap
+                      // await userController.switchAccount();
                     },
                   ),
                   Divider(),

@@ -41,13 +41,19 @@ class _HomeScreenState extends State<HomeScreen> {
     notificationServices.firebaseInit(context);
     notificationServices.setUpInteractMessage(context);
     // notificationServices.isTokenRefresh();
+
+    // you need access token first before sending the notification
+    // fetch and set access token
+    tokenController.fetchAccessTokenData();
+
+
     notificationServices.getDeviceToken().then((value) {
       print("DEVICE TOKEN: ");
       print(value);
+      // notificationServices.sendNotification(value, accessController.accessToken.text);
     });
 
-    // fetch and set access token
-    tokenController.fetchAccessTokenData();
+
   }
 
   @override

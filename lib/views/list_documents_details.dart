@@ -1,3 +1,6 @@
+import 'package:firebase_editor_gsoc/views/array_field_data.dart';
+import 'package:firebase_editor_gsoc/views/edit_field_type.dart';
+import 'package:firebase_editor_gsoc/views/map_field_data.dart';
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
@@ -64,6 +67,59 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
     }
   }
 
+  // void _showEditDialog(String fieldName, String fieldType, String fieldValue) {
+  //   String newFieldType = fieldType;
+  //   String newFieldValue = fieldValue;
+  //
+  //   showDialog(
+  //     context: context,
+  //     builder: (context) {
+  //       return AlertDialog(
+  //         title: const Text('Edit Field'),
+  //         content: Column(
+  //           mainAxisSize: MainAxisSize.min,
+  //           children: [
+  //             TextField(
+  //               controller: TextEditingController(text: fieldName),
+  //               readOnly: true,
+  //               decoration: const InputDecoration(labelText: 'Field Name'),
+  //             ),
+  //             TextField(
+  //               controller: TextEditingController(text: newFieldType),
+  //               onChanged: (value) {
+  //                 newFieldType = value;
+  //               },
+  //               decoration: const InputDecoration(labelText: 'Field Type'),
+  //             ),
+  //             TextField(
+  //               controller: TextEditingController(text: newFieldValue),
+  //               onChanged: (value) {
+  //                 newFieldValue = value;
+  //               },
+  //               decoration: const InputDecoration(labelText: 'Field Value'),
+  //             ),
+  //           ],
+  //         ),
+  //         actions: [
+  //           TextButton(
+  //             onPressed: () {
+  //               Navigator.of(context).pop();
+  //             },
+  //             child: const Text('Cancel'),
+  //           ),
+  //           TextButton(
+  //             onPressed: () {
+  //               Navigator.of(context).pop();
+  //               _updateField(fieldName, newFieldType, newFieldValue);
+  //             },
+  //             child: const Text('OK'),
+  //           ),
+  //         ],
+  //       );
+  //     },
+  //   );
+  // }
+
   void _showEditDialog(String fieldName, String fieldType, String fieldValue) {
     String newFieldType = fieldType;
     String newFieldValue = fieldValue;
@@ -81,12 +137,34 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
                 readOnly: true,
                 decoration: const InputDecoration(labelText: 'Field Name'),
               ),
-              TextField(
-                controller: TextEditingController(text: newFieldType),
-                onChanged: (value) {
-                  newFieldType = value;
-                },
-                decoration: const InputDecoration(labelText: 'Field Type'),
+              Row(
+                children: [
+                  Expanded(
+                    child: TextField(
+                      controller: TextEditingController(text: newFieldType),
+                      readOnly: true,
+                      decoration: const InputDecoration(labelText: 'Field Type'),
+                    ),
+                  ),
+                  IconButton(
+                    icon: Icon(Icons.edit),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => EditFieldTypePage(
+                            fieldName: fieldName,
+                            fieldType: fieldType,
+                            fieldValue: fieldValue,
+                            accessToken: widget.accessToken,
+                            documentPath: widget.documentPath,
+                            documentDetails: _documentDetails,
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ],
               ),
               TextField(
                 controller: TextEditingController(text: newFieldValue),
@@ -117,6 +195,206 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
     );
   }
 
+
+  // void _showEditDialog(String fieldName, String fieldType, dynamic fieldValue) {
+  //   String newFieldType = fieldType;
+  //   String newFieldValue = fieldValue.toString();
+  //
+  //   showDialog(
+  //     context: context,
+  //     builder: (context) {
+  //       return AlertDialog(
+  //         title: const Text('Edit Field'),
+  //         content: StatefulBuilder(
+  //           builder: (context, setState) {
+  //             return Column(
+  //               mainAxisSize: MainAxisSize.min,
+  //               children: [
+  //                 TextField(
+  //                   controller: TextEditingController(text: fieldName),
+  //                   readOnly: true,
+  //                   decoration: const InputDecoration(labelText: 'Field Name'),
+  //                 ),
+  //                 DropdownButton<String>(
+  //                   value: newFieldType,
+  //                   onChanged: (String? newValue) {
+  //                     setState(() {
+  //                       newFieldType = newValue!;
+  //                     });
+  //                   },
+  //                   items: <String>[
+  //                     'stringValue',
+  //                     'integerValue',
+  //                     'booleanValue',
+  //                     'mapValue',
+  //                     'arrayValue',
+  //                     'nullValue',
+  //                     'timestampValue',
+  //                     'geoPointValue',
+  //                     'referenceValue'
+  //                   ].map<DropdownMenuItem<String>>((String value) {
+  //                     return DropdownMenuItem<String>(
+  //                       value: value,
+  //                       child: Text(value),
+  //                     );
+  //                   }).toList(),
+  //                 ),
+  //                 TextField(
+  //                   controller: TextEditingController(text: newFieldValue),
+  //                   onChanged: (value) {
+  //                     newFieldValue = value;
+  //                   },
+  //                   decoration: const InputDecoration(labelText: 'Field Value'),
+  //                 ),
+  //               ],
+  //             );
+  //           },
+  //         ),
+  //         actions: [
+  //           TextButton(
+  //             onPressed: () {
+  //               Navigator.of(context).pop();
+  //             },
+  //             child: const Text('Cancel'),
+  //           ),
+  //           TextButton(
+  //             onPressed: () {
+  //               if (!_validateFieldValue(newFieldType, newFieldValue)) {
+  //                 ScaffoldMessenger.of(context).showSnackBar(
+  //                   const SnackBar(
+  //                     content: Text('Invalid value for the selected datatype.'),
+  //                   ),
+  //                 );
+  //                 return;
+  //               }
+  //               Navigator.of(context).pop();
+  //               _updateField(fieldName, newFieldType, newFieldValue);
+  //             },
+  //             child: const Text('OK'),
+  //           ),
+  //         ],
+  //       );
+  //     },
+  //   );
+  // }
+  //
+  // bool _validateFieldValue(String fieldType, String fieldValue) {
+  //   switch (fieldType) {
+  //     case 'stringValue':
+  //       return true; // Any string is valid
+  //     case 'integerValue':
+  //       return int.tryParse(fieldValue) != null;
+  //     case 'booleanValue':
+  //       return fieldValue.toLowerCase() == 'true' || fieldValue.toLowerCase() == 'false';
+  //     case 'nullValue':
+  //       return fieldValue.isEmpty;
+  //     case 'timestampValue':
+  //       try {
+  //         DateTime.parse(fieldValue);
+  //         return true;
+  //       } catch (e) {
+  //         return false;
+  //       }
+  //     case 'geoPointValue':
+  //       var parts = fieldValue.split(',');
+  //       if (parts.length == 2) {
+  //         var lat = double.tryParse(parts[0]);
+  //         var lon = double.tryParse(parts[1]);
+  //         return lat != null && lon != null && lat >= -90 && lat <= 90 && lon >= -180 && lon <= 180;
+  //       }
+  //       return false;
+  //     case 'referenceValue':
+  //       return Uri.tryParse(fieldValue) != null;
+  //     case 'mapValue':
+  //     // Simple validation for map as JSON
+  //       try {
+  //         json.decode(fieldValue);
+  //         return true;
+  //       } catch (e) {
+  //         return false;
+  //       }
+  //     case 'arrayValue':
+  //     // Simple validation for array as JSON
+  //       try {
+  //         var decoded = json.decode(fieldValue);
+  //         return decoded is List;
+  //       } catch (e) {
+  //         return false;
+  //       }
+  //     default:
+  //       return false;
+  //   }
+  // }
+  //
+  // void _updateField(String fieldName, String fieldType, String fieldValue) async {
+  //   Map<String, dynamic> fields = _documentDetails!['fields'];
+  //   dynamic value;
+  //
+  //   switch (fieldType) {
+  //     case 'stringValue':
+  //       value = fieldValue;
+  //       break;
+  //     case 'integerValue':
+  //       value = int.parse(fieldValue);
+  //       break;
+  //     case 'booleanValue':
+  //       value = fieldValue.toLowerCase() == 'true';
+  //       break;
+  //     case 'nullValue':
+  //       value = null;
+  //       break;
+  //     case 'timestampValue':
+  //       value = fieldValue; // Should be in correct timestamp format
+  //       break;
+  //     case 'geoPointValue':
+  //       var parts = fieldValue.split(',');
+  //       value = {
+  //         'latitude': double.parse(parts[0]),
+  //         'longitude': double.parse(parts[1])
+  //       };
+  //       break;
+  //     case 'referenceValue':
+  //       value = fieldValue; // Should be in correct reference format
+  //       break;
+  //     case 'mapValue':
+  //       value = json.decode(fieldValue);
+  //       break;
+  //     case 'arrayValue':
+  //       value = json.decode(fieldValue);
+  //       break;
+  //     default:
+  //       return;
+  //   }
+  //
+  //   fields[fieldName] = {fieldType: value};
+  //
+  //   String url = 'https://firestore.googleapis.com/v1/${widget.documentPath}?updateMask.fieldPaths=$fieldName';
+  //   Map<String, String> headers = {
+  //     'Authorization': 'Bearer ${widget.accessToken}',
+  //     'Accept': 'application/json',
+  //     'Content-Type': 'application/json',
+  //   };
+  //   Map<String, dynamic> body = {
+  //     "fields": fields,
+  //   };
+  //
+  //   try {
+  //     final response = await http.patch(Uri.parse(url), headers: headers, body: json.encode(body));
+  //
+  //     if (response.statusCode == 200) {
+  //       setState(() {
+  //         _documentDetails!['fields'] = fields;
+  //       });
+  //       print('Field updated successfully');
+  //     } else {
+  //       print('Failed to update field. Status Code: ${response.statusCode}');
+  //     }
+  //   } catch (error) {
+  //     print('Error updating field: $error');
+  //   }
+  // }
+
+
   void _updateField(String fieldName, String fieldType, String fieldValue) async {
     Map<String, dynamic> fields = _documentDetails!['fields'];
     fields[fieldName] = {fieldType: fieldValue};
@@ -138,6 +416,7 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
         setState(() {
           _documentDetails!['fields'] = fields;
         });
+        //call function for storing history
         print('Field updated successfully');
       } else {
         print('Failed to update field. Status Code: ${response.statusCode}');
@@ -185,24 +464,67 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
     );
   }
 
-  void _showMapDialog(String fieldName, Map<String, dynamic> fieldValue) {
+
+
+  void _showGeoPointDialog(String fieldName, Map<String, dynamic> geoPointValue) {
+    double latitude = geoPointValue['latitude'];
+    double longitude = geoPointValue['longitude'];
+
     showDialog(
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: Text('Field: $fieldName'),
-          content: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: _buildMapEntries(fieldValue['fields']),
-            ),
+          title: Text('Edit GeoPoint: $fieldName'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: TextEditingController(text: latitude.toString()),
+                keyboardType: TextInputType.number,
+                decoration: const InputDecoration(labelText: 'Latitude'),
+                onChanged: (value) {
+                  latitude = double.tryParse(value) ?? latitude;
+                },
+              ),
+              TextField(
+                controller: TextEditingController(text: longitude.toString()),
+                keyboardType: TextInputType.number,
+                decoration: const InputDecoration(labelText: 'Longitude'),
+                onChanged: (value) {
+                  longitude = double.tryParse(value) ?? longitude;
+                },
+              ),
+            ],
           ),
           actions: [
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              child: const Text('Close'),
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () {
+                if (latitude < -90 || latitude > 90) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Latitude must be between -90 and 90.'),
+                    ),
+                  );
+                  return;
+                }
+                if (longitude < -180 || longitude > 180) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Longitude must be between -180 and 180.'),
+                    ),
+                  );
+                  return;
+                }
+                Navigator.of(context).pop();
+                _updateGeoPointField(fieldName, latitude, longitude);
+              },
+              child: const Text('OK'),
             ),
           ],
         );
@@ -210,58 +532,86 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
     );
   }
 
-  List<Widget> _buildMapEntries(Map<String, dynamic> mapValue) {
-    List<Widget> widgets = [];
+  void _updateGeoPointField(String fieldName, double latitude, double longitude) async {
+    Map<String, dynamic> fields = _documentDetails!['fields'];
+    fields[fieldName] = {'geoPointValue': {'latitude': latitude, 'longitude': longitude}};
 
-    for (var entry in mapValue.entries) {
-      String key = entry.key;
-      dynamic value = entry.value;
+    String url = 'https://firestore.googleapis.com/v1/${widget.documentPath}?updateMask.fieldPaths=$fieldName';
+    Map<String, String> headers = {
+      'Authorization': 'Bearer ${widget.accessToken}',
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+    };
+    Map<String, dynamic> body = {
+      "fields": fields,
+    };
 
-      if (value is Map<String, dynamic>) {
-        widgets.add(ListTile(
-          title: Text('$key:'),
-          subtitle: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: _buildMapEntries(value),
-          ),
-        ));
+    try {
+      final response = await http.patch(Uri.parse(url), headers: headers, body: json.encode(body));
+
+      if (response.statusCode == 200) {
+        setState(() {
+          _documentDetails!['fields'] = fields;
+        });
+        print('GeoPoint updated successfully');
       } else {
-        widgets.add(ListTile(
-          title: Text('$key: $value'),
-        ));
+        print('Failed to update GeoPoint. Status Code: ${response.statusCode}');
       }
+    } catch (error) {
+      print('Error updating GeoPoint: $error');
     }
-
-    return widgets;
   }
 
+  void _showBoolDialog(String fieldName, bool currentValue) {
+    bool newValue = currentValue;
 
-  void _showArrayDialog(String fieldName, List<dynamic> arrayValue) {
     showDialog(
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: Text('Field: $fieldName'),
-          content: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: arrayValue.map((item) {
-                String itemType = item.keys.first;
-                dynamic itemValue = item[itemType];
-
-                return ListTile(
-                  title: Text('Type: $itemType'),
-                  subtitle: Text('Value: $itemValue'),
-                );
-              }).toList(),
-            ),
+          title: Text('Edit Boolean: $fieldName'),
+          content: StatefulBuilder(
+            builder: (context, setState) {
+              return Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  RadioListTile<bool>(
+                    title: const Text('True'),
+                    value: true,
+                    groupValue: newValue,
+                    onChanged: (value) {
+                      setState(() {
+                        newValue = value!;
+                      });
+                    },
+                  ),
+                  RadioListTile<bool>(
+                    title: const Text('False'),
+                    value: false,
+                    groupValue: newValue,
+                    onChanged: (value) {
+                      setState(() {
+                        newValue = value!;
+                      });
+                    },
+                  ),
+                ],
+              );
+            },
           ),
           actions: [
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              child: const Text('Close'),
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                _updateBoolField(fieldName, newValue);
+              },
+              child: const Text('OK'),
             ),
           ],
         );
@@ -269,6 +619,35 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
     );
   }
 
+  void _updateBoolField(String fieldName, bool newValue) async {
+    Map<String, dynamic> fields = _documentDetails!['fields'];
+    fields[fieldName] = {'booleanValue': newValue};
+
+    String url = 'https://firestore.googleapis.com/v1/${widget.documentPath}?updateMask.fieldPaths=$fieldName';
+    Map<String, String> headers = {
+      'Authorization': 'Bearer ${widget.accessToken}',
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+    };
+    Map<String, dynamic> body = {
+      "fields": fields,
+    };
+
+    try {
+      final response = await http.patch(Uri.parse(url), headers: headers, body: json.encode(body));
+
+      if (response.statusCode == 200) {
+        setState(() {
+          _documentDetails!['fields'] = fields;
+        });
+        print('Boolean value updated successfully');
+      } else {
+        print('Failed to update Boolean value. Status Code: ${response.statusCode}');
+      }
+    } catch (error) {
+      print('Error updating Boolean value: $error');
+    }
+  }
 
 
   String _formatDateTime(String dateTimeString) {
@@ -341,15 +720,16 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
                     fieldType = 'mapValue';
                     fieldValue = fieldData['mapValue'];
                     displayValue = 'Map';
+
                   } else if (fieldData.containsKey('arrayValue')) {
                     fieldType = 'arrayValue';
                     fieldValue = fieldData['arrayValue'];
                     displayValue = 'Array';
-                    print(fieldValue);
                   } else if (fieldData.containsKey('geoPointValue')) {
                     fieldType = 'geoPointValue';
                     fieldValue = fieldData['geoPointValue'];
                     displayValue = 'GeoPoint';
+                    print(fieldValue);
                   } else if (fieldData.containsKey('nullValue')) {
                     fieldType = 'nullValue';
                     fieldValue = fieldData['nullValue'];
@@ -389,25 +769,50 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
                         children: [
                           if (fieldType == 'mapValue')
                             IconButton(onPressed: () {
-                              _showMapDialog(fieldName, fieldValue);
+                              // _showMapDialog(fieldName, fieldValue);
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => MapFieldDataPage(
+                                    fieldName: fieldName,
+                                    fieldValue: fieldValue,
+                                  ),
+                                ),
+                              );
                             }, icon: const Icon(Icons.remove_red_eye)),
                           if (fieldType == 'arrayValue')
                             IconButton(
                               icon: const Icon(Icons.remove_red_eye),
                               onPressed: () {
-                                _showViewDialog(fieldName, fieldValue);
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => ArrayFieldDataPage(
+                                      fieldName: fieldName,
+                                      arrayValue: fieldValue['values'],
+                                    ),
+                                  ),
+                                );
                               },
                             ),
                           if (fieldType == 'geoPointValue')
                             IconButton(
                               icon: const Icon(Icons.remove_red_eye),
                               onPressed: () {
-                                _showViewDialog(fieldName, fieldValue);
+                                _showGeoPointDialog(fieldName, fieldValue);
+                              },
+                            ),
+                          if (fieldType == 'booleanValue')
+                            IconButton(
+                              icon: const Icon(Icons.edit),
+                              onPressed: () {
+                                _showBoolDialog(fieldName, fieldValue);
                               },
                             ),
                           if (fieldType != 'mapValue' &&
                               fieldType != 'arrayValue' &&
-                              fieldType != 'geoPointValue')
+                              fieldType != 'geoPointValue' &&
+                              fieldType != 'booleanValue')
                             IconButton(
                               icon: const Icon(Icons.edit),
                               onPressed: () {

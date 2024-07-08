@@ -1,4 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_editor_gsoc/controllers/controllers.dart';
+import 'package:firebase_editor_gsoc/controllers/token_controller.dart';
 import 'package:firebase_editor_gsoc/controllers/user_controller.dart';
 import 'package:firebase_editor_gsoc/firebase_options.dart';
 import 'package:firebase_editor_gsoc/views/list_projects.dart';
@@ -36,6 +38,8 @@ void main() async{
 
   /// Initialize the UserController
   Get.put(UserController());
+  Get.put(TokenController());
+  Get.put(AccessController());
   runApp(const MyApp());
 }
 

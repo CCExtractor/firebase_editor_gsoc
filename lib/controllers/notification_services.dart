@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
 
@@ -7,6 +8,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/get.dart';
+import 'package:http/http.dart' as http;
 
 
 class NotificationServices {
@@ -188,6 +190,13 @@ class NotificationServices {
         // redirect to the document updated page
         // access all ids from the payload
         print(accessController.accessToken.text);
+        print("Project id: ${message.data['project_id']}");
+        print("DB id: ${message.data['database_id']}");
+        print("Collection id: ${message.data['collection_id']}");
+        print("Document id: ${message.data['document_id']}");
+
+        print("Hard document path: projects/hellos-bc256/databases/(default)/documents/bookings/UkbGIXCwLSWD0YQtosM2");
+        print("Format document path: projects/${message.data['project_id']}/databases/${message.data['database_id']}/documents/${message.data['collection_id']}/${message.data['document_id']}");
         Navigator.push(
           context,
           MaterialPageRoute(
@@ -196,7 +205,7 @@ class NotificationServices {
               projectId: message.data['project_id'],
               databaseId: message.data['database_id'],
               collectionId: message.data['collection_id'],
-              documentPath: "projects/hellos-bc256/databases/(default)/documents/bookings/UkbGIXCwLSWD0YQtosM2",
+              documentPath: "projects/${message.data['project_id']}/databases/${message.data['database_id']}/documents/${message.data['collection_id']}/${message.data['document_id']}",
             ),
           ),
         );
@@ -204,4 +213,40 @@ class NotificationServices {
   }
 
 
+  // Future<void> sendNotification(String token, String myAccessToken) async {
+  //   try {
+  //     String projectId = "";
+  //     String url = 'https://fcm.googleapis.com/v1/projects/$projectId/messages:send';
+  //     String accessToken = myAccessToken;
+  //
+  //     var body = jsonEncode({
+  //       "message": {
+  //         "token": token,
+  //         "notification": {
+  //           "title": "Notification Title",
+  //           "body": "Notification Body",
+  //         },
+  //       }
+  //     });
+  //
+  //     var response = await http.post(
+  //       Uri.parse(url),
+  //       headers: <String, String>{
+  //         'Content-Type': 'application/json',
+  //         'Authorization': 'Bearer $accessToken',
+  //       },
+  //       body: body,
+  //     );
+  //
+  //     if (response.statusCode == 200) {
+  //       print('Notification sent successfully');
+  //     } else {
+  //       print(
+  //           'Failed to send notification. Status code: ${response.statusCode}');
+  //       print('Response body: ${response.body}');
+  //     }
+  //   } catch (e) {
+  //     print('Error sending notification: $e');
+  //   }
+  // }
 }

@@ -116,6 +116,7 @@ class _LoginScreenState extends State<LoginScreen> {
       final GoogleSignIn googleSignIn = GoogleSignIn(scopes: [
         'https://www.googleapis.com/auth/cloud-platform',
         'https://www.googleapis.com/auth/datastore',
+        'https://www.googleapis.com/auth/firebase.messaging'
       ]);
 
       final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
