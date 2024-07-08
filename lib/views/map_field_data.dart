@@ -92,8 +92,6 @@ class _MapFieldDataPageState extends State<MapFieldDataPage> {
     double longitude = geoPointValue['longitude']?.toDouble() ?? 0.0; // Ensure longitude is a double
     print("here");
 
-    DateTime? selectedDate;
-    TimeOfDay? selectedTime;
 
     showDialog(
       context: context,
@@ -324,6 +322,41 @@ class _MapFieldDataPageState extends State<MapFieldDataPage> {
   }
 
 
+  void _deleteFieldWithinMap(String fieldName) async {
+    bool confirmed = await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Confirm Deletion'),
+          content: Text('Are you sure you want to delete the field "$fieldName"?'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(false); // User cancelled
+              },
+              child: Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(true); // User confirmed
+              },
+              child: Text('Delete', style: TextStyle(color: Colors.red)),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (confirmed == true) {
+      setState(() {
+        widget.mapValue['fields'].remove(fieldName);
+      });
+
+      // Update Firestore with the updated fields
+      _updateField(widget.fieldName, widget.mapValue['fields']);
+    }
+  }
+
   void _updateField(String fieldName, Map<String, dynamic> newMapValue) async {
 
     Map<String, dynamic> fields = widget.documentDetails!['fields'];
@@ -455,6 +488,7 @@ class _MapFieldDataPageState extends State<MapFieldDataPage> {
                   icon: const Icon(Icons.delete),
                   onPressed: () {
                     // Implement delete functionality
+                    _deleteFieldWithinMap(key);
                   },
                 ),
               ],

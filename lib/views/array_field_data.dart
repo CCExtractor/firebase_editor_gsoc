@@ -325,7 +325,40 @@ class _ArrayFieldDataPageState extends State<ArrayFieldDataPage> {
   }
 
 
+  void _deleteFieldFromArray(int index) async {
+    bool confirmed = await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Confirm Deletion'),
+          content: Text('Are you sure you want to delete the element at index $index?'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(false); // User cancelled
+              },
+              child: Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(true); // User confirmed
+              },
+              child: Text('Delete', style: TextStyle(color: Colors.red)),
+            ),
+          ],
+        );
+      },
+    );
 
+    if (confirmed == true) {
+      setState(() {
+        widget.arrayValue.removeAt(index);
+      });
+
+      // Update Firestore with the updated array
+      _updateField(widget.fieldName, widget.arrayValue);
+    }
+  }
 
   void _updateField(String fieldName, List<dynamic> newArrayValue) async {
 
@@ -470,6 +503,7 @@ class _ArrayFieldDataPageState extends State<ArrayFieldDataPage> {
                   icon: const Icon(Icons.delete),
                   onPressed: () {
                     // Define your delete action here
+                    _deleteFieldFromArray(index);
                   },
                 ),
               ],
