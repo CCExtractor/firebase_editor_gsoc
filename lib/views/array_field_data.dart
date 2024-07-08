@@ -1,3 +1,4 @@
+import 'package:firebase_editor_gsoc/controllers/history.dart';
 import 'package:firebase_editor_gsoc/views/map_field_data.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -76,7 +77,7 @@ class _ArrayFieldDataPageState extends State<ArrayFieldDataPage> {
                 Navigator.of(context).pop(); // Close the dialog
 
                 // Now update the entire array in Firestore
-                _updateField(widget.fieldName, widget.arrayValue);
+                _updateField(widget.fieldName, widget.arrayValue, 'update');
               },
               child: const Text('Save'),
             ),
@@ -150,7 +151,7 @@ class _ArrayFieldDataPageState extends State<ArrayFieldDataPage> {
                 Navigator.of(context).pop();
 
                 // Now update the entire array in Firestore
-                _updateField(widget.fieldName, widget.arrayValue);
+                _updateField(widget.fieldName, widget.arrayValue, 'update');
 
 
               },
@@ -225,7 +226,7 @@ class _ArrayFieldDataPageState extends State<ArrayFieldDataPage> {
                 Navigator.of(context).pop(); // Close the dialog
 
                 // Now update the entire array in Firestore
-                _updateField(widget.fieldName, widget.arrayValue);
+                _updateField(widget.fieldName, widget.arrayValue, 'update');
               },
               child: const Text('Save'),
             ),
@@ -314,7 +315,7 @@ class _ArrayFieldDataPageState extends State<ArrayFieldDataPage> {
                 Navigator.of(context).pop(); // Close the dialog
 
                 // Now update the entire array in Firestore
-                _updateField(widget.fieldName, widget.arrayValue);
+                _updateField(widget.fieldName, widget.arrayValue, 'update');
               },
               child: const Text('Save'),
             ),
@@ -356,11 +357,11 @@ class _ArrayFieldDataPageState extends State<ArrayFieldDataPage> {
       });
 
       // Update Firestore with the updated array
-      _updateField(widget.fieldName, widget.arrayValue);
+      _updateField(widget.fieldName, widget.arrayValue, 'delete');
     }
   }
 
-  void _updateField(String fieldName, List<dynamic> newArrayValue) async {
+  void _updateField(String fieldName, List<dynamic> newArrayValue, String operationType) async {
 
     Map<String, dynamic> fields = widget.documentDetails!['fields'];
 
@@ -382,6 +383,8 @@ class _ArrayFieldDataPageState extends State<ArrayFieldDataPage> {
       if (response.statusCode == 200) {
         setState(() {
           widget.documentDetails!['fields'] = fields;
+          DateTime updateTime = DateTime.now();
+          insertHistory(widget.documentPath, fieldName, updateTime, operationType);
         });
         print('Field updated successfully');
       } else {
@@ -511,6 +514,8 @@ class _ArrayFieldDataPageState extends State<ArrayFieldDataPage> {
           );
         },
       ),
+
+
     );
   }
 }

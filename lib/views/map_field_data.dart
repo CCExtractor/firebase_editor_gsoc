@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:firebase_editor_gsoc/controllers/history.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
@@ -74,7 +75,7 @@ class _MapFieldDataPageState extends State<MapFieldDataPage> {
                 Navigator.of(context).pop(); // Close the dialog
 
                 // Now update the entire array in Firestore
-                _updateField(widget.fieldName, widget.mapValue['fields']);
+                _updateField(widget.fieldName, widget.mapValue['fields'], 'update');
               },
               child: const Text('Save'),
             ),
@@ -155,7 +156,7 @@ class _MapFieldDataPageState extends State<MapFieldDataPage> {
 
                 // Now update the entire map in Firestore
                 print(widget.mapValue['fields'][fieldName]);
-                _updateField(widget.fieldName, widget.mapValue['fields']);
+                _updateField(widget.fieldName, widget.mapValue['fields'], 'update');
               },
               child: const Text('OK'),
             ),
@@ -246,7 +247,7 @@ class _MapFieldDataPageState extends State<MapFieldDataPage> {
                 Navigator.of(context).pop(); // Close the dialog
 
                 // Now update the entire map in Firestore
-                _updateField(widget.fieldName, widget.mapValue['fields']);
+                _updateField(widget.fieldName, widget.mapValue['fields'], 'update');
               },
               child: const Text('Save'),
             ),
@@ -309,7 +310,7 @@ class _MapFieldDataPageState extends State<MapFieldDataPage> {
 
                 // Update the entire map in Firestore
                 // print(widget.mapValue['fields']);
-                _updateField(widget.fieldName, widget.mapValue['fields']);
+                _updateField(widget.fieldName, widget.mapValue['fields'], 'update');
 
                 Navigator.of(context).pop(); // Close the dialog
               },
@@ -353,11 +354,11 @@ class _MapFieldDataPageState extends State<MapFieldDataPage> {
       });
 
       // Update Firestore with the updated fields
-      _updateField(widget.fieldName, widget.mapValue['fields']);
+      _updateField(widget.fieldName, widget.mapValue['fields'], 'delete');
     }
   }
 
-  void _updateField(String fieldName, Map<String, dynamic> newMapValue) async {
+  void _updateField(String fieldName, Map<String, dynamic> newMapValue, String operationType) async {
 
     Map<String, dynamic> fields = widget.documentDetails!['fields'];
 
@@ -380,6 +381,8 @@ class _MapFieldDataPageState extends State<MapFieldDataPage> {
       if (response.statusCode == 200) {
         setState(() {
           widget.documentDetails!['fields'] = fields;
+          DateTime updateTime = DateTime.now();
+          insertHistory(widget.documentPath, fieldName, updateTime, operationType);
         });
         print('Field updated successfully');
       } else {

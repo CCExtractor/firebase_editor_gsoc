@@ -1,3 +1,4 @@
+import 'package:firebase_editor_gsoc/controllers/history.dart';
 import 'package:firebase_editor_gsoc/views/array_field_data.dart';
 import 'package:firebase_editor_gsoc/views/edit_field_type.dart';
 import 'package:firebase_editor_gsoc/views/map_field_data.dart';
@@ -163,6 +164,8 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
       if (response.statusCode == 200) {
         setState(() {
           _documentDetails!['fields'] = fields;
+          DateTime updateTime = DateTime.now();
+          insertHistory(widget.documentPath, fieldName, updateTime, 'update');
         });
         //call function for storing history
         print('Field updated successfully');
@@ -207,12 +210,12 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
       fields.remove(fieldName);
 
       // Update Firestore with the updated fields
-       _updateDocument(fields);
+       _updateDocument(fieldName, fields);
     }
   }
 
 
-  void _updateDocument(Map<String, dynamic> updatedFields) async {
+  void _updateDocument(String fieldName, Map<String, dynamic> updatedFields) async {
     String url = 'https://firestore.googleapis.com/v1/${widget.documentPath}';
     Map<String, String> headers = {
       'Authorization': 'Bearer ${widget.accessToken}',
@@ -229,6 +232,8 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
       if (response.statusCode == 200) {
         setState(() {
           _documentDetails!['fields'] = updatedFields;
+          DateTime updateTime = DateTime.now();
+          insertHistory(widget.documentPath, fieldName, updateTime, 'delete');
         });
         // Call function for storing history or any other actions after successful update
         print('Field deleted successfully');
@@ -327,6 +332,8 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
       if (response.statusCode == 200) {
         setState(() {
           _documentDetails!['fields'] = fields;
+          DateTime updateTime = DateTime.now();
+          insertHistory(widget.documentPath, fieldName, updateTime, 'update');
         });
         print('GeoPoint updated successfully');
       } else {
@@ -539,6 +546,8 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
       if (response.statusCode == 200) {
         setState(() {
           _documentDetails!['fields'] = fields;
+          DateTime updateTime = DateTime.now();
+          insertHistory(widget.documentPath, fieldName, updateTime, 'update');
         });
         print('Boolean value updated successfully');
       } else {

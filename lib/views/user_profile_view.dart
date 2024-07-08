@@ -1,5 +1,6 @@
 import 'package:firebase_editor_gsoc/controllers/user_controller.dart';
 import 'package:firebase_editor_gsoc/views/list_projects.dart';
+import 'package:firebase_editor_gsoc/views/user_edit_history.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -88,7 +89,12 @@ class UserProfileView extends StatelessWidget {
                     title: const Text('Edit History'),
                     onTap: () {
                       // Handle tap
-                      print('Service 3 tapped');
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => HistoryPage(),
+                        ),
+                      );
                     },
                   ),
                   Divider(),
