@@ -720,7 +720,7 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
                     fieldType = 'mapValue';
                     fieldValue = fieldData['mapValue'];
                     displayValue = 'Map';
-
+                    print(fieldValue);
                   } else if (fieldData.containsKey('arrayValue')) {
                     fieldType = 'arrayValue';
                     fieldValue = fieldData['arrayValue'];
@@ -729,7 +729,7 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
                     fieldType = 'geoPointValue';
                     fieldValue = fieldData['geoPointValue'];
                     displayValue = 'GeoPoint';
-                    print(fieldValue);
+
                   } else if (fieldData.containsKey('nullValue')) {
                     fieldType = 'nullValue';
                     fieldValue = fieldData['nullValue'];
@@ -775,7 +775,10 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
                                 MaterialPageRoute(
                                   builder: (context) => MapFieldDataPage(
                                     fieldName: fieldName,
-                                    fieldValue: fieldValue,
+                                    mapValue: fieldValue,
+                                    documentDetails: _documentDetails,
+                                    accessToken: widget.accessToken,
+                                    documentPath: widget.documentPath,
                                   ),
                                 ),
                               );

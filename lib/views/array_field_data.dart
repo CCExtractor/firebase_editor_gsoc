@@ -448,7 +448,10 @@ class _ArrayFieldDataPageState extends State<ArrayFieldDataPage> {
                         MaterialPageRoute(
                           builder: (context) => MapFieldDataPage(
                             fieldName: index.toString(),
-                            fieldValue: value,
+                            mapValue: value,
+                            documentDetails: widget.documentDetails,
+                            documentPath: widget.documentPath,
+                            accessToken: widget.accessToken,
                           ),
                         ),
                       );
