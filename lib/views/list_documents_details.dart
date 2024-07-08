@@ -790,6 +790,10 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
                                     builder: (context) => ArrayFieldDataPage(
                                       fieldName: fieldName,
                                       arrayValue: fieldValue['values'],
+                                      accessToken: widget.accessToken,
+                                      documentDetails: _documentDetails,
+                                      documentPath: widget.documentPath,
+
                                     ),
                                   ),
                                 );

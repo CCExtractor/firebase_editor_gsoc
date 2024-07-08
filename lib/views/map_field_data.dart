@@ -10,6 +10,7 @@ class MapFieldDataPage extends StatelessWidget {
     required this.fieldValue,
   }) : super(key: key);
 
+
   @override
   Widget build(BuildContext context) {
     Map<String, dynamic> fields = fieldValue['fields'];
