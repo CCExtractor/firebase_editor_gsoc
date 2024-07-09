@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:firebase_editor_gsoc/controllers/history.dart';
 import 'package:firebase_editor_gsoc/views/array_field_data.dart';
 import 'package:firebase_editor_gsoc/views/edit_field_type.dart';
@@ -570,6 +572,117 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
     return displayName;
   }
 
+
+  void showAddFieldDialog(BuildContext context) async {
+    String fieldName = '';
+    String fieldType = 'stringValue'; // Default field type
+    String fieldValue = '';
+
+    // Dropdown menu items for field types
+    List<String> fieldTypes = [
+      'stringValue',
+      'integerValue',
+      'booleanValue',
+      'mapValue',
+      'arrayValue',
+      'nullValue',
+      'timestampValue',
+      'geoPointValue',
+      'referenceValue',
+    ];
+
+    await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Add Field'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              TextField(
+                decoration: InputDecoration(labelText: 'Field Name'),
+                onChanged: (value) {
+                  fieldName = value;
+                },
+              ),
+              DropdownButtonFormField<String>(
+                value: fieldType,
+                items: fieldTypes.map((type) {
+                  return DropdownMenuItem<String>(
+                    value: type,
+                    child: Text(type),
+                  );
+                }).toList(),
+                onChanged: (value) {
+                  fieldType = value!;
+                },
+                decoration: InputDecoration(labelText: 'Field Type'),
+              ),
+              TextField(
+                decoration: InputDecoration(labelText: 'Field Value'),
+                onChanged: (value) {
+                  fieldValue = value;
+                },
+              ),
+            ],
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: Text('Cancel'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: Text('Add'),
+              onPressed: () {
+                _addField(fieldName, fieldType, fieldValue);
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+
+  void _addField(String fieldName, String fieldType, String fieldValue) async {
+    Map<String, dynamic> fields = {..._documentDetails!}; // Copy existing fields
+    fields[fieldName] = {fieldType: fieldValue}; // Add new field
+
+    String url = 'https://firestore.googleapis.com/v1/${widget.documentPath}?updateMask.fieldPaths=$fieldName';
+    Map<String, String> headers = {
+      'Authorization': 'Bearer ${widget.accessToken}',
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+    };
+    Map<String, dynamic> body = {
+      "fields": fields,
+    };
+
+    try {
+      final response = await http.patch(Uri.parse(url), headers: headers, body: json.encode(body));
+
+      if (response.statusCode == 200) {
+        setState(() {
+          _documentDetails!['fields'] = fields;
+          DateTime updateTime = DateTime.now();
+          insertHistory(widget.documentPath, fieldName, updateTime, 'add');
+        });
+        print('Field added successfully');
+      } else {
+        print('Failed to add field. Status Code: ${response.statusCode}');
+      }
+    } catch (error) {
+      print('Error adding field: $error');
+    }
+  }
+
+
+
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -755,6 +868,16 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
                     ),
                   );
                 }).toList(),
+              SizedBox(height: 20), // Space to separate the list from the button
+              Center(
+                child: ElevatedButton(
+                  onPressed: () {
+                    // Action to perform when the button is pressed
+                    showAddFieldDialog(context);
+                  },
+                  child: Text('Add Field'),
+                ),
+              ),
             ],
           ),
         ),
