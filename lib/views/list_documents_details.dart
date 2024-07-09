@@ -648,8 +648,58 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
 
 
   void _addField(String fieldName, String fieldType, String fieldValue) async {
-    Map<String, dynamic> fields = {..._documentDetails!}; // Copy existing fields
-    fields[fieldName] = {fieldType: fieldValue}; // Add new field
+    if (_documentDetails!['fields'] == null) {
+      _documentDetails!['fields'] = {};
+    }
+
+    Map<String, dynamic> fields = {..._documentDetails!['fields']}; // Copy existing fields
+
+    // Ensure the value is correctly structured and valid
+    dynamic formattedValue;
+    try {
+      switch (fieldType) {
+        case 'stringValue':
+          formattedValue = {'stringValue': fieldValue};
+          break;
+        case 'integerValue':
+          formattedValue = {'integerValue': int.parse(fieldValue)};
+          break;
+        case 'booleanValue':
+          formattedValue = {'booleanValue': fieldValue.toLowerCase() == 'true'};
+          break;
+        case 'mapValue':
+          formattedValue = {'mapValue': ""};
+          break;
+        case 'arrayValue':
+          formattedValue = {'arrayValue': ""};
+          break;
+        case 'nullValue':
+          formattedValue = {'nullValue': ""};
+          break;
+        case 'timestampValue':
+          formattedValue = {'timestampValue': ""};
+          break;
+        case 'geoPointValue':
+          formattedValue = {'geoPointValue': "" };
+          break;
+        case 'referenceValue':
+          formattedValue = {'referenceValue': ""};
+          break;
+        default:
+          _showErrorDialog(context, 'Unsupported field type');
+          return;
+      }
+    } catch (e) {
+      _showErrorDialog(context, 'Invalid value for the selected field type: $e');
+      return;
+    }
+
+    // Add new field
+    fields[fieldName] = formattedValue;
+
+    print(fieldName);
+    print(fields[fieldName]);
+    print("FIELDS AFTER NEW: $fields");
 
     String url = 'https://firestore.googleapis.com/v1/${widget.documentPath}?updateMask.fieldPaths=$fieldName';
     Map<String, String> headers = {
@@ -677,6 +727,26 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
     } catch (error) {
       print('Error adding field: $error');
     }
+  }
+
+  void _showErrorDialog(BuildContext context, String message) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Error'),
+          content: Text(message),
+          actions: <Widget>[
+            TextButton(
+              child: Text('OK'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
 
