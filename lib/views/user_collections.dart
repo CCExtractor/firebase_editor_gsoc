@@ -8,10 +8,12 @@ class UserCollectionsPage extends StatefulWidget {
   final String displayName;
   final String accessToken;
 
-  const UserCollectionsPage({super.key,
+  const UserCollectionsPage({
+    super.key,
     required this.projectId,
     required this.displayName,
-    required this.accessToken,});
+    required this.accessToken,
+  });
 
   @override
   _UserCollectionsPageState createState() => _UserCollectionsPageState();
@@ -22,6 +24,7 @@ class _UserCollectionsPageState extends State<UserCollectionsPage> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   late User? user;
   List<String> collections = [];
+  bool _isLoading = false; // Loading state flag
 
   @override
   void initState() {
@@ -44,8 +47,11 @@ class _UserCollectionsPageState extends State<UserCollectionsPage> {
     );
   }
 
-
   Future<void> _fetchCollections() async {
+    setState(() {
+      _isLoading = true; // Set loading state to true
+    });
+
     if (user != null) {
       DocumentSnapshot userDoc = await _firestore.collection('users').doc(user!.uid).get();
       if (userDoc.exists) {
@@ -60,6 +66,10 @@ class _UserCollectionsPageState extends State<UserCollectionsPage> {
         }
       }
     }
+
+    setState(() {
+      _isLoading = false; // Set loading state to false
+    });
   }
 
   void _addCollection(String collectionName) async {
@@ -120,65 +130,81 @@ class _UserCollectionsPageState extends State<UserCollectionsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('User Collections for ${widget.displayName}'),
+        title: Text('${widget.displayName}:Collections'),
       ),
-      body: collections.isEmpty
-          ? Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Text('No Data'),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: _showAddCollectionDialog,
-              child: const Text('Add Collection'),
-            ),
-          ],
-        ),
-      )
-          : ListView.builder(
-        itemCount: collections.length + 1, // Add one for the button
-        itemBuilder: (context, index) {
-          if (index == collections.length) {
-            return Center(
-              child: ElevatedButton(
-                onPressed: _showAddCollectionDialog,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.amber, // Set the background color
-                ),
-                child: const Text('Add Collection'),
-              ),
-            );
-          }
-          return Container(
-            margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(15.0),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.grey.withOpacity(0.5),
-                  spreadRadius: 2,
-                  blurRadius: 5,
-                  offset: const Offset(0, 3), // changes position of shadow
-                ),
-              ],
-            ),
-            child: ListTile(
-              title: Text("Collection: ${collections[index]}"),
-              trailing: ElevatedButton(
-                onPressed: () {
-                  // Define your button action here
-                  _showDocuments(collections[index]);
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.amber, // Set the background color
-                ),
-                child: const Text('Documents'),
+      body: Stack(
+        children: [
+          if (collections.isEmpty && _isLoading == false)
+            Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text('No Data'),
+                  const SizedBox(height: 20),
+                  ElevatedButton(
+                    onPressed: _showAddCollectionDialog,
+                    child: const Text('Add Collection'),
+                  ),
+                ],
               ),
             ),
-          );
-        },
+          if (collections.isNotEmpty)
+            ListView.builder(
+              itemCount: collections.length + 1, // Add one for the button
+              itemBuilder: (context, index) {
+                if (index == collections.length) {
+                  return Center(
+                    child: ElevatedButton(
+                      onPressed: _showAddCollectionDialog,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.amber, // Set the background color
+                      ),
+                      child: const Text('Add Collection'),
+                    ),
+                  );
+                }
+                return Container(
+                  margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(15.0),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey.withOpacity(0.5),
+                        spreadRadius: 2,
+                        blurRadius: 5,
+                        offset: const Offset(0, 3), // changes position of shadow
+                      ),
+                    ],
+                  ),
+                  child: ListTile(
+                    title: Text("Collection: ${collections[index]}"),
+                    trailing: ElevatedButton(
+                      onPressed: () {
+                        // Define your button action here
+                        _showDocuments(collections[index]);
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.amber, // Set the background color
+                      ),
+                      child: const Text('Documents'),
+                    ),
+                  ),
+                );
+              },
+            ),
+          if (_isLoading)
+            const Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  CircularProgressIndicator(),
+                  SizedBox(height: 20),
+                  Text('Loading collections...'),
+                ],
+              ),
+            ),
+        ],
       ),
     );
   }

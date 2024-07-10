@@ -41,19 +41,22 @@ class CustomDrawer extends StatelessWidget {
                 const SizedBox(width: 20.0,),
                 Column(
                   mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       userController.user!.displayName ?? "", // User name
                       style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 16,
+                        color: Colors.black,
+                        fontSize: 20.0,
+                        fontWeight: FontWeight.bold
                       ),
                     ),
                     Text(
                       userController.user!.email ?? "", // User email
                       style: const TextStyle(
-                        color: Colors.white,
+                        color: Colors.black,
                         fontSize: 12,
+                          fontWeight: FontWeight.bold
                       ),
                     ),
                   ],
@@ -139,7 +142,7 @@ class CustomDrawer extends StatelessWidget {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) =>const SchemaList(),
+                  builder: (context) =>const HomeScreen(),
                 ),
               );
             },

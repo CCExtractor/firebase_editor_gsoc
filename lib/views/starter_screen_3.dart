@@ -2,6 +2,7 @@
 
 import 'package:firebase_editor_gsoc/user_login.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class StarterScreen3 extends StatelessWidget {
   const StarterScreen3({super.key});
@@ -60,12 +61,7 @@ class StarterScreen3 extends StatelessWidget {
             ElevatedButton(
               onPressed: () {
                 // Handle the "Next" button press
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const LoginScreen(),
-                  ),
-                );
+                Get.offAll(LoginScreen());
               },
               child: const Text('Next'),
             ),

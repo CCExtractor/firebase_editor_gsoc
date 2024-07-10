@@ -21,7 +21,7 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   final accessController = Get.put(AccessController());
-  final userController = Get.put(UserController());// Initialize UserController
+  final userController = Get.put(UserController()); // Initialize UserController
   final tokenController = Get.put(TokenController());
 
   // final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -29,7 +29,7 @@ class _LoginScreenState extends State<LoginScreen> {
   User? _user;
 
   @override
-  void initState(){
+  void initState() {
     super.initState();
     userController.auth.authStateChanges().listen((event) {
       setState(() {
@@ -43,21 +43,23 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Login'),
+        title: const Text('Welcome'),
         actions: <Widget>[
-          userController.user != null ? IconButton(
-            icon: const Icon(Icons.exit_to_app),
-            onPressed: () {
-              userController.handleLogout();
-            },
-          ) : Container(),
+          userController.user != null
+              ? IconButton(
+                  icon: const Icon(Icons.exit_to_app),
+                  onPressed: () {
+                    userController.handleLogout();
+                  },
+                )
+              : Container(),
         ],
       ),
       body: userController.user != null ? _userInfo() : _googleSignInButton(),
     );
   }
 
-  Widget _googleSignInButton(){
+  Widget _googleSignInButton() {
     return Center(
       child: SizedBox(
         height: 35,
@@ -73,40 +75,68 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  Widget _userInfo(){
+  Widget _userInfo() {
     return SizedBox(
       width: MediaQuery.of(context).size.width,
       height: 800.0,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisSize: MainAxisSize.max,
-        children: [
+      child: Padding(
+        padding: const EdgeInsets.all(18.0),
+        child: Column(
+          children: [
+
+            Text("Welcome to Firebase Editor", style: TextStyle(fontSize: 24.0),),
+            Divider(),
+
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.max,
+                children: [
                   Container(
                     height: 100,
                     width: 100,
-                    decoration: BoxDecoration(
-                      image: DecorationImage(
-                        image: NetworkImage(userController.user!.photoURL!),
+                    child: ClipOval(
+                      child: Image.network(
+                        userController.user!.photoURL!,
+                        fit: BoxFit.cover,
+                        width: 100.0,
+                        height: 100.0,
                       ),
                     ),
-                    child: const Text(""),
                   ),
-          const SizedBox(height: 20,),
-
-          Text(userController.user!.email!),
-          Text(userController.user!.displayName ?? ""),
-
-          ElevatedButton(onPressed: () {
-
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => const HomeScreen(),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(userController.user!.displayName ?? ""),
+                        Text(userController.user!.email!),
+                        ElevatedButton(
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const HomeScreen(),
+                                ),
+                              );
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.amber,
+                            ),
+                            child: const Text("Go to Home")),
+                      ],
+                    ),
+                  ),
+                ],
               ),
-            );
-          }, child: const Text("Go to Home")),
-        ],
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -125,13 +155,15 @@ class _LoginScreenState extends State<LoginScreen> {
         return;
       }
 
-      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+      final GoogleSignInAuthentication googleAuth =
+          await googleUser.authentication;
       final OAuthCredential credential = GoogleAuthProvider.credential(
         accessToken: googleAuth.accessToken,
         idToken: googleAuth.idToken,
       );
 
-      final UserCredential userCredential = await userController.auth.signInWithCredential(credential);
+      final UserCredential userCredential =
+          await userController.auth.signInWithCredential(credential);
       // final User user = userCredential.user!;
       final String? googleAccessToken = googleAuth.accessToken;
       // accessController.accessToken.text = googleAccessToken!;
@@ -146,7 +178,7 @@ class _LoginScreenState extends State<LoginScreen> {
       } else {
         print('Invalid access token');
       }
-        } catch (error) {
+    } catch (error) {
       print(error);
       print('Error during Google sign-in: $error');
       // Handle sign-in errors here, such as showing an alert dialog
@@ -154,9 +186,9 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
-
   Future<bool> isTokenValid(String accessToken) async {
-    final String url = 'https://oauth2.googleapis.com/tokeninfo?access_token=$accessToken';
+    final String url =
+        'https://oauth2.googleapis.com/tokeninfo?access_token=$accessToken';
 
     try {
       final response = await http.get(Uri.parse(url));
@@ -174,8 +206,4 @@ class _LoginScreenState extends State<LoginScreen> {
       return false;
     }
   }
-
-
-
-
 }

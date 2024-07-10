@@ -7,7 +7,7 @@ import 'package:http/http.dart' as http;
 class EditFieldTypePage extends StatefulWidget {
   final String fieldName;
   final String fieldType;
-  final String fieldValue;
+  final dynamic fieldValue;
   Map<String, dynamic>? documentDetails;
   final String accessToken;
   final String documentPath;
@@ -51,6 +51,26 @@ class _EditFieldTypePageState extends State<EditFieldTypePage> {
 
 
   void _updateField(String fieldName, String fieldType, String fieldValue) async {
+    if (_validateFieldValue(newFieldType, newFieldValue)) {
+      Navigator.of(context).pop({
+        'fieldType': newFieldType,
+        'fieldValue': newFieldValue,
+      });
+    } else {
+      if(newFieldType == 'stringValue') {
+        _showErrorDialog("Must be a string");
+      } else if(newFieldType == 'integerValue') {
+        _showErrorDialog("Must be a number");
+      }else if(newFieldType == 'booleanValue') {
+        _showErrorDialog("Must be a boolean value");
+      }else if(newFieldType == 'geoPointValue') {
+        _showErrorDialog('Latitude must be between -90 to 90 and Longitude must be between -180 to 180');
+      }else if(newFieldType == 'timestampValue') {
+        _showErrorDialog("Invalid Value");
+      }else{
+        _showErrorDialog("Invalid Value");
+      }
+    }
     Map<String, dynamic> fields = widget.documentDetails!['fields'];
     dynamic value;
 
@@ -92,6 +112,8 @@ class _EditFieldTypePageState extends State<EditFieldTypePage> {
 
     fields[fieldName] = {fieldType: value};
 
+    print("fields after updating datatype: $fields");
+
     String url = 'https://firestore.googleapis.com/v1/${widget.documentPath}?updateMask.fieldPaths=$fieldName';
     Map<String, String> headers = {
       'Authorization': 'Bearer ${widget.accessToken}',
@@ -131,12 +153,25 @@ class _EditFieldTypePageState extends State<EditFieldTypePage> {
 
   void _saveChanges() {
     if (_validateFieldValue(newFieldType, newFieldValue)) {
+      _updateField(widget.fieldName,newFieldType,newFieldValue);
       Navigator.of(context).pop({
         'fieldType': newFieldType,
         'fieldValue': newFieldValue,
       });
     } else {
-      _showErrorDialog();
+      if(newFieldType == 'stringValue') {
+        _showErrorDialog("Must be a string");
+      } else if(newFieldType == 'integerValue') {
+        _showErrorDialog("Must be a number");
+      }else if(newFieldType == 'booleanValue') {
+        _showErrorDialog("Must be a boolean value");
+      }else if(newFieldType == 'geoPointValue') {
+        _showErrorDialog('Latitude must be between -90 to 90 and Longitude must be between -180 to 180');
+      }else if(newFieldType == 'timestampValue') {
+        _showErrorDialog("Invalid Value");
+      }else{
+        _showErrorDialog("Invalid Value");
+      }
     }
   }
 
@@ -176,13 +211,13 @@ class _EditFieldTypePageState extends State<EditFieldTypePage> {
     }
   }
 
-  void _showErrorDialog() {
+  void _showErrorDialog(String message) {
     showDialog(
       context: context,
       builder: (context) {
         return AlertDialog(
           title: const Text('Invalid Value'),
-          content: const Text('The value you entered is not valid for the selected field type.'),
+          content: Text(message),
           actions: [
             TextButton(
               onPressed: () {
@@ -230,13 +265,16 @@ class _EditFieldTypePageState extends State<EditFieldTypePage> {
         selectedDate!.day,
         selectedTime!.hour,
         selectedTime!.minute,
-      );
+      ).toUtc(); // Convert to UTC
+
       setState(() {
-        newFieldValue = combined.toIso8601String();
+        newFieldValue = combined.toIso8601String(); // This already includes 'Z' for UTC
         fieldValueController.text = newFieldValue;
       });
     }
   }
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -267,7 +305,11 @@ class _EditFieldTypePageState extends State<EditFieldTypePage> {
               items: fieldTypes.map((type) {
                 return DropdownMenuItem<String>(
                   value: type,
-                  child: Text(type),
+                  child: Text(type,
+                    style: TextStyle(
+                    fontSize: 14.0,
+                    fontWeight: FontWeight.normal,
+                  ),),
                 );
               }).toList(),
               decoration: const InputDecoration(labelText: 'Field Type'),
@@ -283,7 +325,10 @@ class _EditFieldTypePageState extends State<EditFieldTypePage> {
                 items: ['true', 'false'].map((boolValue) {
                   return DropdownMenuItem<String>(
                     value: boolValue,
-                    child: Text(boolValue),
+                    child: Text(boolValue, style: TextStyle(
+                      fontSize: 14.0,
+                      fontWeight: FontWeight.normal,
+                    ),),
                   );
                 }).toList(),
                 decoration: const InputDecoration(labelText: 'Field Value'),
@@ -312,13 +357,45 @@ class _EditFieldTypePageState extends State<EditFieldTypePage> {
             else if (newFieldType == 'timestampValue')
                 Column(
                   children: [
-                    ElevatedButton(
-                      onPressed: () => _selectDate(context),
-                      child: const Text('Select Date'),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10.0),
+                          border: Border.all(
+                              color: Colors.blue,
+                              width: 2.0), // Change color and width as needed
+                        ),
+                        child: Row(
+                          children: [
+                            TextButton(
+                              onPressed: () => _selectDate(context),
+                              child: const Text('Select Date'),
+                            ),
+                            Text(selectedDate.toString()),
+                          ],
+                        ),
+                      ),
                     ),
-                    ElevatedButton(
-                      onPressed: () => _selectTime(context),
-                      child: const Text('Select Time'),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10.0),
+                          border: Border.all(
+                              color: Colors.blue,
+                              width: 2.0), // Change color and width as needed
+                        ),
+                        child: Row(
+                          children: [
+                            TextButton(
+                              onPressed: () => _selectTime(context),
+                              child: const Text('Select Time'),
+                            ),
+                            Text(selectedTime.toString()),
+                          ],
+                        ),
+                      ),
                     ),
                     if (newFieldValue.isNotEmpty)
                       Text('Selected DateTime: $newFieldValue'),
@@ -348,6 +425,7 @@ class _EditFieldTypePageState extends State<EditFieldTypePage> {
             SizedBox(height: 20),
             ElevatedButton(
               onPressed: (){
+                // _saveChanges();
                 _updateField(widget.fieldName,newFieldType,newFieldValue);
               },
               child: const Text('Save'),

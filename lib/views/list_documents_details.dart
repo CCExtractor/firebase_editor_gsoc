@@ -16,7 +16,8 @@ class DocumentDetailsPage extends StatefulWidget {
   final String databaseId;
   final String collectionId;
 
-  const DocumentDetailsPage({super.key,
+  const DocumentDetailsPage({
+    super.key,
     required this.accessToken,
     required this.documentPath,
     required this.projectId,
@@ -58,7 +59,8 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
         });
       } else {
         setState(() {
-          _error = 'Failed to call Firestore API. Status Code: ${response.statusCode}';
+          _error =
+              'Failed to call Firestore API. Status Code: ${response.statusCode}';
           _isLoading = false;
         });
       }
@@ -69,7 +71,6 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
       });
     }
   }
-
 
   void _showEditDialog(String fieldName, String fieldType, String fieldValue) {
     String newFieldType = fieldType;
@@ -94,7 +95,8 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
                     child: TextField(
                       controller: TextEditingController(text: newFieldType),
                       readOnly: true,
-                      decoration: const InputDecoration(labelText: 'Field Type'),
+                      decoration:
+                          const InputDecoration(labelText: 'Field Type'),
                     ),
                   ),
                   IconButton(
@@ -146,11 +148,13 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
     );
   }
 
-  void _updateField(String fieldName, String fieldType, String fieldValue) async {
+  void _updateField(
+      String fieldName, String fieldType, String fieldValue) async {
     Map<String, dynamic> fields = _documentDetails!['fields'];
     fields[fieldName] = {fieldType: fieldValue};
 
-    String url = 'https://firestore.googleapis.com/v1/${widget.documentPath}?updateMask.fieldPaths=$fieldName';
+    String url =
+        'https://firestore.googleapis.com/v1/${widget.documentPath}?updateMask.fieldPaths=$fieldName';
     Map<String, String> headers = {
       'Authorization': 'Bearer ${widget.accessToken}',
       'Accept': 'application/json',
@@ -161,7 +165,8 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
     };
 
     try {
-      final response = await http.patch(Uri.parse(url), headers: headers, body: json.encode(body));
+      final response = await http.patch(Uri.parse(url),
+          headers: headers, body: json.encode(body));
 
       if (response.statusCode == 200) {
         setState(() {
@@ -179,14 +184,14 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
     }
   }
 
-
   void _deleteField(String fieldName) async {
     bool confirmed = await showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
           title: Text('Confirm Deletion'),
-          content: Text('Are you sure you want to delete the field "$fieldName"?'),
+          content:
+              Text('Are you sure you want to delete the field "$fieldName"?'),
           actions: <Widget>[
             TextButton(
               onPressed: () {
@@ -212,12 +217,12 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
       fields.remove(fieldName);
 
       // Update Firestore with the updated fields
-       _updateDocument(fieldName, fields);
+      _updateDocument(fieldName, fields);
     }
   }
 
-
-  void _updateDocument(String fieldName, Map<String, dynamic> updatedFields) async {
+  void _updateDocument(
+      String fieldName, Map<String, dynamic> updatedFields) async {
     String url = 'https://firestore.googleapis.com/v1/${widget.documentPath}';
     Map<String, String> headers = {
       'Authorization': 'Bearer ${widget.accessToken}',
@@ -229,7 +234,8 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
     };
 
     try {
-      final response = await http.patch(Uri.parse(url), headers: headers, body: json.encode(body));
+      final response = await http.patch(Uri.parse(url),
+          headers: headers, body: json.encode(body));
 
       if (response.statusCode == 200) {
         setState(() {
@@ -247,19 +253,54 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
     }
   }
 
-
-  void _showGeoPointDialog(String fieldName, Map<String, dynamic> geoPointValue) {
+  void _showGeoPointDialog(String fieldName, String fieldType, Map<String, dynamic> geoPointValue) {
     double latitude = geoPointValue['latitude'];
     double longitude = geoPointValue['longitude'];
+    String newFieldType = fieldType;
 
     showDialog(
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: Text('Edit GeoPoint: $fieldName'),
+          title: Text('Edit Field'),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
+              TextField(
+                controller: TextEditingController(text: fieldName),
+                readOnly: true,
+                decoration: const InputDecoration(labelText: 'Field Name'),
+              ),
+              Row(
+                children: [
+                  Expanded(
+                    child: TextField(
+                      controller: TextEditingController(text: newFieldType),
+                      readOnly: true,
+                      decoration:
+                      const InputDecoration(labelText: 'Field Type'),
+                    ),
+                  ),
+                  IconButton(
+                    icon: Icon(Icons.edit),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                      // Navigator.of(context).push(
+                      //   MaterialPageRoute(
+                      //     builder: (context) => EditFieldTypePage(
+                      //       fieldName: fieldName,
+                      //       fieldType: fieldType,
+                      //       fieldValue: geoPointValue,
+                      //       accessToken: widget.accessToken,
+                      //       documentPath: widget.documentPath,
+                      //       documentDetails: _documentDetails,
+                      //     ),
+                      //   ),
+                      // );
+                    },
+                  ),
+                ],
+              ),
               TextField(
                 controller: TextEditingController(text: latitude.toString()),
                 keyboardType: TextInputType.number,
@@ -314,11 +355,15 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
     );
   }
 
-  void _updateGeoPointField(String fieldName, double latitude, double longitude) async {
+  void _updateGeoPointField(
+      String fieldName, double latitude, double longitude) async {
     Map<String, dynamic> fields = _documentDetails!['fields'];
-    fields[fieldName] = {'geoPointValue': {'latitude': latitude, 'longitude': longitude}};
+    fields[fieldName] = {
+      'geoPointValue': {'latitude': latitude, 'longitude': longitude}
+    };
 
-    String url = 'https://firestore.googleapis.com/v1/${widget.documentPath}?updateMask.fieldPaths=$fieldName';
+    String url =
+        'https://firestore.googleapis.com/v1/${widget.documentPath}?updateMask.fieldPaths=$fieldName';
     Map<String, String> headers = {
       'Authorization': 'Bearer ${widget.accessToken}',
       'Accept': 'application/json',
@@ -329,7 +374,8 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
     };
 
     try {
-      final response = await http.patch(Uri.parse(url), headers: headers, body: json.encode(body));
+      final response = await http.patch(Uri.parse(url),
+          headers: headers, body: json.encode(body));
 
       if (response.statusCode == 200) {
         setState(() {
@@ -403,7 +449,6 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
     );
   }
 
-
   void _showTimeStampEditDialog(String fieldName, String fieldType, dynamic fieldValue) {
     String newFieldType = fieldType;
     String newFieldValue = fieldValue;
@@ -422,73 +467,106 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: const Text('Edit Timestamp'),
+          title: const Text('Edit Field:'),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-
-              Row(
+              Column(
                 children: [
-                  Expanded(
-                    child: TextField(
-                      controller: TextEditingController(text: newFieldType),
-                      readOnly: true,
-                      decoration: const InputDecoration(labelText: 'Field Type'),
-                    ),
+                  TextField(
+                    controller: TextEditingController(text: fieldName),
+                    readOnly: true,
+                    decoration: const InputDecoration(labelText: 'Field Name'),
                   ),
-                  IconButton(
-                    icon: Icon(Icons.edit),
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) => EditFieldTypePage(
-                            fieldName: fieldName,
-                            fieldType: fieldType,
-                            fieldValue: fieldValue,
-                            accessToken: widget.accessToken,
-                            documentPath: widget.documentPath,
-                            documentDetails: _documentDetails,
-                          ),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: TextField(
+                          controller: TextEditingController(text: newFieldType),
+                          readOnly: true,
+                          decoration:
+                              const InputDecoration(labelText: 'Field Type'),
                         ),
-                      );
-                    },
+                      ),
+                      IconButton(
+                        icon: Icon(Icons.edit),
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => EditFieldTypePage(
+                                fieldName: fieldName,
+                                fieldType: fieldType,
+                                fieldValue: fieldValue,
+                                accessToken: widget.accessToken,
+                                documentPath: widget.documentPath,
+                                documentDetails: _documentDetails,
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ],
                   ),
                 ],
               ),
               // Date picker
-              ListTile(
-                title: Text('Date'),
-                subtitle: Text(selectedDate.toString().split(' ')[0]),
-                onTap: () async {
-                  final DateTime? pickedDate = await showDatePicker(
-                    context: context,
-                    initialDate: selectedDate,
-                    firstDate: DateTime(1900),
-                    lastDate: DateTime(2100),
-                  );
-                  if (pickedDate != null && pickedDate != selectedDate) {
-                    setState(() {
-                      selectedDate = pickedDate;
-                    });
-                  }
-                },
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10.0),
+                    border: Border.all(
+                        color: Colors.blue,
+                        width: 2.0), // Change color and width as needed
+                  ),
+                  child: ListTile(
+                    title: Text('Date'),
+                    subtitle: Text(selectedDate.toString().split(' ')[0]),
+                    trailing: Icon(Icons.calendar_month_outlined),
+                    onTap: () async {
+                      final DateTime? pickedDate = await showDatePicker(
+                        context: context,
+                        initialDate: selectedDate,
+                        firstDate: DateTime(1900),
+                        lastDate: DateTime(2100),
+                      );
+                      if (pickedDate != null && pickedDate != selectedDate) {
+                        setState(() {
+                          selectedDate = pickedDate;
+                        });
+                      }
+                    },
+                  ),
+                ),
               ),
               // Time picker
-              ListTile(
-                title: Text('Time'),
-                subtitle: Text(selectedTime.format(context)),
-                onTap: () async {
-                  final TimeOfDay? pickedTime = await showTimePicker(
-                    context: context,
-                    initialTime: selectedTime,
-                  );
-                  if (pickedTime != null && pickedTime != selectedTime) {
-                    setState(() {
-                      selectedTime = pickedTime;
-                    });
-                  }
-                },
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10.0),
+                    border: Border.all(
+                        color: Colors.blue,
+                        width: 2.0), // Change color and width as needed
+                  ),
+                  child: ListTile(
+                    title: Text('Time'),
+                    subtitle: Text(selectedTime.format(context)),
+                    trailing: Icon(Icons.timer_outlined),
+                    onTap: () async {
+                      final TimeOfDay? pickedTime = await showTimePicker(
+                        context: context,
+                        initialTime: selectedTime,
+                      );
+                      if (pickedTime != null && pickedTime != selectedTime) {
+                        setState(() {
+                          selectedTime = pickedTime;
+                        });
+                      }
+                    },
+                  ),
+                ),
               ),
             ],
           ),
@@ -518,7 +596,6 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
 
                 // Now update the entire map in Firestore
                 _updateField(fieldName, fieldType, fieldValue);
-
               },
               child: const Text('Save'),
             ),
@@ -532,7 +609,8 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
     Map<String, dynamic> fields = _documentDetails!['fields'];
     fields[fieldName] = {'booleanValue': newValue};
 
-    String url = 'https://firestore.googleapis.com/v1/${widget.documentPath}?updateMask.fieldPaths=$fieldName';
+    String url =
+        'https://firestore.googleapis.com/v1/${widget.documentPath}?updateMask.fieldPaths=$fieldName';
     Map<String, String> headers = {
       'Authorization': 'Bearer ${widget.accessToken}',
       'Accept': 'application/json',
@@ -543,7 +621,8 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
     };
 
     try {
-      final response = await http.patch(Uri.parse(url), headers: headers, body: json.encode(body));
+      final response = await http.patch(Uri.parse(url),
+          headers: headers, body: json.encode(body));
 
       if (response.statusCode == 200) {
         setState(() {
@@ -553,13 +632,13 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
         });
         print('Boolean value updated successfully');
       } else {
-        print('Failed to update Boolean value. Status Code: ${response.statusCode}');
+        print(
+            'Failed to update Boolean value. Status Code: ${response.statusCode}');
       }
     } catch (error) {
       print('Error updating Boolean value: $error');
     }
   }
-
 
   String _formatDateTime(String dateTimeString) {
     DateTime dateTime = DateTime.parse(dateTimeString);
@@ -571,7 +650,6 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
     String displayName = parts.last;
     return displayName;
   }
-
 
   void showAddFieldDialog(BuildContext context) async {
     String fieldName = '';
@@ -610,7 +688,13 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
                 items: fieldTypes.map((type) {
                   return DropdownMenuItem<String>(
                     value: type,
-                    child: Text(type),
+                    child: Text(
+                      type,
+                      style: TextStyle(
+                        fontSize: 14.0,
+                        fontWeight: FontWeight.normal,
+                      ),
+                    ),
                   );
                 }).toList(),
                 onChanged: (value) {
@@ -646,13 +730,14 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
     );
   }
 
-
   void _addField(String fieldName, String fieldType, String fieldValue) async {
     if (_documentDetails!['fields'] == null) {
       _documentDetails!['fields'] = {};
     }
 
-    Map<String, dynamic> fields = {..._documentDetails!['fields']}; // Copy existing fields
+    Map<String, dynamic> fields = {
+      ..._documentDetails!['fields']
+    }; // Copy existing fields
 
     // Ensure the value is correctly structured and valid
     dynamic formattedValue;
@@ -680,7 +765,7 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
           formattedValue = {'timestampValue': ""};
           break;
         case 'geoPointValue':
-          formattedValue = {'geoPointValue': "" };
+          formattedValue = {'geoPointValue': ""};
           break;
         case 'referenceValue':
           formattedValue = {'referenceValue': ""};
@@ -690,7 +775,8 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
           return;
       }
     } catch (e) {
-      _showErrorDialog(context, 'Invalid value for the selected field type: $e');
+      _showErrorDialog(
+          context, 'Invalid value for the selected field type: $e');
       return;
     }
 
@@ -701,7 +787,8 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
     print(fields[fieldName]);
     print("FIELDS AFTER NEW: $fields");
 
-    String url = 'https://firestore.googleapis.com/v1/${widget.documentPath}?updateMask.fieldPaths=$fieldName';
+    String url =
+        'https://firestore.googleapis.com/v1/${widget.documentPath}?updateMask.fieldPaths=$fieldName';
     Map<String, String> headers = {
       'Authorization': 'Bearer ${widget.accessToken}',
       'Accept': 'application/json',
@@ -712,7 +799,8 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
     };
 
     try {
-      final response = await http.patch(Uri.parse(url), headers: headers, body: json.encode(body));
+      final response = await http.patch(Uri.parse(url),
+          headers: headers, body: json.encode(body));
 
       if (response.statusCode == 200) {
         setState(() {
@@ -749,10 +837,6 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
     );
   }
 
-
-
-
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -761,198 +845,265 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
       ),
       body: _isLoading
           ? const Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            CircularProgressIndicator(),
-            SizedBox(height: 20),
-            Text('Loading document details...'),
-          ],
-        ),
-      )
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  CircularProgressIndicator(),
+                  SizedBox(height: 20),
+                  Text('Loading document details...'),
+                ],
+              ),
+            )
           : _error != null
-          ? Center(child: Text(_error!))
-          : _documentDetails != null
-          ? Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text('Document ID: ${extractDisplayName(_documentDetails!['name'])}',
-                  style: const TextStyle(fontWeight: FontWeight.bold)),
-              Text("Collection Name: ${widget.collectionId}"),
-              const SizedBox(height: 8),
-              Text('Created Time: ${_formatDateTime(_documentDetails!['createTime'])}'),
-              Text('Updated Time: ${_formatDateTime(_documentDetails!['updateTime'])}'),
-              const SizedBox(height: 16),
-              const Text('Fields:', style: TextStyle(fontWeight: FontWeight.bold)),
-              const SizedBox(height: 8),
-              if (_documentDetails!['fields'] != null)
-                ..._documentDetails!['fields'].entries.map((entry) {
-                  String fieldName = entry.key;
-                  Map<String, dynamic> fieldData = entry.value;
-                  String fieldType;
-                  dynamic displayValue;
-                  dynamic fieldValue;
+              ? Center(child: Text(_error!))
+              : _documentDetails != null
+                  ? Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: SingleChildScrollView(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                      'Document ID: ${extractDisplayName(_documentDetails!['name'])}',
+                                      style: const TextStyle(
+                                          fontWeight: FontWeight.bold)),
+                                  Text(
+                                      "Collection Name: ${widget.collectionId}"),
+                                  const SizedBox(height: 8),
+                                  Text(
+                                      'Created Time: ${_formatDateTime(_documentDetails!['createTime'])}'),
+                                  Text(
+                                      'Updated Time: ${_formatDateTime(_documentDetails!['updateTime'])}'),
+                                ],
+                              ),
+                            ),
 
-                  if (fieldData.containsKey('stringValue')) {
-                    fieldType = 'stringValue';
-                    fieldValue = fieldData['stringValue'];
-                    displayValue = fieldValue;
-                  } else if (fieldData.containsKey('integerValue')) {
-                    fieldType = 'integerValue';
-                    fieldValue = fieldData['integerValue'];
-                    displayValue = fieldValue;
-                  } else if (fieldData.containsKey('timestampValue')) {
-                    fieldType = 'timestampValue';
-                    fieldValue = fieldData['timestampValue'];
-                    displayValue = fieldValue;
-                  } else if (fieldData.containsKey('mapValue')) {
-                    fieldType = 'mapValue';
-                    fieldValue = fieldData['mapValue'];
-                    displayValue = 'Map';
-                    print(fieldValue);
-                  } else if (fieldData.containsKey('arrayValue')) {
-                    fieldType = 'arrayValue';
-                    fieldValue = fieldData['arrayValue'];
-                    displayValue = 'Array';
-                  } else if (fieldData.containsKey('geoPointValue')) {
-                    fieldType = 'geoPointValue';
-                    fieldValue = fieldData['geoPointValue'];
-                    displayValue = 'GeoPoint';
+                            const SizedBox(height: 16),
 
-                  } else if (fieldData.containsKey('nullValue')) {
-                    fieldType = 'nullValue';
-                    fieldValue = fieldData['nullValue'];
-                    displayValue = fieldValue;
-                  } else if (fieldData.containsKey("booleanValue")) {
-                    fieldType = 'booleanValue';
-                    fieldValue = fieldData['booleanValue'];
-                    displayValue = fieldValue;
-                  } else if (fieldData.containsKey("referenceValue")) {
-                    fieldType = 'referenceValue';
-                    fieldValue = fieldData['referenceValue'];
-                    displayValue = fieldValue;
-                  } else {
-                    // Handle unsupported types or unexpected data structure
-                    fieldType = 'unsupported';
-                    fieldValue = 'Unsupported';
-                    displayValue = fieldValue;
-                  }
-                  return Container(
-                    margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(15.0),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.grey.withOpacity(0.5),
-                          spreadRadius: 2,
-                          blurRadius: 5,
-                          offset: const Offset(0, 3), // changes position of shadow
-                        ),
-                      ],
-                    ),
-                    child: ListTile(
-                      title: Text('$fieldName ($fieldType): $displayValue'),
-                      trailing: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          if (fieldType == 'mapValue')
-                            IconButton(onPressed: () {
-                              // _showMapDialog(fieldName, fieldValue);
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => MapFieldDataPage(
-                                    fieldName: fieldName,
-                                    mapValue: fieldValue,
-                                    documentDetails: _documentDetails,
-                                    accessToken: widget.accessToken,
-                                    documentPath: widget.documentPath,
+                            Row(
+                              mainAxisSize: MainAxisSize.max,
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                const Text('Fields:',
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 16.0)),
+                                ElevatedButton(
+                                  onPressed: () {
+                                    // Action to perform when the button is pressed
+                                    showAddFieldDialog(context);
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.amber,
                                   ),
+                                  child: Text('Add Field'),
                                 ),
-                              );
-                            }, icon: const Icon(Icons.remove_red_eye)),
-                          if (fieldType == 'arrayValue')
-                            IconButton(
-                              icon: const Icon(Icons.remove_red_eye),
-                              onPressed: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => ArrayFieldDataPage(
-                                      fieldName: fieldName,
-                                      arrayValue: fieldValue['values'],
-                                      accessToken: widget.accessToken,
-                                      documentDetails: _documentDetails,
-                                      documentPath: widget.documentPath,
+                              ],
+                            ),
+                            const SizedBox(height: 8),
+                            Divider(),
+                            if (_documentDetails!['fields'] != null)
+                              ..._documentDetails!['fields']
+                                  .entries
+                                  .map((entry) {
+                                String fieldName = entry.key;
+                                Map<String, dynamic> fieldData = entry.value;
+                                String fieldType;
+                                String displayFieldType;
+                                dynamic displayValue;
+                                dynamic fieldValue;
 
+                                if (fieldData.containsKey('stringValue')) {
+                                  fieldType = 'stringValue';
+                                  displayFieldType = 'string';
+                                  fieldValue = fieldData['stringValue'];
+                                  displayValue = fieldValue;
+                                } else if (fieldData
+                                    .containsKey('integerValue')) {
+                                  fieldType = 'integerValue';
+                                  displayFieldType = 'number';
+                                  fieldValue = fieldData['integerValue'];
+                                  displayValue = fieldValue;
+                                } else if (fieldData
+                                    .containsKey('timestampValue')) {
+                                  fieldType = 'timestampValue';
+                                  displayFieldType = 'timestamp';
+                                  fieldValue = fieldData['timestampValue'];
+                                  displayValue = fieldValue;
+                                } else if (fieldData.containsKey('mapValue')) {
+                                  fieldType = 'mapValue';
+                                  displayFieldType = 'map';
+                                  fieldValue = fieldData['mapValue'];
+                                  displayValue = 'Map';
+                                  print(fieldValue);
+                                } else if (fieldData
+                                    .containsKey('arrayValue')) {
+                                  fieldType = 'arrayValue';
+                                  displayFieldType = 'array';
+                                  fieldValue = fieldData['arrayValue'];
+                                  displayValue = 'Array';
+                                } else if (fieldData
+                                    .containsKey('geoPointValue')) {
+                                  fieldType = 'geoPointValue';
+                                  displayFieldType = 'geoPoint';
+                                  fieldValue = fieldData['geoPointValue'];
+                                  displayValue =
+                                      "[${fieldValue['latitude']}, ${fieldValue['longitude']}]";
+                                } else if (fieldData.containsKey('nullValue')) {
+                                  fieldType = 'nullValue';
+                                  displayFieldType = 'null';
+                                  fieldValue = fieldData['nullValue'];
+                                  displayValue = fieldValue;
+                                } else if (fieldData
+                                    .containsKey("booleanValue")) {
+                                  fieldType = 'booleanValue';
+                                  displayFieldType = 'boolean';
+                                  fieldValue = fieldData['booleanValue'];
+                                  displayValue = fieldValue;
+                                } else if (fieldData
+                                    .containsKey("referenceValue")) {
+                                  fieldType = 'referenceValue';
+                                  displayFieldType = 'reference';
+                                  fieldValue = fieldData['referenceValue'];
+                                  displayValue = fieldValue;
+                                } else {
+                                  // Handle unsupported types or unexpected data structure
+                                  fieldType = 'unsupported';
+                                  displayFieldType = fieldType;
+                                  fieldValue = 'Unsupported';
+                                  displayValue = fieldValue;
+                                }
+                                return Container(
+                                  margin: const EdgeInsets.symmetric(
+                                      horizontal: 16.0, vertical: 8.0),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(15.0),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.grey.withOpacity(0.5),
+                                        spreadRadius: 2,
+                                        blurRadius: 5,
+                                        offset: const Offset(
+                                            0, 3), // changes position of shadow
+                                      ),
+                                    ],
+                                  ),
+                                  child: ListTile(
+                                    title: Text(
+                                        '$fieldName ($displayFieldType): $displayValue'),
+                                    trailing: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        if (fieldType == 'mapValue')
+                                          IconButton(
+                                              onPressed: () {
+                                                // _showMapDialog(fieldName, fieldValue);
+                                                Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        MapFieldDataPage(
+                                                      fieldName: fieldName,
+                                                      mapValue: fieldValue,
+                                                      documentDetails:
+                                                          _documentDetails,
+                                                      accessToken:
+                                                          widget.accessToken,
+                                                      documentPath:
+                                                          widget.documentPath,
+                                                    ),
+                                                  ),
+                                                );
+                                              },
+                                              icon: const Icon(
+                                                  Icons.remove_red_eye)),
+                                        if (fieldType == 'arrayValue')
+                                          IconButton(
+                                            icon: const Icon(
+                                                Icons.remove_red_eye),
+                                            onPressed: () {
+                                              Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      ArrayFieldDataPage(
+                                                    fieldName: fieldName,
+                                                    arrayValue:
+                                                        fieldValue['values'],
+                                                    accessToken:
+                                                        widget.accessToken,
+                                                    documentDetails:
+                                                        _documentDetails,
+                                                    documentPath:
+                                                        widget.documentPath,
+                                                  ),
+                                                ),
+                                              );
+                                            },
+                                          ),
+                                        if (fieldType == 'geoPointValue')
+                                          IconButton(
+                                            icon: const Icon(Icons.edit),
+                                            onPressed: () {
+                                              _showGeoPointDialog(fieldName, fieldType,fieldValue);
+                                            },
+                                          ),
+                                        if (fieldType == 'booleanValue')
+                                          IconButton(
+                                            icon: const Icon(Icons.edit),
+                                            onPressed: () {
+                                              _showBoolDialog(
+                                                  fieldName, fieldValue);
+                                            },
+                                          ),
+                                        if (fieldType == 'timestampValue')
+                                          IconButton(
+                                            icon: const Icon(Icons.edit),
+                                            onPressed: () {
+                                              _showTimeStampEditDialog(
+                                                  fieldName,
+                                                  fieldType,
+                                                  fieldValue);
+                                            },
+                                          ),
+                                        if (fieldType != 'mapValue' &&
+                                            fieldType != 'arrayValue' &&
+                                            fieldType != 'geoPointValue' &&
+                                            fieldType != 'booleanValue' &&
+                                            fieldType != 'timestampValue')
+                                          IconButton(
+                                            icon: const Icon(Icons.edit),
+                                            onPressed: () {
+                                              _showEditDialog(fieldName,
+                                                  fieldType, fieldValue);
+                                            },
+                                          ),
+                                        IconButton(
+                                          icon: const Icon(Icons.delete),
+                                          onPressed: () {
+                                            // Define your delete action here
+                                            _deleteField(fieldName);
+                                          },
+                                        ),
+                                      ],
                                     ),
                                   ),
                                 );
-                              },
-                            ),
-                          if (fieldType == 'geoPointValue')
-                            IconButton(
-                              icon: const Icon(Icons.remove_red_eye),
-                              onPressed: () {
-                                _showGeoPointDialog(fieldName, fieldValue);
-                              },
-                            ),
-                          if (fieldType == 'booleanValue')
-                            IconButton(
-                              icon: const Icon(Icons.edit),
-                              onPressed: () {
-                                _showBoolDialog(fieldName, fieldValue);
-                              },
-                            ),
-                          if (fieldType == 'timestampValue')
-                            IconButton(
-                              icon: const Icon(Icons.edit),
-                              onPressed: () {
-                                _showTimeStampEditDialog(fieldName, fieldType, fieldValue);
-                              },
-                            ),
-                          if (fieldType != 'mapValue' &&
-                              fieldType != 'arrayValue' &&
-                              fieldType != 'geoPointValue' &&
-                              fieldType != 'booleanValue' &&
-                              fieldType != 'timestampValue')
-                            IconButton(
-                              icon: const Icon(Icons.edit),
-                              onPressed: () {
-                                _showEditDialog(fieldName, fieldType, fieldValue);
-                              },
-                            ),
-                          IconButton(
-                            icon: const Icon(Icons.delete),
-                            onPressed: () {
-                              // Define your delete action here
-                              _deleteField(fieldName);
-                            },
-                          ),
-                        ],
+                              }).toList(),
+                            SizedBox(
+                                height:
+                                    20), // Space to separate the list from the button
+                          ],
+                        ),
                       ),
-                    ),
-                  );
-                }).toList(),
-              SizedBox(height: 20), // Space to separate the list from the button
-              Center(
-                child: ElevatedButton(
-                  onPressed: () {
-                    // Action to perform when the button is pressed
-                    showAddFieldDialog(context);
-                  },
-                  child: Text('Add Field'),
-                ),
-              ),
-            ],
-          ),
-        ),
-      )
-          : const Center(child: Text('No document details found.')),
+                    )
+                  : const Center(child: Text('No document details found.')),
     );
   }
 }

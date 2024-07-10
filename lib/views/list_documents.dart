@@ -114,6 +114,7 @@ class _DocumentsPageState extends State<DocumentsPage> {
         return AlertDialog(
           title: Text('Create Document'),
           content: Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
               TextField(
@@ -125,7 +126,14 @@ class _DocumentsPageState extends State<DocumentsPage> {
               ),
               SizedBox(height: 10),
               TextButton(
-                child: Text('Auto ID'),
+                child: Container(
+                  padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.blue, width: 2.0), // Change color and width as needed
+                    borderRadius: BorderRadius.circular(8.0), // Optional: add border radius
+                  ),
+                    child: Text('Auto ID'),
+                ),
                 onPressed: () {
                   setState(() {
                     documentId = generateRandomId(20);
@@ -144,6 +152,8 @@ class _DocumentsPageState extends State<DocumentsPage> {
             TextButton(
               child: Text('Cancel'),
               onPressed: () {
+                // set document id to null
+                documentController.documentIdController.text = "";
                 Navigator.of(context).pop();
               },
             ),
@@ -295,77 +305,12 @@ class _DocumentsPageState extends State<DocumentsPage> {
 
 
 
-  // @override
-  // Widget build(BuildContext context) {
-  //   return Scaffold(
-  //     appBar: AppBar(
-  //       title: const Text('Documents'),
-  //     ),
-  //     body: _isLoading
-  //         ? const Center(
-  //       child: Column(
-  //         mainAxisAlignment: MainAxisAlignment.center,
-  //         children: [
-  //           CircularProgressIndicator(),
-  //           SizedBox(height: 20),
-  //           Text('Loading documents...'),
-  //         ],
-  //       ),
-  //     )
-  //         : _error != null
-  //         ? Center(child: Text(_error!))
-  //         : ListView.builder(
-  //       itemCount: _documents.length,
-  //       itemBuilder: (context, index) {
-  //         var document = _documents[index];
-  //         return Container(
-  //           margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-  //           decoration: BoxDecoration(
-  //             color: Colors.white,
-  //             borderRadius: BorderRadius.circular(15.0),
-  //             boxShadow: [
-  //               BoxShadow(
-  //                 color: Colors.grey.withOpacity(0.5),
-  //                 spreadRadius: 2,
-  //                 blurRadius: 5,
-  //                 offset: const Offset(0, 3), // changes position of shadow
-  //               ),
-  //             ],
-  //           ),
-  //           child: ListTile(
-  //             title: Text("Document ID: ${extractDisplayName(document['name'])}"),
-  //             subtitle: Column(
-  //               crossAxisAlignment: CrossAxisAlignment.start,
-  //               children: [
-  //                 Text('Created Time: ${_formatDateTime(document['createTime'])}'),
-  //                 Text('Updated Time: ${_formatDateTime(document['updateTime'])}'),
-  //
-  //                 ElevatedButton(
-  //                   onPressed: () {
-  //                     // Define your button action here
-  //                     print(document['name']);
-  //                     _showDocumentDetails(document['name']);
-  //                   },
-  //                   style: ElevatedButton.styleFrom(
-  //                     backgroundColor: Colors.amber, // Set the background color
-  //                   ),
-  //                   child: const Text('View Fields'),
-  //                 ),
-  //               ],
-  //             ),
-  //           ),
-  //         );
-  //       },
-  //     ),
-  //   );
-  // }
-
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Documents'),
+        title: Text('${widget.collectionId}: documents'),
       ),
       body: _isLoading
           ? const Center(
