@@ -148,6 +148,84 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
     );
   }
 
+
+  void _showNullEditDialog(String fieldName, String fieldType, dynamic fieldValue) {
+    String newFieldType = fieldType;
+    dynamic newFieldValue = fieldValue;
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Edit Field'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: TextEditingController(text: fieldName),
+                readOnly: true,
+                decoration: const InputDecoration(labelText: 'Field Name'),
+              ),
+              Row(
+                children: [
+                  Expanded(
+                    child: TextField(
+                      controller: TextEditingController(text: newFieldType),
+                      readOnly: true,
+                      decoration:
+                      const InputDecoration(labelText: 'Field Type'),
+                    ),
+                  ),
+                  IconButton(
+                    icon: Icon(Icons.edit),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                      // Navigator.of(context).push(
+                      //   MaterialPageRoute(
+                      //     builder: (context) => EditFieldTypePage(
+                      //       fieldName: fieldName,
+                      //       fieldType: fieldType,
+                      //       fieldValue: fieldValue,
+                      //       accessToken: widget.accessToken,
+                      //       documentPath: widget.documentPath,
+                      //       documentDetails: _documentDetails,
+                      //     ),
+                      //   ),
+                      // );
+                    },
+                  ),
+                ],
+              ),
+              TextField(
+                controller: TextEditingController(text: 'null'),
+                readOnly: true,
+                onChanged: (value) {
+                  newFieldValue = value;
+                },
+                decoration: const InputDecoration(labelText: 'Field Value'),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                _updateField(fieldName, newFieldType, newFieldValue);
+              },
+              child: const Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   void _updateField(
       String fieldName, String fieldType, String fieldValue) async {
     Map<String, dynamic> fields = _documentDetails!['fields'];
@@ -256,6 +334,8 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
   void _showGeoPointDialog(String fieldName, String fieldType, Map<String, dynamic> geoPointValue) {
     double latitude = geoPointValue['latitude'];
     double longitude = geoPointValue['longitude'];
+    print(latitude);
+    print(longitude);
     String newFieldType = fieldType;
 
     showDialog(
@@ -392,40 +472,83 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
     }
   }
 
-  void _showBoolDialog(String fieldName, bool currentValue) {
+  void _showBoolDialog(String fieldName, String fieldType, bool currentValue) {
     bool newValue = currentValue;
+    String newFieldType = fieldType;
+
+    TextEditingController fieldNameController = TextEditingController(text: fieldName);
+    TextEditingController fieldTypeController = TextEditingController(text: newFieldType);
 
     showDialog(
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: Text('Edit Boolean: $fieldName'),
+          title: Text('Edit Field'),
           content: StatefulBuilder(
             builder: (context, setState) {
-              return Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  RadioListTile<bool>(
-                    title: const Text('True'),
-                    value: true,
-                    groupValue: newValue,
-                    onChanged: (value) {
-                      setState(() {
-                        newValue = value!;
-                      });
-                    },
+              return SingleChildScrollView(
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(
+                    maxHeight: MediaQuery.of(context).size.height * 0.5,
                   ),
-                  RadioListTile<bool>(
-                    title: const Text('False'),
-                    value: false,
-                    groupValue: newValue,
-                    onChanged: (value) {
-                      setState(() {
-                        newValue = value!;
-                      });
-                    },
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      TextField(
+                        controller: fieldNameController,
+                        readOnly: true,
+                        decoration: const InputDecoration(labelText: 'Field Name'),
+                      ),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: TextField(
+                              controller: fieldTypeController,
+                              readOnly: true,
+                              decoration: const InputDecoration(labelText: 'Field Type'),
+                            ),
+                          ),
+                          IconButton(
+                            icon: Icon(Icons.edit),
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                          ),
+                        ],
+                      ),
+                      DropdownButtonFormField<bool>(
+                        value: newValue,
+                        onChanged: (bool? selectedValue) {
+                          setState(() {
+                            newValue = selectedValue!;
+                          });
+                        },
+                        items: const [
+                          DropdownMenuItem(
+                            value: true,
+                            child: Text(
+                              'true',
+                              style: TextStyle(
+                                fontSize: 14.0,
+                                fontWeight: FontWeight.normal,
+                              ),
+                            ),
+                          ),
+                          DropdownMenuItem(
+                            value: false,
+                            child: Text(
+                              'false',
+                              style: TextStyle(
+                                fontSize: 14.0,
+                                fontWeight: FontWeight.normal,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
-                ],
+                ),
               );
             },
           ),
@@ -448,6 +571,9 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
       },
     );
   }
+
+
+
 
   void _showTimeStampEditDialog(String fieldName, String fieldType, dynamic fieldValue) {
     String newFieldType = fieldType;
@@ -629,6 +755,7 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
           _documentDetails!['fields'] = fields;
           DateTime updateTime = DateTime.now();
           insertHistory(widget.documentPath, fieldName, updateTime, 'update');
+          print("boolean updated fields: $fields");
         });
         print('Boolean value updated successfully');
       } else {
@@ -655,6 +782,7 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
     String fieldName = '';
     String fieldType = 'stringValue'; // Default field type
     String fieldValue = '';
+    bool fieldBoolValue = true; // default value
 
     // Dropdown menu items for field types
     List<String> fieldTypes = [
@@ -702,12 +830,34 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
                 },
                 decoration: InputDecoration(labelText: 'Field Type'),
               ),
-              TextField(
-                decoration: InputDecoration(labelText: 'Field Value'),
-                onChanged: (value) {
-                  fieldValue = value;
-                },
-              ),
+              if (fieldType == 'booleanValue')
+                DropdownButtonFormField<bool>(
+                  value: fieldBoolValue,
+                  items: const [
+                    DropdownMenuItem<bool>(
+                      value: true,
+                      child: Text('true'),
+                    ),
+                    DropdownMenuItem<bool>(
+                      value: false,
+                      child: Text('false'),
+                    ),
+                  ],
+                  onChanged: (value) {
+                    setState(() {
+                      fieldBoolValue = value!;
+                      fieldValue = value.toString();
+                    });
+                  },
+                  decoration: InputDecoration(labelText: 'Field Value'),
+                )
+              else
+                TextField(
+                  decoration: InputDecoration(labelText: 'Field Value'),
+                  onChanged: (value) {
+                    fieldValue = value;
+                  },
+                ),
             ],
           ),
           actions: <Widget>[
@@ -958,7 +1108,7 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
                                   fieldType = 'nullValue';
                                   displayFieldType = 'null';
                                   fieldValue = fieldData['nullValue'];
-                                  displayValue = fieldValue;
+                                  displayValue = 'null';
                                 } else if (fieldData
                                     .containsKey("booleanValue")) {
                                   fieldType = 'booleanValue';
@@ -1059,7 +1209,7 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
                                             icon: const Icon(Icons.edit),
                                             onPressed: () {
                                               _showBoolDialog(
-                                                  fieldName, fieldValue);
+                                                  fieldName, fieldType, fieldValue);
                                             },
                                           ),
                                         if (fieldType == 'timestampValue')
@@ -1072,11 +1222,23 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
                                                   fieldValue);
                                             },
                                           ),
+                                        if (fieldType == 'nullValue')
+                                          IconButton(
+                                            icon: const Icon(Icons.edit),
+                                            onPressed: () {
+                                              _showNullEditDialog(
+                                                  fieldName,
+                                                  fieldType,
+                                                  fieldValue);
+                                            },
+                                          ),
                                         if (fieldType != 'mapValue' &&
                                             fieldType != 'arrayValue' &&
                                             fieldType != 'geoPointValue' &&
                                             fieldType != 'booleanValue' &&
-                                            fieldType != 'timestampValue')
+                                            fieldType != 'timestampValue' &&
+                                            fieldType != 'nullValue'
+                                        )
                                           IconButton(
                                             icon: const Icon(Icons.edit),
                                             onPressed: () {

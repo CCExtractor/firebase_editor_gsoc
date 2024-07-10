@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:firebase_editor_gsoc/controllers/document_controller.dart';
+import 'package:firebase_editor_gsoc/controllers/history.dart';
 import 'package:firebase_editor_gsoc/views/list_documents_details.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -221,6 +222,8 @@ class _DocumentsPageState extends State<DocumentsPage> {
       if (response.statusCode == 200) {
         print('Document created successfully');
         // set document id to null
+        DateTime createTime = DateTime.now();
+        insertHistory(documentPath, "Document - ${documentController.documentIdController.text}", createTime, 'create');
         documentController.documentIdController.text = "";
         // Handle successful document creation (e.g., navigate to document details page)
       } else {
@@ -293,6 +296,8 @@ class _DocumentsPageState extends State<DocumentsPage> {
       if (response.statusCode == 200) {
         setState(() {
           _documents.removeWhere((doc) => doc['name'] == documentPath);
+          DateTime deleteTime = DateTime.now();
+          insertHistory(documentPath, "Document - ${documentController.documentIdController.text}", deleteTime, 'delete');
         });
         print('Document deleted successfully');
       } else {

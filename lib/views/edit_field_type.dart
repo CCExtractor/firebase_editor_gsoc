@@ -51,26 +51,26 @@ class _EditFieldTypePageState extends State<EditFieldTypePage> {
 
 
   void _updateField(String fieldName, String fieldType, String fieldValue) async {
-    if (_validateFieldValue(newFieldType, newFieldValue)) {
-      Navigator.of(context).pop({
-        'fieldType': newFieldType,
-        'fieldValue': newFieldValue,
-      });
-    } else {
-      if(newFieldType == 'stringValue') {
-        _showErrorDialog("Must be a string");
-      } else if(newFieldType == 'integerValue') {
-        _showErrorDialog("Must be a number");
-      }else if(newFieldType == 'booleanValue') {
-        _showErrorDialog("Must be a boolean value");
-      }else if(newFieldType == 'geoPointValue') {
-        _showErrorDialog('Latitude must be between -90 to 90 and Longitude must be between -180 to 180');
-      }else if(newFieldType == 'timestampValue') {
-        _showErrorDialog("Invalid Value");
-      }else{
-        _showErrorDialog("Invalid Value");
-      }
-    }
+    // if (_validateFieldValue(newFieldType, newFieldValue)) {
+    //   Navigator.of(context).pop({
+    //     'fieldType': newFieldType,
+    //     'fieldValue': newFieldValue,
+    //   });
+    // } else {
+    //   if(newFieldType == 'stringValue') {
+    //     _showErrorDialog("Must be a string");
+    //   } else if(newFieldType == 'integerValue') {
+    //     _showErrorDialog("Must be a number");
+    //   }else if(newFieldType == 'booleanValue') {
+    //     _showErrorDialog("Must be a boolean value");
+    //   }else if(newFieldType == 'geoPointValue') {
+    //     _showErrorDialog('Latitude must be between -90 to 90 and Longitude must be between -180 to 180');
+    //   }else if(newFieldType == 'timestampValue') {
+    //     _showErrorDialog("Invalid Value");
+    //   }else{
+    //     _showErrorDialog("Invalid Value");
+    //   }
+    // }
     Map<String, dynamic> fields = widget.documentDetails!['fields'];
     dynamic value;
 
