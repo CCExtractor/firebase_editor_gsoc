@@ -5,9 +5,6 @@ This project aims to develop a versatile mobile application tailored for efficie
 
 ## Features
 
-### Schema Definition Interface
-- Intuitive interface for defining schemas
-- Supports string fields, multi-line text, selects, and checkboxes
 
 ### CRUD Operations Editor
 - Seamless Create, Read, Update, and Delete operations on Firebase databases
