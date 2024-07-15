@@ -3,31 +3,35 @@ import 'dart:convert';
 import 'package:firebase_editor_gsoc/controllers/history.dart';
 import 'package:firebase_editor_gsoc/views/array_field_data.dart';
 import 'package:firebase_editor_gsoc/views/array_within_map.dart';
-import 'package:firebase_editor_gsoc/views/map_within_map.dart';
+import 'package:firebase_editor_gsoc/views/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
-class MapFieldDataPage extends StatefulWidget {
-  final String fieldName;
-  final Map<String, dynamic> mapValue;
+class MapWithinMapFieldDataPage extends StatefulWidget {
+  final String parentMapFieldName;
+  final String childMapFieldName;
+  final Map<String, dynamic> parentMapValue;
+  final Map<String, dynamic> childMapValue;
   final Map<String, dynamic>? documentDetails;
   final String accessToken;
   final String documentPath;
 
-  const MapFieldDataPage({
+  const MapWithinMapFieldDataPage({
     Key? key,
-    required this.fieldName,
-    required this.mapValue,
+    required this.parentMapFieldName,
+    required this.childMapFieldName,
+    required this.parentMapValue,
+    required this.childMapValue,
     required this.documentDetails,
     required this.accessToken,
     required this.documentPath
   }) : super(key: key);
 
   @override
-  State<MapFieldDataPage> createState() => _MapFieldDataPageState();
+  State<MapWithinMapFieldDataPage> createState() => _MapWithinMapFieldDataPageState();
 }
 
-class _MapFieldDataPageState extends State<MapFieldDataPage> {
+class _MapWithinMapFieldDataPageState extends State<MapWithinMapFieldDataPage> {
 
 
 
@@ -72,13 +76,13 @@ class _MapFieldDataPageState extends State<MapFieldDataPage> {
               onPressed: () {
                 setState(() {
                   // Update widget.arrayValue with the new boolean value at the specified index
-                  widget.mapValue['fields'][fieldName] = {valueType: newValue};
+                  widget.childMapValue['fields'][fieldName] = {valueType: newValue};
                 });
 
                 Navigator.of(context).pop(); // Close the dialog
 
                 // Now update the entire array in Firestore
-                _updateField(widget.fieldName, widget.mapValue['fields'], 'update');
+                _updateField(widget.parentMapFieldName, widget.childMapValue['fields'], 'update');
               },
               child: const Text('Save'),
             ),
@@ -150,7 +154,7 @@ class _MapFieldDataPageState extends State<MapFieldDataPage> {
                 }
 
                 setState(() {
-                  widget.mapValue['fields'][fieldName] = {
+                  widget.childMapValue['fields'][fieldName] = {
                     'geoPointValue': {'latitude': latitude, 'longitude': longitude}
                   };
                 });
@@ -158,8 +162,7 @@ class _MapFieldDataPageState extends State<MapFieldDataPage> {
                 Navigator.of(context).pop();
 
                 // Now update the entire map in Firestore
-                print(widget.mapValue['fields'][fieldName]);
-                _updateField(widget.fieldName, widget.mapValue['fields'], 'update');
+                _updateField(widget.parentMapFieldName, widget.childMapValue['fields'], 'update');
               },
               child: const Text('OK'),
             ),
@@ -244,13 +247,13 @@ class _MapFieldDataPageState extends State<MapFieldDataPage> {
 
                 setState(() {
                   // Update the map field value with the new timestamp value at the specified index
-                  widget.mapValue['fields'][fieldName] = {'timestampValue': newDateTime.toUtc().toIso8601String()};
+                  widget.childMapValue['fields'][fieldName] = {'timestampValue': newDateTime.toUtc().toIso8601String()};
                 });
 
                 Navigator.of(context).pop(); // Close the dialog
 
                 // Now update the entire map in Firestore
-                _updateField(widget.fieldName, widget.mapValue['fields'], 'update');
+                _updateField(widget.parentMapFieldName, widget.childMapValue['fields'], 'update');
               },
               child: const Text('Save'),
             ),
@@ -330,15 +333,15 @@ class _MapFieldDataPageState extends State<MapFieldDataPage> {
                   // Update the map field value with the new value for the specified key
                   if(valueType == 'stringValue'){
                     // print(widget.mapValue['fields'][key]);
-                    widget.mapValue['fields'][key] = {valueType: newValue};
+                    widget.childMapValue['fields'][key] = {valueType: newValue};
                   }else if (valueType == 'integerValue') {
-                    widget.mapValue['fields'][key] = {valueType: int.parse(newValue)}; // Convert to integer if needed
+                    widget.childMapValue['fields'][key] = {valueType: int.parse(newValue)}; // Convert to integer if needed
                   } else if (valueType == 'nullValue') {
-                    widget.mapValue['fields'][key] = {valueType: newValue};
+                    widget.childMapValue['fields'][key] = {valueType: newValue};
                   } else if (valueType == 'booleanValue') {
-                    widget.mapValue['fields'][key] = {valueType: newValue.toLowerCase()};
+                    widget.childMapValue['fields'][key] = {valueType: newValue.toLowerCase()};
                   } else if (valueType == 'referenceValue') {
-                    widget.mapValue['fields'][key] = {valueType: newValue};
+                    widget.childMapValue['fields'][key] = {valueType: newValue};
                   } else {
                     // Handle unsupported types
                   }
@@ -346,7 +349,7 @@ class _MapFieldDataPageState extends State<MapFieldDataPage> {
 
                 // Update the entire map in Firestore
                 // print(widget.mapValue['fields']);
-                _updateField(widget.fieldName, widget.mapValue['fields'], 'update');
+                _updateField(widget.parentMapFieldName, widget.childMapValue['fields'], 'update');
 
                 Navigator.of(context).pop(); // Close the dialog
               },
@@ -386,20 +389,20 @@ class _MapFieldDataPageState extends State<MapFieldDataPage> {
 
     if (confirmed == true) {
       setState(() {
-        widget.mapValue['fields'].remove(fieldName);
+        widget.childMapValue['fields'].remove(fieldName);
       });
 
       // Update Firestore with the updated fields
-      _updateField(widget.fieldName, widget.mapValue['fields'], 'delete');
+      _updateField(widget.parentMapFieldName, widget.childMapValue['fields'], 'delete');
     }
   }
 
-  void _updateField(String fieldName, Map<String, dynamic> newMapValue, String operationType) async {
+  void _updateField(String fieldName, Map<String, dynamic> newChildMapValue, String operationType) async {
 
     Map<String, dynamic> fields = widget.documentDetails!['fields'];
 
-    fields[fieldName] = {'mapValue' :{'fields': newMapValue}};
-    print("update fun called ${fields[fieldName]}");
+    fields[fieldName]['mapValue']['fields'][widget.childMapFieldName] = {'mapValue' :{'fields': newChildMapValue}};
+
 
     String url = 'https://firestore.googleapis.com/v1/${widget.documentPath}?updateMask.fieldPaths=$fieldName';
     Map<String, String> headers = {
@@ -431,11 +434,11 @@ class _MapFieldDataPageState extends State<MapFieldDataPage> {
 
   @override
   Widget build(BuildContext context) {
-    Map<String, dynamic> fields = widget.mapValue['fields'];
+    Map<String, dynamic> fields = widget.childMapValue['fields'];
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Map Field: ${widget.fieldName}'),
+        title: Text('Map Field: ${widget.childMapFieldName}'),
       ),
       body: ListView.builder(
         itemCount: fields.length,
@@ -458,7 +461,7 @@ class _MapFieldDataPageState extends State<MapFieldDataPage> {
             value = valueData['timestampValue'];
           } else if (valueData.containsKey('mapValue')) {
             valueType = 'mapValue';
-            value = valueData['mapValue'];
+            value = 'Map';
           } else if (valueData.containsKey('arrayValue')) {
             valueType = 'arrayValue';
             value = valueData['arrayValue'];
@@ -536,43 +539,16 @@ class _MapFieldDataPageState extends State<MapFieldDataPage> {
                     IconButton(
                       icon: const Icon(Icons.remove_red_eye),
                       onPressed: () {
-                        print(widget.documentDetails);
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) =>
-                                ArrayWithinMapFieldDataPage(
-                                    mapFieldName: widget.fieldName,
-                                    arrayFieldName: key,
-                                    arrayValue: value['values'],
-                                    mapValue: widget.mapValue,
-                                    documentDetails: widget.documentDetails,
-                                    accessToken: widget.accessToken,
-                                    documentPath: widget.documentPath)
-                          ),
-                        );
+                        showSnackBar(context, "For further editing please visit Firebase.com");
+
                       },
                     ),
-
                   if (valueType == 'mapValue') // Check if it's a map or array value
                     IconButton(
                       icon: const Icon(Icons.remove_red_eye),
                       onPressed: () {
-                        print(widget.documentDetails);
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) =>
-                                 MapWithinMapFieldDataPage(
-                                     parentMapFieldName: widget.fieldName,
-                                     childMapFieldName: key,
-                                     parentMapValue: widget.mapValue,
-                                     childMapValue: value,
-                                     documentDetails: widget.documentDetails,
-                                     accessToken: widget.accessToken,
-                                     documentPath: widget.documentPath)
-                          ),
-                        );
+                        showSnackBar(context, "For further editing please visit Firebase.com");
+
                       },
                     ),
                   IconButton(

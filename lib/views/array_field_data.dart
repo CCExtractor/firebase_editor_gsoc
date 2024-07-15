@@ -251,9 +251,6 @@ class _ArrayFieldDataPageState extends State<ArrayFieldDataPage> {
   }
 
 
-
-
-
   void _showEditDialog(String fieldName, String valueType, dynamic value, int index) {
     dynamic newValue = value; // Initial value to display in TextField
 
