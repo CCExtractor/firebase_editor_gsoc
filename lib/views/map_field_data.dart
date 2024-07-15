@@ -270,14 +270,47 @@ class _MapFieldDataPageState extends State<MapFieldDataPage> {
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text('Field Key: $key'),
-              Text('Field Type: $valueType'),
+              TextField(
+                controller: TextEditingController(text: key),
+                readOnly: true,
+                decoration: const InputDecoration(labelText: 'Key'),
+              ),
+              Row(
+                children: [
+                  Expanded(
+                    child: TextField(
+                      controller: TextEditingController(text: valueType),
+                      readOnly: true,
+                      decoration:
+                      const InputDecoration(labelText: 'Value Type'),
+                    ),
+                  ),
+                  IconButton(
+                    icon: Icon(Icons.edit),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                      // Navigator.of(context).push(
+                      //   MaterialPageRoute(
+                      //     builder: (context) => EditFieldTypePage(
+                      //       fieldName: fieldName,
+                      //       fieldType: fieldType,
+                      //       fieldValue: geoPointValue,
+                      //       accessToken: widget.accessToken,
+                      //       documentPath: widget.documentPath,
+                      //       documentDetails: _documentDetails,
+                      //     ),
+                      //   ),
+                      // );
+                    },
+                  ),
+                ],
+              ),
               TextField(
                 controller: valueController,
                 onChanged: (newValueText) {
                   newValue = newValueText; // Update the new value as user types
                 },
-                decoration: const InputDecoration(labelText: 'New Field Value'),
+                decoration: const InputDecoration(labelText: 'Value'),
               ),
             ],
           ),
@@ -443,58 +476,75 @@ class _MapFieldDataPageState extends State<MapFieldDataPage> {
             value = 'Unsupported';
           }
 
-          return ListTile(
-            title: Text('$key ($valueType): $value'),
-            trailing: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                if (valueType != 'mapValue' && valueType != 'arrayValue' && valueType != 'geoPointValue' && valueType != 'booleanValue' && valueType != 'timestampValue')
-                  IconButton(
-                    icon: const Icon(Icons.edit),
-                    onPressed: () {
-                      // print(widget.mapValue);
-                      // print(widget.mapValue.runtimeType);
-                      TextEditingController valueController = TextEditingController(text: value.toString());
-                      _showEditDialog(key, valueType, value, valueController);
-                    },
-                  ),
-                if (valueType == 'geoPointValue')
-                  IconButton(
-                    icon: const Icon(Icons.edit),
-                    onPressed: () {
-                      _showGeoPointEditDialog(key, value);
-                    },
-                  ),
-                if (valueType == 'timestampValue') // Check if it's a timestamp value
-                  IconButton(
-                    icon: const Icon(Icons.edit),
-                    onPressed: () {
-                      // Assuming `index` is the index of the current item in your list
-                      _showTimeStampEditDialog(key, valueType, value);
-                    },
-                  ),
-                if (valueType == 'booleanValue') // Check if it's a boolean value
-                  IconButton(
-                    icon: const Icon(Icons.edit),
-                    onPressed: () {
-                      _showEditBoolDialog(key, valueType, value);
-                    },
-                  ),
-                if (valueType == 'mapValue' || valueType == 'arrayValue') // Check if it's a map or array value
-                  IconButton(
-                    icon: const Icon(Icons.remove_red_eye),
-                    onPressed: () {
-
-                    },
-                  ),
-                IconButton(
-                  icon: const Icon(Icons.delete),
-                  onPressed: () {
-                    // Implement delete functionality
-                    _deleteFieldWithinMap(key);
-                  },
+          return Container(
+            margin: const EdgeInsets.symmetric(
+                horizontal: 16.0, vertical: 8.0),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(15.0),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.grey.withOpacity(0.5),
+                  spreadRadius: 2,
+                  blurRadius: 5,
+                  offset: const Offset(
+                      0, 3), // changes position of shadow
                 ),
               ],
+            ),
+            child: ListTile(
+              title: Text('$key ($valueType): $value'),
+              trailing: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  if (valueType != 'mapValue' && valueType != 'arrayValue' && valueType != 'geoPointValue' && valueType != 'booleanValue' && valueType != 'timestampValue')
+                    IconButton(
+                      icon: const Icon(Icons.edit),
+                      onPressed: () {
+                        // print(widget.mapValue);
+                        // print(widget.mapValue.runtimeType);
+                        TextEditingController valueController = TextEditingController(text: value.toString());
+                        _showEditDialog(key, valueType, value, valueController);
+                      },
+                    ),
+                  if (valueType == 'geoPointValue')
+                    IconButton(
+                      icon: const Icon(Icons.edit),
+                      onPressed: () {
+                        _showGeoPointEditDialog(key, value);
+                      },
+                    ),
+                  if (valueType == 'timestampValue') // Check if it's a timestamp value
+                    IconButton(
+                      icon: const Icon(Icons.edit),
+                      onPressed: () {
+                        // Assuming `index` is the index of the current item in your list
+                        _showTimeStampEditDialog(key, valueType, value);
+                      },
+                    ),
+                  if (valueType == 'booleanValue') // Check if it's a boolean value
+                    IconButton(
+                      icon: const Icon(Icons.edit),
+                      onPressed: () {
+                        _showEditBoolDialog(key, valueType, value);
+                      },
+                    ),
+                  if (valueType == 'mapValue' || valueType == 'arrayValue') // Check if it's a map or array value
+                    IconButton(
+                      icon: const Icon(Icons.remove_red_eye),
+                      onPressed: () {
+
+                      },
+                    ),
+                  IconButton(
+                    icon: const Icon(Icons.delete),
+                    onPressed: () {
+                      // Implement delete functionality
+                      _deleteFieldWithinMap(key);
+                    },
+                  ),
+                ],
+              ),
             ),
           );
         },

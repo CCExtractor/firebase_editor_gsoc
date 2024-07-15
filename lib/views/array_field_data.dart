@@ -1,4 +1,5 @@
 import 'package:firebase_editor_gsoc/controllers/history.dart';
+import 'package:firebase_editor_gsoc/views/datatypes/array.dart';
 import 'package:firebase_editor_gsoc/views/map_field_data.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -32,33 +33,83 @@ class _ArrayFieldDataPageState extends State<ArrayFieldDataPage> {
 
   void _showEditBoolDialog(String fieldName, String valueType, bool value, int index) {
     bool newValue = value; // Initial value to display in DropdownButton
+    String newFieldType = valueType;
+
+    TextEditingController fieldNameController = TextEditingController(text: fieldName);
+    TextEditingController fieldTypeController = TextEditingController(text: newFieldType);
 
     showDialog(
       context: context,
       builder: (context) {
         return AlertDialog(
           title: const Text('Edit Array Element'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text('Field Type: $valueType'),
-              DropdownButton<bool>(
-                value: newValue,
-                items: const [
-                  DropdownMenuItem(
-                    value: true,
-                    child: Text('True'),
+          content: StatefulBuilder(
+            builder: (context, setState) {
+              return SingleChildScrollView(
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(
+                    maxHeight: MediaQuery.of(context).size.height * 0.5,
                   ),
-                  DropdownMenuItem(
-                    value: false,
-                    child: Text('False'),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      TextField(
+                        controller: fieldNameController,
+                        readOnly: true,
+                        decoration: const InputDecoration(labelText: 'Index'),
+                      ),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: TextField(
+                              controller: fieldTypeController,
+                              readOnly: true,
+                              decoration: const InputDecoration(labelText: 'Field Type'),
+                            ),
+                          ),
+                          IconButton(
+                            icon: Icon(Icons.edit),
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                          ),
+                        ],
+                      ),
+                      DropdownButtonFormField<bool>(
+                        value: newValue,
+                        onChanged: (bool? selectedValue) {
+                          setState(() {
+                            newValue = selectedValue!;
+                          });
+                        },
+                        items: const [
+                          DropdownMenuItem(
+                            value: true,
+                            child: Text(
+                              'true',
+                              style: TextStyle(
+                                fontSize: 14.0,
+                                fontWeight: FontWeight.normal,
+                              ),
+                            ),
+                          ),
+                          DropdownMenuItem(
+                            value: false,
+                            child: Text(
+                              'false',
+                              style: TextStyle(
+                                fontSize: 14.0,
+                                fontWeight: FontWeight.normal,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
-                ],
-                onChanged: (newValueValue) {
-                  newValue = newValueValue!; // Update the new value when user selects from the dropdown
-                },
-              ),
-            ],
+                ),
+              );
+            },
           ),
           actions: [
             TextButton(
@@ -99,6 +150,41 @@ class _ArrayFieldDataPageState extends State<ArrayFieldDataPage> {
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
+              TextField(
+                controller: TextEditingController(text: fieldName),
+                readOnly: true,
+                decoration: const InputDecoration(labelText: 'Index'),
+              ),
+              Row(
+                children: [
+                  Expanded(
+                    child: TextField(
+                      controller: TextEditingController(text: valueType),
+                      readOnly: true,
+                      decoration:
+                      const InputDecoration(labelText: 'Field Type'),
+                    ),
+                  ),
+                  IconButton(
+                    icon: Icon(Icons.edit),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                      // Navigator.of(context).push(
+                      //   MaterialPageRoute(
+                      //     builder: (context) => EditFieldTypePage(
+                      //       fieldName: fieldName,
+                      //       fieldType: fieldType,
+                      //       fieldValue: geoPointValue,
+                      //       accessToken: widget.accessToken,
+                      //       documentPath: widget.documentPath,
+                      //       documentDetails: _documentDetails,
+                      //     ),
+                      //   ),
+                      // );
+                    },
+                  ),
+                ],
+              ),
               TextField(
                 controller: TextEditingController(text: latitude.toString()),
                 keyboardType: TextInputType.number,
@@ -178,13 +264,47 @@ class _ArrayFieldDataPageState extends State<ArrayFieldDataPage> {
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text('Field Type: $valueType'),
+              TextField(
+                controller: TextEditingController(text: fieldName),
+                readOnly: true,
+                decoration: const InputDecoration(labelText: 'Index'),
+              ),
+              Row(
+                children: [
+                  Expanded(
+                    child: TextField(
+                      controller: TextEditingController(text: valueType),
+                      readOnly: true,
+                      decoration:
+                      const InputDecoration(labelText: 'Field Type'),
+                    ),
+                  ),
+                  IconButton(
+                    icon: Icon(Icons.edit),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                      // Navigator.of(context).push(
+                      //   MaterialPageRoute(
+                      //     builder: (context) => EditFieldTypePage(
+                      //       fieldName: fieldName,
+                      //       fieldType: fieldType,
+                      //       fieldValue: geoPointValue,
+                      //       accessToken: widget.accessToken,
+                      //       documentPath: widget.documentPath,
+                      //       documentDetails: _documentDetails,
+                      //     ),
+                      //   ),
+                      // );
+                    },
+                  ),
+                ],
+              ),
               TextField(
                 controller: TextEditingController(text: newValue.toString()),
                 onChanged: (newValueText) {
                   newValue = newValueText; // Update the new value as user types
                 },
-                decoration: const InputDecoration(labelText: 'New Field Value'),
+                decoration: const InputDecoration(labelText: 'Field Value'),
               ),
             ],
           ),
@@ -254,39 +374,98 @@ class _ArrayFieldDataPageState extends State<ArrayFieldDataPage> {
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
+              TextField(
+                controller: TextEditingController(text: fieldName),
+                readOnly: true,
+                decoration: const InputDecoration(labelText: 'Index'),
+              ),
+              Row(
+                children: [
+                  Expanded(
+                    child: TextField(
+                      controller: TextEditingController(text: valueType),
+                      readOnly: true,
+                      decoration:
+                      const InputDecoration(labelText: 'Field Type'),
+                    ),
+                  ),
+                  IconButton(
+                    icon: Icon(Icons.edit),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                      // Navigator.of(context).push(
+                      //   MaterialPageRoute(
+                      //     builder: (context) => EditFieldTypePage(
+                      //       fieldName: fieldName,
+                      //       fieldType: fieldType,
+                      //       fieldValue: geoPointValue,
+                      //       accessToken: widget.accessToken,
+                      //       documentPath: widget.documentPath,
+                      //       documentDetails: _documentDetails,
+                      //     ),
+                      //   ),
+                      // );
+                    },
+                  ),
+                ],
+              ),
               // Date picker
-              ListTile(
-                title: Text('Date'),
-                subtitle: Text(selectedDate!.toString().split(' ')[0]),
-                onTap: () async {
-                  final DateTime? pickedDate = await showDatePicker(
-                    context: context,
-                    initialDate: selectedDate!,
-                    firstDate: DateTime(1900),
-                    lastDate: DateTime(2100),
-                  );
-                  if (pickedDate != null && pickedDate != selectedDate) {
-                    setState(() {
-                      selectedDate = pickedDate;
-                    });
-                  }
-                },
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10.0),
+                    border: Border.all(
+                        color: Colors.blue,
+                        width: 2.0), // Change color and width as needed
+                  ),
+                  child: ListTile(
+                    title: Text('Date'),
+                    subtitle: Text(selectedDate!.toString().split(' ')[0]),
+                    trailing: Icon(Icons.calendar_month_outlined),
+                    onTap: () async {
+                      final DateTime? pickedDate = await showDatePicker(
+                        context: context,
+                        initialDate: selectedDate!,
+                        firstDate: DateTime(1900),
+                        lastDate: DateTime(2100),
+                      );
+                      if (pickedDate != null && pickedDate != selectedDate) {
+                        setState(() {
+                          selectedDate = pickedDate;
+                        });
+                      }
+                    },
+                  ),
+                ),
               ),
               // Time picker
-              ListTile(
-                title: Text('Time'),
-                subtitle: Text(selectedTime!.format(context)),
-                onTap: () async {
-                  final TimeOfDay? pickedTime = await showTimePicker(
-                    context: context,
-                    initialTime: selectedTime!,
-                  );
-                  if (pickedTime != null && pickedTime != selectedTime) {
-                    setState(() {
-                      selectedTime = pickedTime;
-                    });
-                  }
-                },
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10.0),
+                    border: Border.all(
+                        color: Colors.blue,
+                        width: 2.0), // Change color and width as needed
+                  ),
+                  child: ListTile(
+                    title: Text('Time'),
+                    subtitle: Text(selectedTime!.format(context)),
+                    trailing: Icon(Icons.watch_later_outlined),
+                    onTap: () async {
+                      final TimeOfDay? pickedTime = await showTimePicker(
+                        context: context,
+                        initialTime: selectedTime!,
+                      );
+                      if (pickedTime != null && pickedTime != selectedTime) {
+                        setState(() {
+                          selectedTime = pickedTime;
+                        });
+                      }
+                    },
+                  ),
+                ),
               ),
             ],
           ),
@@ -401,118 +580,172 @@ class _ArrayFieldDataPageState extends State<ArrayFieldDataPage> {
       appBar: AppBar(
         title: Text('Array Field: ${widget.fieldName}'),
       ),
-      body: ListView.builder(
-        itemCount: widget.arrayValue.length,
-        itemBuilder: (context, index) {
-          dynamic valueData = widget.arrayValue[index];
-          String valueType;
-          dynamic value;
-
-          if (valueData.containsKey('stringValue')) {
-            valueType = 'stringValue';
-            value = valueData['stringValue'];
-          } else if (valueData.containsKey('integerValue')) {
-            valueType = 'integerValue';
-            value = valueData['integerValue'];
-          } else if (valueData.containsKey('timestampValue')) {
-            valueType = 'timestampValue';
-            value = valueData['timestampValue'];
-          } else if (valueData.containsKey('mapValue')) {
-            valueType = 'mapValue';
-            value = valueData['mapValue'];
-          } else if (valueData.containsKey('arrayValue')) {
-            valueType = 'arrayValue';
-            value = 'Array';
-          } else if (valueData.containsKey('geoPointValue')) {
-            valueType = 'geoPointValue';
-            value = valueData['geoPointValue'];
-          } else if (valueData.containsKey('nullValue')) {
-            valueType = 'nullValue';
-            value = valueData['nullValue'];
-          } else if (valueData.containsKey('booleanValue')) {
-            valueType = 'booleanValue';
-            value = valueData['booleanValue'];
-          } else if (valueData.containsKey('referenceValue')) {
-            valueType = 'referenceValue';
-            value = valueData['referenceValue'];
-          } else {
-            valueType = 'unsupported';
-            value = 'Unsupported';
-          }
-
-
-          /// FIREBASE DOESN'T ALLOW ARRAY WITH IN THE ARRAY SO NO NEED IMPLEMENT FOR IT
-
-          return ListTile(
-            title: Text('($valueType): $value'),
-            trailing: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                if (valueType == 'timestampValue')
-                  IconButton(
-                    icon: const Icon(Icons.edit),
-                    onPressed: () {
-
-                      print(value);
-                      print(value.runtimeType);
-                      _showTimeStampEditDialog(index.toString(), valueType, value, index);
-                    },
-                  ),
-                if (valueType == 'booleanValue')
-                  IconButton(
-                    icon: const Icon(Icons.edit),
-                    onPressed: () {
-                      // print(widget.arrayValue);
-                      // print(widget.arrayValue.runtimeType);
-                      // _showEditDialog(index.toString(), valueType, value, index);
-                      _showEditBoolDialog(index.toString(), valueType, value, index);
-                    },
-                  ),
-                if(valueType == 'geoPointValue')
-                  IconButton(
-                    icon: const Icon(Icons.edit),
-                    onPressed: () {
-                      _showGeoPointEditDialog(index.toString(), valueType.toString(), value, index);
-                    },
-                  ),
-                if(valueType == 'mapValue')
-                  IconButton(
-                    icon: const Icon(Icons.remove_red_eye),
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => MapFieldDataPage(
-                            fieldName: index.toString(),
-                            mapValue: value,
-                            documentDetails: widget.documentDetails,
-                            documentPath: widget.documentPath,
-                            accessToken: widget.accessToken,
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                if (valueType != 'mapValue' && valueType != 'arrayValue' && valueType != 'geoPointValue' && valueType != 'booleanValue' && valueType != 'timestampValue')
-                  IconButton(
-                    icon: const Icon(Icons.edit),
-                    onPressed: () {
-                      // print(widget.arrayValue);
-                      // print(widget.arrayValue.runtimeType);
-                      _showEditDialog(index.toString(), valueType, value, index);
-                    },
-                  ),
-                IconButton(
-                  icon: const Icon(Icons.delete),
-                  onPressed: () {
-                    // Define your delete action here
-                    _deleteFieldFromArray(index);
-                  },
-                ),
-              ],
+      body: Column(
+        children: [
+          ElevatedButton(
+            onPressed: () {
+              // Action to perform when the button is pressed
+              showArrayAddFieldDialog(context, widget.fieldName,widget.documentDetails, widget.documentPath, widget.accessToken, widget.arrayValue);
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.amber,
             ),
-          );
-        },
+            child: Text('Add Field'),
+          ),
+          Expanded(
+            child: ListView.builder(
+              itemCount: widget.arrayValue.length,
+              itemBuilder: (context, index) {
+                dynamic valueData = widget.arrayValue[index];
+                String valueType;
+                String displayValueType = 'string'; // default datatype
+                dynamic value;
+                dynamic displayValue;
+
+                if (valueData.containsKey('stringValue')) {
+                  valueType = 'stringValue';
+                  displayValueType = 'string';
+                  value = valueData['stringValue'];
+                  displayValue = value;
+                } else if (valueData.containsKey('integerValue')) {
+                  valueType = 'integerValue';
+                  displayValueType = 'number';
+                  value = valueData['integerValue'];
+                  displayValue = value;
+                } else if (valueData.containsKey('timestampValue')) {
+                  valueType = 'timestampValue';
+                  displayValueType = 'timestamp';
+                  value = valueData['timestampValue'];
+                  displayValue = value;
+                } else if (valueData.containsKey('mapValue')) {
+                  valueType = 'mapValue';
+                  displayValueType = 'map';
+                  value = valueData['mapValue'];
+                  displayValue = 'Map';
+                } else if (valueData.containsKey('arrayValue')) {
+                  valueType = 'arrayValue';
+                  displayValueType = 'array';
+                  value = 'Array';
+                  displayValue = 'Array';
+                } else if (valueData.containsKey('geoPointValue')) {
+                  valueType = 'geoPointValue';
+                  displayValueType = 'geoPoint';
+                  value = valueData['geoPointValue'];
+                  displayValue = "[${value['latitude']}, ${value['longitude']}]";
+                } else if (valueData.containsKey('nullValue')) {
+                  valueType = 'nullValue';
+                  displayValueType = 'null';
+                  value = valueData['nullValue'];
+                  displayValue = 'null';
+                } else if (valueData.containsKey('booleanValue')) {
+                  valueType = 'booleanValue';
+                  displayValueType = 'bool';
+                  value = valueData['booleanValue'];
+                  displayValue = value;
+                } else if (valueData.containsKey('referenceValue')) {
+                  valueType = 'referenceValue';
+                  displayValueType = 'reference';
+                  value = valueData['referenceValue'];
+                  displayValue = value;
+                } else {
+                  valueType = 'unsupported';
+                  value = 'Unsupported';
+                }
+
+
+                /// FIREBASE DOESN'T ALLOW ARRAY WITH IN THE ARRAY SO NO NEED IMPLEMENT FOR IT
+
+                return Container(
+                  margin: const EdgeInsets.symmetric(
+                      horizontal: 16.0, vertical: 8.0),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(15.0),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey.withOpacity(0.5),
+                        spreadRadius: 2,
+                        blurRadius: 5,
+                        offset: const Offset(
+                            0, 3), // changes position of shadow
+                      ),
+                    ],
+                  ),
+                  child: ListTile(
+                    title: Text('$index', style: TextStyle(color: Colors.grey, fontWeight: FontWeight.bold),),
+                    subtitle: Text('($displayValueType): $displayValue'),
+                    trailing: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        if (valueType == 'timestampValue')
+                          IconButton(
+                            icon: const Icon(Icons.edit),
+                            onPressed: () {
+
+                              print(value);
+                              print(value.runtimeType);
+                              _showTimeStampEditDialog(index.toString(), valueType, value, index);
+                            },
+                          ),
+                        if (valueType == 'booleanValue')
+                          IconButton(
+                            icon: const Icon(Icons.edit),
+                            onPressed: () {
+                              // print(widget.arrayValue);
+                              // print(widget.arrayValue.runtimeType);
+                              // _showEditDialog(index.toString(), valueType, value, index);
+                              _showEditBoolDialog(index.toString(), valueType, value, index);
+                            },
+                          ),
+                        if(valueType == 'geoPointValue')
+                          IconButton(
+                            icon: const Icon(Icons.edit),
+                            onPressed: () {
+                              _showGeoPointEditDialog(index.toString(), valueType.toString(), value, index);
+                            },
+                          ),
+                        if(valueType == 'mapValue')
+                          IconButton(
+                            icon: const Icon(Icons.remove_red_eye),
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => MapFieldDataPage(
+                                    fieldName: index.toString(),
+                                    mapValue: value,
+                                    documentDetails: widget.documentDetails,
+                                    documentPath: widget.documentPath,
+                                    accessToken: widget.accessToken,
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                        if (valueType != 'mapValue' && valueType != 'arrayValue' && valueType != 'geoPointValue' && valueType != 'booleanValue' && valueType != 'timestampValue')
+                          IconButton(
+                            icon: const Icon(Icons.edit),
+                            onPressed: () {
+                              // print(widget.arrayValue);
+                              // print(widget.arrayValue.runtimeType);
+                              _showEditDialog(index.toString(), valueType, value, index);
+                            },
+                          ),
+                        IconButton(
+                          icon: const Icon(Icons.delete),
+                          onPressed: () {
+                            // Define your delete action here
+                            _deleteFieldFromArray(index);
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+        ],
       ),
 
 
