@@ -30,3 +30,19 @@ void showErrorDialog(BuildContext context, String message) {
     },
   );
 }
+
+
+void showSnackBar(BuildContext context, String message) {
+  final snackBar = SnackBar(
+    content: Text(message),
+    action: SnackBarAction(
+      label: 'OK',
+      onPressed: () {
+        // Do something if needed when the action is pressed
+        // Navigator.of(context).pop();
+      },
+    ),
+  );
+
+  ScaffoldMessenger.of(context).showSnackBar(snackBar);
+}

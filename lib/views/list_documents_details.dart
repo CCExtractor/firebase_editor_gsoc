@@ -57,6 +57,7 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
         setState(() {
           _documentDetails = data;
           _isLoading = false;
+          print(_documentDetails);
         });
       } else {
         setState(() {

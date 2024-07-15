@@ -1,6 +1,7 @@
 import 'package:firebase_editor_gsoc/controllers/history.dart';
 import 'package:firebase_editor_gsoc/views/datatypes/array.dart';
 import 'package:firebase_editor_gsoc/views/map_field_data.dart';
+import 'package:firebase_editor_gsoc/views/map_within_array.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -711,12 +712,15 @@ class _ArrayFieldDataPageState extends State<ArrayFieldDataPage> {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => MapFieldDataPage(
-                                    fieldName: index.toString(),
+                                  builder: (context) => MapWithinArrayFieldDataPage(
+                                    arrayFieldName: widget.fieldName,
+                                    mapFieldName: index.toString(),
                                     mapValue: value,
+                                    arrayValue: widget.arrayValue,
                                     documentDetails: widget.documentDetails,
                                     documentPath: widget.documentPath,
                                     accessToken: widget.accessToken,
+                                    index: index
                                   ),
                                 ),
                               );
