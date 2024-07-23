@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 String updateTimeStampFieldValue(DateTime date, TimeOfDay time) {
   final DateTime newDateTime = DateTime(
@@ -45,4 +46,17 @@ void showSnackBar(BuildContext context, String message) {
   );
 
   ScaffoldMessenger.of(context).showSnackBar(snackBar);
+}
+
+
+void showToast(String message) {
+  Fluttertoast.showToast(
+    msg: message,
+    toastLength: Toast.LENGTH_SHORT,
+    gravity: ToastGravity.BOTTOM,
+    timeInSecForIosWeb: 1,
+    backgroundColor: Colors.black,
+    textColor: Colors.white,
+    fontSize: 16.0,
+  );
 }

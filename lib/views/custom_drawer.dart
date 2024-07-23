@@ -91,20 +91,20 @@ class CustomDrawer extends StatelessWidget {
               );
             },
           ),
-          const Divider(),
-          ListTile(
-            leading: const Icon(Icons.format_align_center_outlined),
-            title: const Text('New Schema'),
-            onTap: () {
-              // Handle tap
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const DefineSchema(),
-                ),
-              );
-            },
-          ),
+          // const Divider(),
+          // ListTile(
+          //   leading: const Icon(Icons.format_align_center_outlined),
+          //   title: const Text('New Schema'),
+          //   onTap: () {
+          //     // Handle tap
+          //     Navigator.push(
+          //       context,
+          //       MaterialPageRoute(
+          //         builder: (context) => const DefineSchema(),
+          //       ),
+          //     );
+          //   },
+          // ),
           const Divider(),
           ListTile(
             leading: const Icon(Icons.storage_rounded),

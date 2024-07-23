@@ -48,6 +48,7 @@ dependencies:
   firebase_messaging: ^15.0.2
   app_settings: ^5.1.1
   flutter_local_notifications: ^17.2.1
+  fluttertoast: ^8.2.6
 
 dev_dependencies:
   flutter_test:

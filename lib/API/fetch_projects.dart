@@ -27,11 +27,12 @@ Future<Map<String, dynamic>> callFirebaseProjectsAPI(String accessToken) async {
       return json.decode(response.body);
     } else {
       print('Failed to call Firebase Projects API. Status Code: ${response.statusCode}');
-      throw Exception('Failed to call Firebase Projects API. Status Code: ${response.statusCode}');
-
+      // throw Exception('Failed to call Firebase Projects API. Status Code: ${response.statusCode}');
+      throw Exception("Error, Please sign in Again!");
     }
   } catch (error) {
     print('Error calling Firebase Projects API: $error');
-    throw Exception('Error calling Firebase Projects API: $error');
+    // throw Exception('Error calling Firebase Projects API: $error');
+    throw Exception("Error, Please sign in Again!");
   }
 }

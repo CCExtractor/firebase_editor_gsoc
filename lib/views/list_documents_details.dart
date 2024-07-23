@@ -3,6 +3,7 @@ import 'package:firebase_editor_gsoc/controllers/history.dart';
 import 'package:firebase_editor_gsoc/views/array_field_data.dart';
 import 'package:firebase_editor_gsoc/views/edit_field_type.dart';
 import 'package:firebase_editor_gsoc/views/map_field_data.dart';
+import 'package:firebase_editor_gsoc/views/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
@@ -42,6 +43,8 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
     _fetchDocumentDetails();
   }
 
+
+  /// FUNCTION FOR FETCHING DOCUMENT DETAILS
   void _fetchDocumentDetails() async {
     String url = 'https://firestore.googleapis.com/v1/${widget.documentPath}';
     Map<String, String> headers = {
@@ -74,6 +77,9 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
     }
   }
 
+
+  /// FUNCTION TO READ and UPDATE FIELD VALUES OF SCALAR DATA TYPES - string, number, reference, null etc.
+  // to update field values
   void _showEditDialog(String fieldName, String fieldType, String fieldValue) {
     String newFieldType = fieldType;
     String newFieldValue = fieldValue;
@@ -98,25 +104,25 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
                       controller: TextEditingController(text: newFieldType),
                       readOnly: true,
                       decoration:
-                          const InputDecoration(labelText: 'Field Type'),
+                      const InputDecoration(labelText: 'Field Type'),
                     ),
                   ),
                   IconButton(
                     icon: const Icon(Icons.edit),
                     onPressed: () {
                       Navigator.of(context).pop();
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) => EditFieldTypePage(
-                            fieldName: fieldName,
-                            fieldType: fieldType,
-                            fieldValue: fieldValue,
-                            accessToken: widget.accessToken,
-                            documentPath: widget.documentPath,
-                            documentDetails: _documentDetails,
-                          ),
-                        ),
-                      );
+                      // Navigator.of(context).push(
+                      //   MaterialPageRoute(
+                      //     builder: (context) => EditFieldTypePage(
+                      //       fieldName: fieldName,
+                      //       fieldType: fieldType,
+                      //       fieldValue: fieldValue,
+                      //       accessToken: widget.accessToken,
+                      //       documentPath: widget.documentPath,
+                      //       documentDetails: _documentDetails,
+                      //     ),
+                      //   ),
+                      // );
                     },
                   ),
                 ],
@@ -149,8 +155,45 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
       },
     );
   }
+  void _updateField(String fieldName, String fieldType, String fieldValue) async {
+    Map<String, dynamic> fields = _documentDetails!['fields'];
+    fields[fieldName] = {fieldType: fieldValue};
+
+    String url =
+        'https://firestore.googleapis.com/v1/${widget.documentPath}?updateMask.fieldPaths=$fieldName';
+    Map<String, String> headers = {
+      'Authorization': 'Bearer ${widget.accessToken}',
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+    };
+    Map<String, dynamic> body = {
+      "fields": fields,
+    };
+
+    try {
+      final response = await http.patch(Uri.parse(url),
+          headers: headers, body: json.encode(body));
+
+      if (response.statusCode == 200) {
+        setState(() {
+          _documentDetails!['fields'] = fields;
+
+          DateTime updateTime = DateTime.now();
+          insertHistory(widget.documentPath, fieldName, updateTime, 'update');
+
+          showToast("Field '$fieldName' updated!");
+        });
+        //call function for storing history
+      } else {
+        showErrorDialog(context, 'Failed to update field. Status Code: ${response.statusCode}');
+      }
+    } catch (error) {
+      showErrorDialog(context, "Failed to update field $error");
+    }
+  }
 
 
+  /// FUNCTION TO SHOW NULL TYPE FIELD
   void _showNullEditDialog(String fieldName, String fieldType, dynamic fieldValue) {
     String newFieldType = fieldType;
     dynamic newFieldValue = fieldValue;
@@ -228,39 +271,7 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
     );
   }
 
-  void _updateField(
-      String fieldName, String fieldType, String fieldValue) async {
-    Map<String, dynamic> fields = _documentDetails!['fields'];
-    fields[fieldName] = {fieldType: fieldValue};
-
-    String url =
-        'https://firestore.googleapis.com/v1/${widget.documentPath}?updateMask.fieldPaths=$fieldName';
-    Map<String, String> headers = {
-      'Authorization': 'Bearer ${widget.accessToken}',
-      'Accept': 'application/json',
-      'Content-Type': 'application/json',
-    };
-    Map<String, dynamic> body = {
-      "fields": fields,
-    };
-
-    try {
-      final response = await http.patch(Uri.parse(url),
-          headers: headers, body: json.encode(body));
-
-      if (response.statusCode == 200) {
-        setState(() {
-          _documentDetails!['fields'] = fields;
-          DateTime updateTime = DateTime.now();
-          insertHistory(widget.documentPath, fieldName, updateTime, 'update');
-        });
-        //call function for storing history
-      } else {
-      }
-    } catch (error) {
-    }
-  }
-
+  /// FUNCTIONS FOR DELETING THE FIELDS OF A DOCUMENT
   void _deleteField(String fieldName) async {
     bool confirmed = await showDialog(
       context: context,
@@ -297,9 +308,8 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
       _updateDocument(fieldName, fields);
     }
   }
-
-  void _updateDocument(
-      String fieldName, Map<String, dynamic> updatedFields) async {
+  // to update doc after deleting the value
+  void _updateDocument(String fieldName, Map<String, dynamic> updatedFields) async {
     String url = 'https://firestore.googleapis.com/v1/${widget.documentPath}';
     Map<String, String> headers = {
       'Authorization': 'Bearer ${widget.accessToken}',
@@ -317,16 +327,23 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
       if (response.statusCode == 200) {
         setState(() {
           _documentDetails!['fields'] = updatedFields;
+
           DateTime updateTime = DateTime.now();
           insertHistory(widget.documentPath, fieldName, updateTime, 'delete');
+
+          showToast("Field Deleted!");
         });
         // Call function for storing history or any other actions after successful update
       } else {
+        showErrorDialog(context, 'Failed to delete field. Status Code: ${response.statusCode}');
       }
     } catch (error) {
+      showErrorDialog(context, "Failed to delete field $error");
     }
   }
 
+
+  /// FUNCTIONS FOR READING AND UPDATING GEO-POINT FIELD VALUE
   void _showGeoPointDialog(String fieldName, String fieldType, Map<String, dynamic> geoPointValue) {
     double latitude = geoPointValue['latitude'];
     double longitude = geoPointValue['longitude'];
@@ -428,9 +445,7 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
       },
     );
   }
-
-  void _updateGeoPointField(
-      String fieldName, double latitude, double longitude) async {
+  void _updateGeoPointField(String fieldName, double latitude, double longitude) async {
     Map<String, dynamic> fields = _documentDetails!['fields'];
     fields[fieldName] = {
       'geoPointValue': {'latitude': latitude, 'longitude': longitude}
@@ -456,13 +471,20 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
           _documentDetails!['fields'] = fields;
           DateTime updateTime = DateTime.now();
           insertHistory(widget.documentPath, fieldName, updateTime, 'update');
+
+          showToast("Field '$fieldName' updated!");
         });
       } else {
+        showErrorDialog(context, 'Failed to update field. Status Code: ${response.statusCode}');
       }
     } catch (error) {
+
+      showErrorDialog(context, "Failed to update field $error");
     }
   }
 
+
+  /// FUNCTIONS FOR READING AND UPDATING THE BOOLEAN FIELD VALUE
   void _showBoolDialog(String fieldName, String fieldType, bool currentValue) {
     bool newValue = currentValue;
     String newFieldType = fieldType;
@@ -562,10 +584,43 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
       },
     );
   }
+  void _updateBoolField(String fieldName, bool newValue) async {
+    Map<String, dynamic> fields = _documentDetails!['fields'];
+    fields[fieldName] = {'booleanValue': newValue};
+
+    String url =
+        'https://firestore.googleapis.com/v1/${widget.documentPath}?updateMask.fieldPaths=$fieldName';
+    Map<String, String> headers = {
+      'Authorization': 'Bearer ${widget.accessToken}',
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+    };
+    Map<String, dynamic> body = {
+      "fields": fields,
+    };
+
+    try {
+      final response = await http.patch(Uri.parse(url),
+          headers: headers, body: json.encode(body));
+
+      if (response.statusCode == 200) {
+        setState(() {
+          _documentDetails!['fields'] = fields;
+          DateTime updateTime = DateTime.now();
+          insertHistory(widget.documentPath, fieldName, updateTime, 'update');
+          showToast("Field '$fieldName' updated!");
+        });
+      } else {
+
+        showErrorDialog(context, 'Failed to update field. Status Code: ${response.statusCode}');
+      }
+    } catch (error) {
+      showErrorDialog(context, 'Failed to update field: $error');
+    }
+  }
 
 
-
-
+  /// FUNCTIONS FOR READING & UPDATING TIME STAMP FIELD VALUE
   void _showTimeStampEditDialog(String fieldName, String fieldType, dynamic fieldValue) {
     String newFieldType = fieldType;
 
@@ -608,18 +663,18 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
                         icon: const Icon(Icons.edit),
                         onPressed: () {
                           Navigator.of(context).pop();
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (context) => EditFieldTypePage(
-                                fieldName: fieldName,
-                                fieldType: fieldType,
-                                fieldValue: fieldValue,
-                                accessToken: widget.accessToken,
-                                documentPath: widget.documentPath,
-                                documentDetails: _documentDetails,
-                              ),
-                            ),
-                          );
+                          // Navigator.of(context).push(
+                          //   MaterialPageRoute(
+                          //     builder: (context) => EditFieldTypePage(
+                          //       fieldName: fieldName,
+                          //       fieldType: fieldType,
+                          //       fieldValue: fieldValue,
+                          //       accessToken: widget.accessToken,
+                          //       documentPath: widget.documentPath,
+                          //       documentDetails: _documentDetails,
+                          //     ),
+                          //   ),
+                          // );
                         },
                       ),
                     ],
@@ -720,54 +775,16 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
       },
     );
   }
-
-  void _updateBoolField(String fieldName, bool newValue) async {
-    Map<String, dynamic> fields = _documentDetails!['fields'];
-    fields[fieldName] = {'booleanValue': newValue};
-
-    String url =
-        'https://firestore.googleapis.com/v1/${widget.documentPath}?updateMask.fieldPaths=$fieldName';
-    Map<String, String> headers = {
-      'Authorization': 'Bearer ${widget.accessToken}',
-      'Accept': 'application/json',
-      'Content-Type': 'application/json',
-    };
-    Map<String, dynamic> body = {
-      "fields": fields,
-    };
-
-    try {
-      final response = await http.patch(Uri.parse(url),
-          headers: headers, body: json.encode(body));
-
-      if (response.statusCode == 200) {
-        setState(() {
-          _documentDetails!['fields'] = fields;
-          DateTime updateTime = DateTime.now();
-          insertHistory(widget.documentPath, fieldName, updateTime, 'update');
-        });
-      } else {
-      }
-    } catch (error) {
-    }
-  }
-
   String _formatDateTime(String dateTimeString) {
     DateTime dateTime = DateTime.parse(dateTimeString);
     return DateFormat('dd-MM-yyyy HH:mm').format(dateTime);
   }
-
   String extractDisplayName(String documentName) {
     List<String> parts = documentName.split("${widget.collectionId}/");
     String displayName = parts.last;
     return displayName;
   }
-
-
-
-
-
-  String _updateFieldValue(DateTime date, TimeOfDay time) {
+  String _updateTimeStampFieldValue(DateTime date, TimeOfDay time) {
     final DateTime newDateTime = DateTime(
       date.year,
       date.month,
@@ -778,6 +795,7 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
     return newDateTime.toUtc().toIso8601String();
   }
 
+  /// FUNCTIONS FOR ADDING FIELD TO DOCUMENT
   void showAddFieldDialog(BuildContext context) async {
     String fieldName = '';
     String fieldType = 'stringValue'; // Default field type
@@ -789,12 +807,15 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
     DateTime selectedDate = DateTime.now();
     TimeOfDay selectedTime = TimeOfDay.now();
 
+    List<Map<String, String>> arrayFields = []; // Store array fields
+    List<Map<String, String>> mapFields = []; // Store map fields
+
     // Dropdown menu items for field types
     List<String> fieldTypes = [
       'stringValue',
       'integerValue',
       'booleanValue',
-      'mapValue',
+      // 'mapValue',
       'arrayValue',
       'nullValue',
       'timestampValue',
@@ -850,7 +871,7 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
                         items: const [
                           DropdownMenuItem<bool>(
                             value: true,
-                            child: Text('true', style:  TextStyle(
+                            child: Text('true', style: TextStyle(
                               fontSize: 14.0,
                               fontWeight: FontWeight.normal,
                             ),),
@@ -901,44 +922,60 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
                           children: [
                             Padding(
                               padding: const EdgeInsets.all(8.0),
-                              child: ListTile(
-                                title: const Text('Date'),
-                                subtitle: Text(selectedDate.toString().split(' ')[0]),
-                                trailing: const Icon(Icons.calendar_month_outlined),
-                                onTap: () async {
-                                  final DateTime? pickedDate = await showDatePicker(
-                                    context: context,
-                                    initialDate: selectedDate,
-                                    firstDate: DateTime(1900),
-                                    lastDate: DateTime(2100),
-                                  );
-                                  if (pickedDate != null && pickedDate != selectedDate) {
-                                    setState(() {
-                                      selectedDate = pickedDate;
-                                      fieldValue = _updateFieldValue(selectedDate, selectedTime);
-                                    });
-                                  }
-                                },
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(10.0),
+                                  border: Border.all(
+                                      color: Colors.blue,
+                                      width: 2.0), // Change color and width as needed
+                                ),
+                                child: ListTile(
+                                  title: const Text('Date'),
+                                  subtitle: Text(selectedDate.toString().split(' ')[0]),
+                                  trailing: const Icon(Icons.calendar_month_outlined),
+                                  onTap: () async {
+                                    final DateTime? pickedDate = await showDatePicker(
+                                      context: context,
+                                      initialDate: selectedDate,
+                                      firstDate: DateTime(1900),
+                                      lastDate: DateTime(2100),
+                                    );
+                                    if (pickedDate != null && pickedDate != selectedDate) {
+                                      setState(() {
+                                        selectedDate = pickedDate;
+                                        fieldValue = _updateTimeStampFieldValue(selectedDate, selectedTime);
+                                      });
+                                    }
+                                  },
+                                ),
                               ),
                             ),
                             Padding(
                               padding: const EdgeInsets.all(8.0),
-                              child: ListTile(
-                                title: const Text('Time'),
-                                subtitle: Text(selectedTime.format(context)),
-                                trailing: const Icon(Icons.watch_later_outlined),
-                                onTap: () async {
-                                  final TimeOfDay? pickedTime = await showTimePicker(
-                                    context: context,
-                                    initialTime: selectedTime,
-                                  );
-                                  if (pickedTime != null && pickedTime != selectedTime) {
-                                    setState(() {
-                                      selectedTime = pickedTime;
-                                      fieldValue = _updateFieldValue(selectedDate, selectedTime);
-                                    });
-                                  }
-                                },
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(10.0),
+                                  border: Border.all(
+                                      color: Colors.blue,
+                                      width: 2.0), // Change color and width as needed
+                                ),
+                                child: ListTile(
+                                  title: const Text('Time'),
+                                  subtitle: Text(selectedTime.format(context)),
+                                  trailing: const Icon(Icons.watch_later_outlined),
+                                  onTap: () async {
+                                    final TimeOfDay? pickedTime = await showTimePicker(
+                                      context: context,
+                                      initialTime: selectedTime,
+                                    );
+                                    if (pickedTime != null && pickedTime != selectedTime) {
+                                      setState(() {
+                                        selectedTime = pickedTime;
+                                        fieldValue = _updateTimeStampFieldValue(selectedDate, selectedTime);
+                                      });
+                                    }
+                                  },
+                                ),
                               ),
                             ),
                             if (fieldValue.isNotEmpty)
@@ -956,14 +993,18 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
                               });
                             },
                           )
-                        else
-                          TextField(
-                            controller: fieldValueController,
-                            onChanged: (value) {
-                              fieldValue = value;
-                            },
-                            decoration: const InputDecoration(labelText: 'Field Value'),
-                          ),
+                            else if (fieldType == 'arrayValue' || fieldType == 'mapValue')
+                              Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Text("You can add fields after creating the $fieldType"),
+                              )
+                             else TextField(
+                                controller: fieldValueController,
+                                onChanged: (value) {
+                                  fieldValue = value;
+                                },
+                                decoration: const InputDecoration(labelText: 'Field Value'),
+                              ),
                   ],
                 ),
               ),
@@ -977,7 +1018,12 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
                 TextButton(
                   child: const Text('Add'),
                   onPressed: () {
-                    _addField(fieldName, fieldType, fieldValue);
+                    if(fieldType == 'arrayValue' || fieldType == "mapValue") {
+                      // since we are creating empty array and empty map, field value won't matter
+                      _addField(fieldName, fieldType, fieldType);
+                    } else {
+                      _addField(fieldName, fieldType, fieldValue);
+                    }
                     Navigator.of(context).pop();
                   },
                 ),
@@ -988,9 +1034,101 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
       },
     );
   }
-
-
-  void _addField(String fieldName, String fieldType, String fieldValue) async {
+  // void _addField(String fieldName, String fieldType, String fieldValue) async {
+  //     if (_documentDetails!['fields'] == null) {
+  //       _documentDetails!['fields'] = {};
+  //     }
+  //
+  //     Map<String, dynamic> fields = {
+  //       ..._documentDetails!['fields']
+  //     }; // Copy existing fields
+  //
+  //     // Ensure the value is correctly structured and valid
+  //     dynamic formattedValue;
+  //     try {
+  //       switch (fieldType) {
+  //         case 'stringValue':
+  //           formattedValue = {'stringValue': fieldValue};
+  //           break;
+  //         case 'integerValue':
+  //           formattedValue = {'integerValue': int.parse(fieldValue)};
+  //           break;
+  //         case 'booleanValue':
+  //           formattedValue = {'booleanValue': fieldValue.toLowerCase() == 'true' || fieldValue.toLowerCase() == 'false'} ;
+  //           break;
+  //         case 'mapValue':
+  //           formattedValue = {'mapValue': ""};
+  //           break;
+  //         case 'arrayValue':
+  //           formattedValue = {'arrayValue': ""};
+  //           break;
+  //         case 'nullValue':
+  //           formattedValue = {'nullValue': ""};
+  //           break;
+  //         case 'timestampValue':
+  //           formattedValue = {'timestampValue': fieldValue};
+  //           break;
+  //         case 'geoPointValue':
+  //           var parts = fieldValue.split(',');
+  //           var value = {
+  //             'latitude': double.parse(parts[0]),
+  //             'longitude': double.parse(parts[1])
+  //           };
+  //           formattedValue = {'geoPointValue': value};
+  //           break;
+  //         case 'referenceValue':
+  //           formattedValue = {'referenceValue': fieldValue};
+  //           break;
+  //         default:
+  //           showErrorDialog(context, 'Unsupported field type');
+  //           return;
+  //       }
+  //     } catch (e) {
+  //       showErrorDialog(
+  //           context, 'Invalid value for the selected field type: $e');
+  //       return;
+  //     }
+  //
+  //     // Add new field
+  //     fields[fieldName] = formattedValue;
+  //
+  //
+  //     String url =
+  //         'https://firestore.googleapis.com/v1/${widget.documentPath}?updateMask.fieldPaths=$fieldName';
+  //     Map<String, String> headers = {
+  //       'Authorization': 'Bearer ${widget.accessToken}',
+  //       'Accept': 'application/json',
+  //       'Content-Type': 'application/json',
+  //     };
+  //     Map<String, dynamic> body = {
+  //       "fields": fields,
+  //     };
+  //
+  //     try {
+  //       final response = await http.patch(Uri.parse(url),
+  //           headers: headers, body: json.encode(body));
+  //
+  //       if (response.statusCode == 200) {
+  //         setState(() {
+  //
+  //           // update state
+  //           _documentDetails!['fields'] = fields;
+  //
+  //           // log it
+  //           DateTime updateTime = DateTime.now();
+  //           insertHistory(widget.documentPath, fieldName, updateTime, 'add');
+  //
+  //           // show toast
+  //           showToast("Field '$fieldName' added!");
+  //         });
+  //       } else {
+  //         showErrorDialog(context, 'Failed to add field. Status Code: ${response.statusCode}');
+  //       }
+  //     } catch (error) {
+  //       showErrorDialog(context, "Failed to add Field $error");
+  //     }
+  //   }
+  void _addField(String fieldName, String fieldType, dynamic fieldValue) async {
     if (_documentDetails!['fields'] == null) {
       _documentDetails!['fields'] = {};
     }
@@ -1010,16 +1148,16 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
           formattedValue = {'integerValue': int.parse(fieldValue)};
           break;
         case 'booleanValue':
-          formattedValue = {'booleanValue': fieldValue.toLowerCase() == 'true' || fieldValue.toLowerCase() == 'false'} ;
+          formattedValue = {'booleanValue': fieldValue.toLowerCase() == 'true' || fieldValue.toLowerCase() == 'false'};
           break;
         case 'mapValue':
-          formattedValue = {'mapValue': ""};
+          formattedValue = {'mapValue': {'fields': {}}}; // Create an empty map
           break;
         case 'arrayValue':
-          formattedValue = {'arrayValue': ""};
+          formattedValue = {'arrayValue': {'values': []}}; // Create an empty array
           break;
         case 'nullValue':
-          formattedValue = {'nullValue': ""};
+          formattedValue = {'nullValue': null};
           break;
         case 'timestampValue':
           formattedValue = {'timestampValue': fieldValue};
@@ -1036,18 +1174,16 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
           formattedValue = {'referenceValue': fieldValue};
           break;
         default:
-          _showErrorDialog(context, 'Unsupported field type');
+          showErrorDialog(context, 'Unsupported field type');
           return;
       }
     } catch (e) {
-      _showErrorDialog(
-          context, 'Invalid value for the selected field type: $e');
+      showErrorDialog(context, 'Invalid value for the selected field type: $e');
       return;
     }
 
     // Add new field
     fields[fieldName] = formattedValue;
-
 
     String url =
         'https://firestore.googleapis.com/v1/${widget.documentPath}?updateMask.fieldPaths=$fieldName';
@@ -1066,35 +1202,204 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
 
       if (response.statusCode == 200) {
         setState(() {
+          // update state
           _documentDetails!['fields'] = fields;
+
+          // log it
           DateTime updateTime = DateTime.now();
           insertHistory(widget.documentPath, fieldName, updateTime, 'add');
+
+          // show toast
+          showToast("Field '$fieldName' added!");
         });
       } else {
+        showErrorDialog(context, 'Failed to add field. Status Code: ${response.statusCode}');
       }
     } catch (error) {
+      showErrorDialog(context, "Failed to add Field $error");
+    }
+  }
+  void _addArrayField(String fieldName, List<Map<String, String>> arrayFields) async {
+    if (_documentDetails!['fields'] == null) {
+      _documentDetails!['fields'] = {};
+    }
+
+    print("array name: $fieldName");
+
+    Map<String, dynamic> fields = {
+      ..._documentDetails!['fields']
+    }; // Copy existing fields
+
+    List<dynamic> arrayValue = [];
+    try {
+      for (var field in arrayFields) {
+        switch (field['type']) {
+          case 'stringValue':
+            arrayValue.add({'stringValue': field['value']});
+            break;
+          case 'integerValue':
+            arrayValue.add({'integerValue': int.parse(field['value']!)});
+            break;
+          case 'booleanValue':
+            arrayValue.add({'booleanValue': field['value']!.toLowerCase() == 'true'});
+            break;
+          case 'mapValue':
+            arrayValue.add({'mapValue': {}});
+            break;
+          case 'nullValue':
+            arrayValue.add({'nullValue': null});
+            break;
+          case 'timestampValue':
+            arrayValue.add({'timestampValue': field['value']});
+            break;
+          case 'geoPointValue':
+            var parts = field['value']!.split(',');
+            var value = {
+              'latitude': double.parse(parts[0]),
+              'longitude': double.parse(parts[1])
+            };
+            arrayValue.add({'geoPointValue': value});
+            break;
+          case 'referenceValue':
+            arrayValue.add({'referenceValue': field['value']});
+            break;
+          default:
+            showErrorDialog(context, 'Unsupported field type in array');
+            return;
+        }
+      }
+    } catch (e) {
+      showErrorDialog(context, 'Invalid value for the selected field type: $e');
+      return;
+    }
+
+    // fields[fieldName] = {'values': {'arrayValue': arrayValue}};
+    fields[fieldName] = {'arrayValue': {'values': arrayValue}};
+
+    String url = 'https://firestore.googleapis.com/v1/${widget.documentPath}?updateMask.fieldPaths=$fieldName';
+    Map<String, String> headers = {
+      'Authorization': 'Bearer ${widget.accessToken}',
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+    };
+    Map<String, dynamic> body = {
+      "fields": fields,
+    };
+
+    try {
+      final response = await http.patch(Uri.parse(url), headers: headers, body: json.encode(body));
+
+      if (response.statusCode == 200) {
+        setState(() {
+          print('Field updated successfully');
+          _documentDetails!['fields'] = fields;
+
+          DateTime updateTime = DateTime.now();
+          insertHistory(widget.documentPath, fieldName, updateTime, 'add');
+
+          // show toast
+          showToast("Field '$fieldName' added!");
+
+        });
+      } else {
+        // Handle error
+        showErrorDialog(context, 'Failed to add field. Status Code: ${response.statusCode}');;
+      }
+    } catch (error) {
+      // Handle error
+      showErrorDialog(context, "Failed to add Field $error");
+    }
+  }
+  void _addMapField(String fieldName, List<Map<String, String>> mapFields) async {
+    if (_documentDetails!['fields'] == null) {
+      _documentDetails!['fields'] = {};
+    }
+
+    Map<String, dynamic> fields = {
+      ..._documentDetails!['fields']
+    }; // Copy existing fields
+
+    Map<String, dynamic> mapValue = {};
+    try {
+      for (var field in mapFields) {
+        switch (field['type']) {
+          case 'stringValue':
+            mapValue[field['name']!] = {'stringValue': field['value']};
+            break;
+          case 'integerValue':
+            mapValue[field['name']!] = {'integerValue': int.parse(field['value']!)};
+            break;
+          case 'booleanValue':
+            mapValue[field['name']!] = {'booleanValue': field['value']!.toLowerCase() == 'true'};
+            break;
+          case 'mapValue':
+            mapValue[field['name']!] = {'mapValue': {}};
+            break;
+          case 'nullValue':
+            mapValue[field['name']!] = {'nullValue': null};
+            break;
+          case 'timestampValue':
+            mapValue[field['name']!] = {'timestampValue': field['value']};
+            break;
+          case 'geoPointValue':
+            var parts = field['value']!.split(',');
+            var value = {
+              'latitude': double.parse(parts[0]),
+              'longitude': double.parse(parts[1])
+            };
+            mapValue[field['name']!] = {'geoPointValue': value};
+            break;
+          case 'referenceValue':
+            mapValue[field['name']!] = {'referenceValue': field['value']};
+            break;
+          default:
+            showErrorDialog(context, 'Unsupported field type in map');
+            return;
+        }
+      }
+    } catch (e) {
+      showErrorDialog(context, 'Invalid value for the selected field type: $e');
+      return;
+    }
+
+
+    fields[fieldName] = {'mapValue': {'fields': mapValue}};
+
+    String url = 'https://firestore.googleapis.com/v1/${widget.documentPath}?updateMask.fieldPaths=$fieldName';
+    Map<String, String> headers = {
+      'Authorization': 'Bearer ${widget.accessToken}',
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+    };
+    Map<String, dynamic> body = {
+      "fields": fields,
+    };
+
+    try {
+      final response = await http.patch(Uri.parse(url), headers: headers, body: json.encode(body));
+
+      if (response.statusCode == 200) {
+        setState(() {
+
+          _documentDetails!['fields'] = fields;
+
+          DateTime updateTime = DateTime.now();
+          insertHistory(widget.documentPath, fieldName, updateTime, 'add');
+
+          // show toast
+          showToast("Field '$fieldName' added!");
+        });
+      } else {
+        // Handle error
+        showErrorDialog(context, 'Failed to add field. Status Code: ${response.statusCode}');
+      }
+    } catch (error) {
+      // Handle error
+      showErrorDialog(context, "Failed to add Field $error");
     }
   }
 
-  void _showErrorDialog(BuildContext context, String message) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Error'),
-          content: Text(message),
-          actions: <Widget>[
-            TextButton(
-              child: const Text('OK'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -1210,8 +1515,7 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
                                   fieldType = 'geoPointValue';
                                   displayFieldType = 'geoPoint';
                                   fieldValue = fieldData['geoPointValue'];
-                                  displayValue =
-                                      "[${fieldValue['latitude']}, ${fieldValue['longitude']}]";
+                                  displayValue = "[${fieldValue['latitude']}, ${fieldValue['longitude']}]";
                                 } else if (fieldData.containsKey('nullValue')) {
                                   fieldType = 'nullValue';
                                   displayFieldType = 'null';

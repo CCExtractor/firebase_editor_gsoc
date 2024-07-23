@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:firebase_editor_gsoc/controllers/document_controller.dart';
 import 'package:firebase_editor_gsoc/controllers/history.dart';
 import 'package:firebase_editor_gsoc/views/list_documents_details.dart';
+import 'package:firebase_editor_gsoc/views/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'dart:convert';
@@ -113,27 +114,27 @@ class _DocumentsPageState extends State<DocumentsPage> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Create Document'),
+          title: const Text('Create Document'),
           content: Column(
             crossAxisAlignment: CrossAxisAlignment.end,
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
               TextField(
                 controller: documentController.documentIdController,
-                decoration: InputDecoration(labelText: 'Document ID'),
+                decoration: const InputDecoration(labelText: 'Document ID'),
                 onChanged: (value) {
                   documentController.documentIdController.text = value;
                 },
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               TextButton(
                 child: Container(
-                  padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+                  padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
                   decoration: BoxDecoration(
                     border: Border.all(color: Colors.blue, width: 2.0), // Change color and width as needed
                     borderRadius: BorderRadius.circular(8.0), // Optional: add border radius
                   ),
-                    child: Text('Auto ID'),
+                    child: const Text('Auto ID'),
                 ),
                 onPressed: () {
                   setState(() {
@@ -141,7 +142,6 @@ class _DocumentsPageState extends State<DocumentsPage> {
                     documentController.documentIdController.text = documentId;
                   });
 
-                  print("New doc ID: ${documentController.documentIdController.text}");
                   // Update the TextField with the generated ID
                   Navigator.of(context).pop();
                   showCreateDocumentDialog(context); // Reopen the dialog to show the updated ID
@@ -151,7 +151,7 @@ class _DocumentsPageState extends State<DocumentsPage> {
           ),
           actions: <Widget>[
             TextButton(
-              child: Text('Cancel'),
+              child: const Text('Cancel'),
               onPressed: () {
                 // set document id to null
                 documentController.documentIdController.text = "";
@@ -159,11 +159,9 @@ class _DocumentsPageState extends State<DocumentsPage> {
               },
             ),
             TextButton(
-              child: Text('Create'),
+              child: const Text('Create'),
               onPressed: () {
-                print("create  ${documentController.documentIdController.text}");
                 if (documentController.documentIdController.text.isNotEmpty) {
-                  print(documentId);
                   _checkAndCreateDocument(documentController.documentIdController.text, context);
                   Navigator.of(context).pop();
                 } else {
@@ -220,19 +218,25 @@ class _DocumentsPageState extends State<DocumentsPage> {
     try {
       final response = await http.patch(Uri.parse(url), headers: headers, body: json.encode(body));
       if (response.statusCode == 200) {
-        print('Document created successfully');
-        // set document id to null
         DateTime createTime = DateTime.now();
-        insertHistory(documentPath, "Document - ${documentController.documentIdController.text}", createTime, 'create');
+        insertHistory(documentPath, "Document - $documentId", createTime, 'create');
+
+        // temp for state update!
+        _fetchDocuments();
+
+        // Clear the document ID controller after creating the document
         documentController.documentIdController.text = "";
-        // Handle successful document creation (e.g., navigate to document details page)
+
+        // Show a toast message
+        showToast("Document Created Successfully!");
       } else {
-        _showErrorDialog(context, 'Failed to create document. Status Code: ${response.statusCode}');
+        showErrorDialog(context, 'Failed to create document. Status Code: ${response.statusCode}');
       }
     } catch (error) {
-      _showErrorDialog(context, 'Error creating document: $error');
+      showErrorDialog(context, 'Error creating document: $error');
     }
   }
+
 
 
   void _showErrorDialog(BuildContext context, String message) {
@@ -240,11 +244,11 @@ class _DocumentsPageState extends State<DocumentsPage> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Error'),
+          title: const Text('Error'),
           content: Text(message),
           actions: <Widget>[
             TextButton(
-              child: Text('OK'),
+              child: const Text('OK'),
               onPressed: () {
                 Navigator.of(context).pop();
               },
@@ -261,17 +265,17 @@ class _DocumentsPageState extends State<DocumentsPage> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Confirm Deletion'),
-          content: Text('Are you sure you want to delete this document?'),
+          title: const Text('Confirm Deletion'),
+          content: const Text('Are you sure you want to delete this document?'),
           actions: <Widget>[
             TextButton(
-              child: Text('Cancel'),
+              child: const Text('Cancel'),
               onPressed: () {
                 Navigator.of(context).pop(); // Dismiss the dialog
               },
             ),
             TextButton(
-              child: Text('Delete'),
+              child: const Text('Delete'),
               onPressed: () {
                 Navigator.of(context).pop(); // Dismiss the dialog
                 _deleteDocument(documentPath); // Proceed with deletion
@@ -294,17 +298,20 @@ class _DocumentsPageState extends State<DocumentsPage> {
       final response = await http.delete(Uri.parse(url), headers: headers);
 
       if (response.statusCode == 200) {
+
+        // String docId =
         setState(() {
           _documents.removeWhere((doc) => doc['name'] == documentPath);
+
           DateTime deleteTime = DateTime.now();
-          insertHistory(documentPath, "Document - ${documentController.documentIdController.text}", deleteTime, 'delete');
+          insertHistory(documentPath, "Document - ${extractDisplayName(documentPath)}", deleteTime, 'delete');
         });
-        print('Document deleted successfully');
+        showToast('Document deleted successfully!');
       } else {
-        print('Failed to delete document. Status Code: ${response.statusCode}');
+        showErrorDialog(context, 'Failed to delete document. Status Code: ${response.statusCode}');
       }
     } catch (error) {
-      print('Error deleting document: $error');
+      showErrorDialog(context, 'Failed to delete document: $error');
     }
   }
 
@@ -376,7 +383,6 @@ class _DocumentsPageState extends State<DocumentsPage> {
                             ElevatedButton(
                               onPressed: () {
                                 // Define your button action here
-                                print(document['name']);
                                 _showDocumentDetails(document['name']);
                               },
                               style: ElevatedButton.styleFrom(
@@ -389,7 +395,7 @@ class _DocumentsPageState extends State<DocumentsPage> {
                             {
                               _confirmDeleteDocument(document['name']);
                             },
-                                icon: Icon(Icons.delete)),
+                                icon: const Icon(Icons.delete)),
                           ],
                         ),
                       ],
