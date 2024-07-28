@@ -33,6 +33,11 @@ class _DocumentsPageState extends State<DocumentsPage> {
   String? _error;
   final documentController = Get.put(DocumentController());
 
+
+
+  bool _isBatchOperation = false;
+  List<String> _selectedDocuments = [];
+
   @override
   void initState() {
     super.initState();
@@ -316,6 +321,136 @@ class _DocumentsPageState extends State<DocumentsPage> {
   }
 
 
+ /// Fetch document details
+  Future<Map<String, dynamic>> _fetchDocumentDetails(String documentPath) async {
+    String url = 'https://firestore.googleapis.com/v1/$documentPath';
+    Map<String, String> headers = {
+      'Authorization': 'Bearer ${widget.accessToken}',
+      'Accept': 'application/json',
+    };
+
+    try {
+      final response = await http.get(Uri.parse(url), headers: headers);
+
+      if (response.statusCode == 200) {
+        var data = json.decode(response.body);
+        return data['fields'] ?? {};
+      } else {
+        showErrorDialog(context, 'Failed to fetch document details. Status Code: ${response.statusCode}');
+        return {};
+      }
+    } catch (error) {
+      showErrorDialog(context, 'Error fetching document details: $error');
+      return {};
+    }
+  }
+
+
+  /// you can use this to add or update both
+  Future<void> _addFieldToSelectedDocuments() async {
+    if (_selectedDocuments.isEmpty) {
+      showErrorDialog(context, 'No documents selected for batch update.');
+      return;
+    }
+
+    String url = 'https://firestore.googleapis.com/v1/projects/${widget.projectId}/databases/${widget.databaseId}/documents:batchWrite';
+    Map<String, String> headers = {
+      'Authorization': 'Bearer ${widget.accessToken}',
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+    };
+
+    List<Map<String, dynamic>> writes = [];
+    for (var documentPath in _selectedDocuments) {
+      Map<String, dynamic> existingFields = await _fetchDocumentDetails(documentPath);
+
+      // Add new fields to the existing fields
+      existingFields.addAll({
+        "new field": {
+          "stringValue": "batch update from apk"
+        },
+      });
+
+      writes.add({
+        "update": {
+          "fields": existingFields,
+          "name": documentPath
+        }
+      });
+    }
+
+    Map<String, dynamic> body = {
+      "writes": writes
+    };
+
+    try {
+      final response = await http.post(
+        Uri.parse(url),
+        headers: headers,
+        body: json.encode(body),
+      );
+
+      if (response.statusCode == 200) {
+        showToast('Field added to selected documents successfully!');
+        _fetchDocuments(); // Refresh the documents list
+      } else {
+        showErrorDialog(context, 'Failed to add field to documents. Status Code: ${response.statusCode}');
+      }
+    } catch (error) {
+      showErrorDialog(context, 'Error adding field to documents: $error');
+    }
+  }
+
+  Future<void> _deleteFieldFromSelectedDocuments(String fieldName) async {
+    if (_selectedDocuments.isEmpty) {
+      showErrorDialog(context, 'No documents selected for batch update.');
+      return;
+    }
+
+    String url = 'https://firestore.googleapis.com/v1/projects/${widget.projectId}/databases/${widget.databaseId}/documents:batchWrite';
+    Map<String, String> headers = {
+      'Authorization': 'Bearer ${widget.accessToken}',
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+    };
+
+    List<Map<String, dynamic>> writes = [];
+    for (var documentPath in _selectedDocuments) {
+      Map<String, dynamic> existingFields = await _fetchDocumentDetails(documentPath);
+
+      // Remove the specified field from the existing fields
+      existingFields.remove(fieldName);
+
+      writes.add({
+        "update": {
+          "fields": existingFields,
+          "name": documentPath
+        }
+      });
+    }
+
+    Map<String, dynamic> body = {
+      "writes": writes
+    };
+
+    try {
+      final response = await http.post(
+        Uri.parse(url),
+        headers: headers,
+        body: json.encode(body),
+      );
+
+      if (response.statusCode == 200) {
+        showToast('Field deleted from selected documents successfully!');
+        _fetchDocuments(); // Refresh the documents list
+      } else {
+        showErrorDialog(context, 'Failed to delete field from documents. Status Code: ${response.statusCode}');
+      }
+    } catch (error) {
+      showErrorDialog(context, 'Error deleting field from documents: $error');
+    }
+  }
+
 
 
   @override
@@ -339,19 +474,77 @@ class _DocumentsPageState extends State<DocumentsPage> {
           ? Center(child: Text(_error!))
           : Column(
         children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-            child: ElevatedButton(
-              onPressed: () {
-                // Define your button action here
-                showCreateDocumentDialog(context);
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.amber, // Set the background color
+          Row(
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
+                child: ElevatedButton(
+                  onPressed: () {
+                    // Define your button action here
+                    showCreateDocumentDialog(context);
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.amber, // Set the background color
+                  ),
+                  child: const Text('Create Document'),
+                ),
               ),
-              child: const Text('Create Document'),
-            ),
+
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
+                child: ElevatedButton(
+                  onPressed: () {
+                    setState(() {
+                      _isBatchOperation = !_isBatchOperation;
+                      if (!_isBatchOperation) {
+                        _selectedDocuments.clear();
+                      }
+                    });
+
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.blue, // Set the background color
+
+                  ),
+                  child: Text(_isBatchOperation ? 'Cancel Batch Operation' : 'Batch Operation',),
+                ),
+              ),
+
+            ],
           ),
+
+          if (_isBatchOperation)
+            Row(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
+                  child: ElevatedButton(
+                    onPressed: () {
+                      // Define your button action here
+                      _addFieldToSelectedDocuments();
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.green, // Set the background color
+                    ),
+                    child: const Text('Add a Field'),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
+                  child: ElevatedButton(
+                    onPressed: () {
+                      // Define your button action here
+                      _deleteFieldFromSelectedDocuments("new field");
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.green, // Set the background color
+                    ),
+                    child: const Text('Delete a Field'),
+                  ),
+                ),
+              ],
+            ),
+
           Expanded(
             child: ListView.builder(
               itemCount: _documents.length,
@@ -372,6 +565,25 @@ class _DocumentsPageState extends State<DocumentsPage> {
                     ],
                   ),
                   child: ListTile(
+                    leading: _isBatchOperation
+                        ? Checkbox(
+                      value: _selectedDocuments.contains(document['name']),
+                      onChanged: (bool? value) {
+                        setState(() {
+                          if (value == true) {
+                            _selectedDocuments.add(document['name']);
+                          } else {
+                            _selectedDocuments.remove(document['name']);
+                          }
+
+                          print("checkbox enabled");
+                          if (_isBatchOperation && _selectedDocuments.isNotEmpty) {
+                            print('Selected Documents: $_selectedDocuments');
+                          }
+                        });
+                      },
+                    )
+                        : null,
                     title: Text("Document ID: ${extractDisplayName(document['name'])}"),
                     subtitle: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -390,18 +602,64 @@ class _DocumentsPageState extends State<DocumentsPage> {
                               ),
                               child: const Text('View Fields'),
                             ),
-
-                            IconButton(onPressed: ()
-                            {
-                              _confirmDeleteDocument(document['name']);
-                            },
-                                icon: const Icon(Icons.delete)),
+                            IconButton(
+                              onPressed: () {
+                                _confirmDeleteDocument(document['name']);
+                              },
+                              icon: const Icon(Icons.delete),
+                            ),
                           ],
                         ),
                       ],
                     ),
                   ),
                 );
+
+                // return Container(
+                //   margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                //   decoration: BoxDecoration(
+                //     color: Colors.white,
+                //     borderRadius: BorderRadius.circular(15.0),
+                //     boxShadow: [
+                //       BoxShadow(
+                //         color: Colors.grey.withOpacity(0.5),
+                //         spreadRadius: 2,
+                //         blurRadius: 5,
+                //         offset: const Offset(0, 3), // changes position of shadow
+                //       ),
+                //     ],
+                //   ),
+                //   child: ListTile(
+                //     title: Text("Document ID: ${extractDisplayName(document['name'])}"),
+                //     subtitle: Column(
+                //       crossAxisAlignment: CrossAxisAlignment.start,
+                //       children: [
+                //         Text('Created Time: ${_formatDateTime(document['createTime'])}'),
+                //         Text('Updated Time: ${_formatDateTime(document['updateTime'])}'),
+                //         Row(
+                //           children: [
+                //             ElevatedButton(
+                //               onPressed: () {
+                //                 // Define your button action here
+                //                 _showDocumentDetails(document['name']);
+                //               },
+                //               style: ElevatedButton.styleFrom(
+                //                 backgroundColor: Colors.amber, // Set the background color
+                //               ),
+                //               child: const Text('View Fields'),
+                //             ),
+                //
+                //             IconButton(onPressed: ()
+                //             {
+                //               _confirmDeleteDocument(document['name']);
+                //             },
+                //                 icon: const Icon(Icons.delete)),
+                //           ],
+                //         ),
+                //       ],
+                //     ),
+                //   ),
+                // );
               },
             ),
           ),
