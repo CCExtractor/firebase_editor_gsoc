@@ -16,8 +16,9 @@ class UserController extends GetxController {
 
 
   // handle logout
-  void handleLogout() {
+  void handleLogout() async{
     try {
+     await GoogleSignIn().signOut(); // Sign out from Google
      auth.signOut();
      Get.offAll(const LoginScreen()); // Replace LoginScreen with your desired screen
     } catch (error) {

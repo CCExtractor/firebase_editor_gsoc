@@ -149,6 +149,9 @@ class _LoginScreenState extends State<LoginScreen> {
         'https://www.googleapis.com/auth/firebase.messaging'
       ]);
 
+
+      await googleSignIn.signOut(); // Ensure previous account is signed out
+      
       final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
       if (googleUser == null) {
         // The user canceled the sign-in
