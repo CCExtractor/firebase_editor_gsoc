@@ -55,8 +55,8 @@ class _HomeScreenState extends State<HomeScreen> {
       print("DEVICE TOKEN: ");
       print(value);
       // notificationServices.sendNotification(value, accessController.accessToken.text);
+      notificationServices.sendNotification(value);
     });
-
 
   }
 

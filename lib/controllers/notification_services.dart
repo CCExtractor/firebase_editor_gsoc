@@ -213,40 +213,63 @@ class NotificationServices {
   }
 
 
-  // Future<void> sendNotification(String token, String myAccessToken) async {
-  //   try {
-  //     String projectId = "";
-  //     String url = 'https://fcm.googleapis.com/v1/projects/$projectId/messages:send';
-  //     String accessToken = myAccessToken;
-  //
-  //     var body = jsonEncode({
-  //       "message": {
-  //         "token": token,
-  //         "notification": {
-  //           "title": "Notification Title",
-  //           "body": "Notification Body",
-  //         },
-  //       }
-  //     });
-  //
-  //     var response = await http.post(
-  //       Uri.parse(url),
-  //       headers: <String, String>{
-  //         'Content-Type': 'application/json',
-  //         'Authorization': 'Bearer $accessToken',
-  //       },
-  //       body: body,
-  //     );
-  //
-  //     if (response.statusCode == 200) {
-  //       print('Notification sent successfully');
-  //     } else {
-  //       print(
-  //           'Failed to send notification. Status code: ${response.statusCode}');
-  //       print('Response body: ${response.body}');
-  //     }
-  //   } catch (e) {
-  //     print('Error sending notification: $e');
-  //   }
-  // }
+  Future<String> fetchAccessToken() async {
+    const url = 'https://us-central1-gsoc-24-3f4d1.cloudfunctions.net/getOAuthToken';
+
+    try {
+      final response = await http.get(Uri.parse(url));
+
+      if (response.statusCode == 200) {
+        return response.body;
+      } else {
+        print('Failed to fetch access token. Status code: ${response.statusCode}');
+        return '';
+      }
+    } catch (e) {
+      print('Error fetching access token: $e');
+      return '';
+    }
+  }
+
+  Future<void> sendNotification(String token) async {
+    try {
+      String projectId = "gsoc-24-3f4d1"; // Replace with your actual project ID
+      String url = 'https://fcm.googleapis.com/v1/projects/$projectId/messages:send';
+
+      // Fetch the access token
+      String accessToken = await fetchAccessToken();
+      if (accessToken.isEmpty) {
+        print('Failed to get access token');
+        return;
+      }
+
+      var body = jsonEncode({
+        "message": {
+          "token": token,
+          "notification": {
+            "title": "Notification API works",
+            "body": "Success",
+          },
+        }
+      });
+
+      var response = await http.post(
+        Uri.parse(url),
+        headers: <String, String>{
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $accessToken',
+        },
+        body: body,
+      );
+
+      if (response.statusCode == 200) {
+        print('Notification sent successfully');
+      } else {
+        print('Failed to send notification. Status code: ${response.statusCode}');
+        print('Response body: ${response.body}');
+      }
+    } catch (e) {
+      print('Error sending notification: $e');
+    }
+  }
 }
