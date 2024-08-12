@@ -236,6 +236,8 @@ class _DocumentsPageState extends State<DocumentsPage> {
 
         // Show a toast message
         showToast("Document Created Successfully!");
+
+        // recentEntryService.triggerRecentEntry(widget.projectId, widget.databaseId, widget.collectionId);
       } else {
         showErrorDialog(context, 'Failed to create document. Status Code: ${response.statusCode}');
       }

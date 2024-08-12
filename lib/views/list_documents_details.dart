@@ -1,5 +1,6 @@
 import 'package:firebase_editor_gsoc/controllers/history.dart';
 import 'package:firebase_editor_gsoc/controllers/notification_services.dart';
+import 'package:firebase_editor_gsoc/controllers/recent_entries.dart';
 import 'package:firebase_editor_gsoc/views/array_field_data.dart';
 import 'package:firebase_editor_gsoc/views/map_field_data.dart';
 import 'package:firebase_editor_gsoc/views/utils/utils.dart';
@@ -36,6 +37,7 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
   DateTime? selectedDate;
   TimeOfDay? selectedTime;
   NotificationServices notificationServices = NotificationServices();
+  RecentEntryService recentEntryService = RecentEntryService();
 
   @override
   void initState() {
@@ -188,6 +190,7 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
           showToast("Field '$fieldName' updated!");
           // trigger notifications
           notificationServices.triggerNotification(widget.projectId, widget.databaseId, widget.collectionId, extractDisplayName(widget.documentPath));
+          recentEntryService.triggerRecentEntry(widget.projectId, widget.databaseId, widget.collectionId);
         });
         //call function for storing history
       } else {
@@ -338,6 +341,7 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
           insertHistory(widget.documentPath, fieldName, updateTime, 'delete');
           showToast("Field Deleted!");
           notificationServices.triggerNotification(widget.projectId, widget.databaseId, widget.collectionId, extractDisplayName(widget.documentPath));
+          recentEntryService.triggerRecentEntry(widget.projectId, widget.databaseId, widget.collectionId);
         });
         // Call function for storing history or any other actions after successful update
       } else {
@@ -479,6 +483,7 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
           insertHistory(widget.documentPath, fieldName, updateTime, 'update');
           showToast("Field '$fieldName' updated!");
           notificationServices.triggerNotification(widget.projectId, widget.databaseId, widget.collectionId, extractDisplayName(widget.documentPath));
+          recentEntryService.triggerRecentEntry(widget.projectId, widget.databaseId, widget.collectionId);
         });
       } else {
         showErrorDialog(context, 'Failed to update field. Status Code: ${response.statusCode}');
@@ -616,6 +621,7 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
           insertHistory(widget.documentPath, fieldName, updateTime, 'update');
           showToast("Field '$fieldName' updated!");
           notificationServices.triggerNotification(widget.projectId, widget.databaseId, widget.collectionId, extractDisplayName(widget.documentPath));
+          recentEntryService.triggerRecentEntry(widget.projectId, widget.databaseId, widget.collectionId);
         });
       } else {
 
@@ -1219,6 +1225,7 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
           // show toast
           showToast("Field '$fieldName' added!");
           notificationServices.triggerNotification(widget.projectId, widget.databaseId, widget.collectionId, extractDisplayName(widget.documentPath));
+          recentEntryService.triggerRecentEntry(widget.projectId, widget.databaseId, widget.collectionId);
         });
       } else {
         showErrorDialog(context, 'Failed to add field. Status Code: ${response.statusCode}');

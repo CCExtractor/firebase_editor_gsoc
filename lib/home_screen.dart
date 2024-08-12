@@ -3,12 +3,17 @@ import 'package:firebase_editor_gsoc/controllers/controllers.dart';
 import 'package:firebase_editor_gsoc/controllers/data_visualization.dart';
 import 'package:firebase_editor_gsoc/controllers/history.dart';
 import 'package:firebase_editor_gsoc/controllers/notification_services.dart';
+import 'package:firebase_editor_gsoc/controllers/recent_entries.dart';
 import 'package:firebase_editor_gsoc/controllers/token_controller.dart';
 import 'package:firebase_editor_gsoc/controllers/user_controller.dart';
 import 'package:firebase_editor_gsoc/views/custom_drawer.dart';
+import 'package:firebase_editor_gsoc/views/list_projects.dart';
+import 'package:firebase_editor_gsoc/views/user_profile_view.dart';
+import 'package:firebase_editor_gsoc/views/utils/utils.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart'; // Import the intl package
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -30,13 +35,24 @@ class _HomeScreenState extends State<HomeScreen> {
 
   final DataVisualizationService _dataVisualizationService =
       DataVisualizationService();
+
+  RecentEntryService recentEntryService = RecentEntryService();
   Map<String, int> _chartData = {};
+  List<Map<String, dynamic>> _recentEntries = [];
 
   Future<void> _loadData() async {
     List<Map<String, dynamic>> firebaseData =
         await _dataVisualizationService.fetchFilteredData();
     setState(() {
       _chartData = processDataForChart(firebaseData);
+    });
+  }
+
+
+  Future<void> _loadRecentEntries() async {
+    List<Map<String, dynamic>> recentEntries = await recentEntryService.fetchRecentEntries();
+    setState(() {
+      _recentEntries = recentEntries;
     });
   }
 
@@ -63,6 +79,18 @@ class _HomeScreenState extends State<HomeScreen> {
     // });
 
     _loadData();
+    _loadRecentEntries();
+  }
+
+
+  String formatDateTime(String dateTimeStr) {
+    try {
+      DateTime dateTime = DateTime.parse(dateTimeStr);
+      return DateFormat('dd-MM-yyyy HH:mm').format(dateTime);
+    } catch (e) {
+      print('Error parsing date: $e');
+      return 'Unknown';
+    }
   }
 
   @override
@@ -81,6 +109,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   children: [
                     Container(
                       width: double.infinity,
+                      height: 150.0,
                       padding: const EdgeInsets.all(16.0),
                       decoration: BoxDecoration(
                         color: Colors.blueAccent,
@@ -115,20 +144,22 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                           Column(
                             mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
+
+                              Text("You are currently signed in as:", style: TextStyle(color: Colors.white),),
                               Text(
                                 userController.user!.displayName ??
                                     "", // User name
                                 style: const TextStyle(
-                                    color: Colors.black,
+                                    color: Colors.white,
                                     fontSize: 20.0,
                                     fontWeight: FontWeight.bold),
                               ),
                               Text(
                                 userController.user!.email ?? "", // User email
                                 style: const TextStyle(
-                                    color: Colors.black,
+                                    color: Colors.white,
                                     fontSize: 12,
                                     fontWeight: FontWeight.bold),
                               ),
@@ -141,7 +172,14 @@ class _HomeScreenState extends State<HomeScreen> {
                       height: 16,
                     ),
                     Container(
-                      padding: const EdgeInsets.all(16.0),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(15.0),
+                        border: Border.all(
+                          color: Colors.amber, // Border color
+                          width: 2.0, // Border width
+                        ),
+                      ),
+                      padding: const EdgeInsets.all(8.0),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: [
@@ -149,7 +187,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             icon: Icons.list,
                             label: 'Projects',
                             onPressed: () {
-                              print('Home button pressed');
+                              Get.to(ProjectsPage());
                               // Add your logic here
                             },
                           ),
@@ -157,7 +195,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             icon: Icons.account_circle_rounded,
                             label: 'Profile',
                             onPressed: () {
-                              print('Notifications button pressed');
+                              Get.to(UserProfileView());
                               // Add your logic here
                             },
                           ),
@@ -165,7 +203,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             icon: Icons.help,
                             label: 'Help',
                             onPressed: () {
-                              print('Settings button pressed');
+                              showToast("coming soon");
                               // Add your logic here
                             },
                           ),
@@ -174,6 +212,18 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                     SizedBox(height: 16), // Space between the two containers
 
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Colors.amber,
+                      ),
+                      width: double.infinity,
+                      height: 50.0,
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text("Operations in Last 30 days", style: TextStyle(fontSize: 15.0),),
+                      ),
+                    ),
+                    SizedBox(height: 20.0,),
                     Container(
                       width: MediaQuery.of(context).size.width *
                           0.9, // 80% of the screen width
@@ -191,7 +241,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         ],
                       ),
                       child: Padding(
-                        padding: const EdgeInsets.all(16.0),
+                        padding: const EdgeInsets.all(8.0),
                         child: BarChart(
                           BarChartData(
                             alignment: BarChartAlignment.spaceAround,
@@ -205,20 +255,25 @@ class _HomeScreenState extends State<HomeScreen> {
                                     width: 15,
                                     borderRadius: BorderRadius.circular(4),
                                     rodStackItems: [],
+                                    color: Colors.blueAccent,
                                   ),
                                 ],
                               );
                             }).toList(),
                             titlesData: FlTitlesData(
                               bottomTitles: AxisTitles(
+                                axisNameWidget: Text(
+                                  'Projects/Collections', // Title for the x-axis
+                                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                                ),
+                                axisNameSize: 30, // Space for the x-axis title
                                 sideTitles: SideTitles(
                                   showTitles: true,
                                   getTitlesWidget: (value, meta) {
                                     return SideTitleWidget(
                                       axisSide: meta.axisSide,
                                       child: Text(
-                                        _chartData.keys.elementAt(
-                                            value.toInt() % _chartData.length),
+                                        _chartData.keys.elementAt(value.toInt() % _chartData.length),
                                         style: TextStyle(fontSize: 10),
                                       ),
                                     );
@@ -226,6 +281,11 @@ class _HomeScreenState extends State<HomeScreen> {
                                 ),
                               ),
                               leftTitles: AxisTitles(
+                                axisNameWidget: Text(
+                                  'Operations Count', // Title for the y-axis
+                                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                                ),
+                                axisNameSize: 30, // Space for the y-axis title
                                 sideTitles: SideTitles(
                                   showTitles: true,
                                   reservedSize: 40,
@@ -241,42 +301,59 @@ class _HomeScreenState extends State<HomeScreen> {
                                 ),
                               ),
                               topTitles: AxisTitles(
-                                  sideTitles: SideTitles(showTitles: false)),
+                                sideTitles: SideTitles(showTitles: false),
+                              ),
                               rightTitles: AxisTitles(
-                                  sideTitles: SideTitles(showTitles: false)),
+                                sideTitles: SideTitles(showTitles: false),
+                              ),
                             ),
                             gridData: FlGridData(show: false),
                             borderData: FlBorderData(
                               show: true,
                               border: Border.all(
-                                  color: const Color(0xff37434d), width: 1),
+                                  color: const Color(0xff37434d),
+                                  width: 1),
                             ),
                           ),
                         ),
+
+                      ),
+                    ),
+                    SizedBox(height: 20.0,),
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Colors.amber,
+                      ),
+                      width: double.infinity,
+                      height: 50.0,
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text("Recently Accessed Collections", style: TextStyle(fontSize: 20.0),),
                       ),
                     ),
                     Container(
                       padding: const EdgeInsets.all(16.0),
                       child: Column(
-                        children: [
-                          _buildTextTile(
-                            title: 'Title 1',
-                            subtitle: 'Subtitle 1',
-                          ),
-                          SizedBox(height: 16), // Space between tiles
-                          _buildTextTile(
-                            title: 'Title 2',
-                            subtitle: 'Subtitle 2',
-                          ),
-                          SizedBox(height: 16), // Space between tiles
-                          _buildTextTile(
-                            title: 'Title 3',
-                            subtitle: 'Subtitle 3',
-                          ),
-                        ],
+                        children: List.generate(
+                          _recentEntries.length,
+                              (index) {
+                            var entry = _recentEntries[index];
+                            return Column(
+                              children: [
+                                _buildTextTile(
+                                  title: entry['projectName'] ?? 'Unknown Project',
+                                  subtitle:
+                                  'Database: ${entry['databaseName'] ?? 'Unknown'}\n'
+                                      'Collection: ${entry['collectionName'] ?? 'Unknown'}\n'
+                                      'Update Time: ${formatDateTime(entry['updateTime'])}',
+                                ),
+                                SizedBox(height: 16),
+                              ],
+                            );
+                          },
+                        ),
                       ),
                     ),
-
                     Divider(),
                   ],
                 ),
@@ -332,14 +409,15 @@ class _HomeScreenState extends State<HomeScreen> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(10.0),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.5),
-            spreadRadius: 1,
-            blurRadius: 5,
-            offset: const Offset(0, 2), // changes position of shadow
-          ),
-        ],
+        border: Border.all(color: Colors.blueAccent),
+        // boxShadow: [
+        //   BoxShadow(
+        //     color: Colors.grey.withOpacity(0.5),
+        //     spreadRadius: 1,
+        //     blurRadius: 5,
+        //     offset: const Offset(0, 2), // changes position of shadow
+        //   ),
+        // ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
