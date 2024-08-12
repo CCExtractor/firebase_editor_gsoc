@@ -562,6 +562,7 @@ class _ArrayFieldDataPageState extends State<ArrayFieldDataPage> {
           DateTime updateTime = DateTime.now();
           insertHistory(widget.documentPath, fieldName, updateTime, operationType);
           showToast("Field updated successfully!");
+          
         });
       } else {
       }

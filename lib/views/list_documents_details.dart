@@ -1,4 +1,5 @@
 import 'package:firebase_editor_gsoc/controllers/history.dart';
+import 'package:firebase_editor_gsoc/controllers/notification_services.dart';
 import 'package:firebase_editor_gsoc/views/array_field_data.dart';
 import 'package:firebase_editor_gsoc/views/map_field_data.dart';
 import 'package:firebase_editor_gsoc/views/utils/utils.dart';
@@ -34,6 +35,7 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
 
   DateTime? selectedDate;
   TimeOfDay? selectedTime;
+  NotificationServices notificationServices = NotificationServices();
 
   @override
   void initState() {
@@ -41,6 +43,12 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
     _fetchDocumentDetails();
   }
 
+
+  String extractDisplayName(String documentName) {
+    List<String> parts = documentName.split("${widget.collectionId}/");
+    String displayName = parts.last;
+    return displayName;
+  }
 
   /// FUNCTION FOR FETCHING DOCUMENT DETAILS
   void _fetchDocumentDetails() async {
@@ -178,6 +186,8 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
           DateTime updateTime = DateTime.now();
           insertHistory(widget.documentPath, fieldName, updateTime, 'update');
           showToast("Field '$fieldName' updated!");
+          // trigger notifications
+          notificationServices.triggerNotification(widget.projectId, widget.databaseId, widget.collectionId, extractDisplayName(widget.documentPath));
         });
         //call function for storing history
       } else {
@@ -327,6 +337,7 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
           DateTime updateTime = DateTime.now();
           insertHistory(widget.documentPath, fieldName, updateTime, 'delete');
           showToast("Field Deleted!");
+          notificationServices.triggerNotification(widget.projectId, widget.databaseId, widget.collectionId, extractDisplayName(widget.documentPath));
         });
         // Call function for storing history or any other actions after successful update
       } else {
@@ -467,6 +478,7 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
           DateTime updateTime = DateTime.now();
           insertHistory(widget.documentPath, fieldName, updateTime, 'update');
           showToast("Field '$fieldName' updated!");
+          notificationServices.triggerNotification(widget.projectId, widget.databaseId, widget.collectionId, extractDisplayName(widget.documentPath));
         });
       } else {
         showErrorDialog(context, 'Failed to update field. Status Code: ${response.statusCode}');
@@ -603,6 +615,7 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
           DateTime updateTime = DateTime.now();
           insertHistory(widget.documentPath, fieldName, updateTime, 'update');
           showToast("Field '$fieldName' updated!");
+          notificationServices.triggerNotification(widget.projectId, widget.databaseId, widget.collectionId, extractDisplayName(widget.documentPath));
         });
       } else {
 
@@ -773,11 +786,12 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
     DateTime dateTime = DateTime.parse(dateTimeString);
     return DateFormat('dd-MM-yyyy HH:mm').format(dateTime);
   }
-  String extractDisplayName(String documentName) {
-    List<String> parts = documentName.split("${widget.collectionId}/");
-    String displayName = parts.last;
-    return displayName;
-  }
+
+  // String extractDisplayName(String documentName) {
+  //   List<String> parts = documentName.split("${widget.collectionId}/");
+  //   String displayName = parts.last;
+  //   return displayName;
+  // }
   String _updateTimeStampFieldValue(DateTime date, TimeOfDay time) {
     final DateTime newDateTime = DateTime(
       date.year,
@@ -1204,6 +1218,7 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
           insertHistory(widget.documentPath, fieldName, updateTime, 'add');
           // show toast
           showToast("Field '$fieldName' added!");
+          notificationServices.triggerNotification(widget.projectId, widget.databaseId, widget.collectionId, extractDisplayName(widget.documentPath));
         });
       } else {
         showErrorDialog(context, 'Failed to add field. Status Code: ${response.statusCode}');
