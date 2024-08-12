@@ -1,16 +1,43 @@
-# firebase_editor_gsoc
+# Firebase Editor
 
-A new Flutter project.
+## Overview
+This project aims to develop a versatile mobile application tailored for efficient data management on Firebase databases. Given Firebase's popularity among small to medium-scale projects for its schemaless nature, there is a growing need for a generic mobile editor that enables seamless CRUD operations, independent of the database structure. Our project addresses this need by building a user-friendly and feature-rich mobile application that effectively empowers users to manage Firebase databases.
 
-## Getting Started
+## Features
 
-This project is a starting point for a Flutter application.
 
-A few resources to get you started if this is your first Flutter project:
+### CRUD Operations Editor
+- Seamless Create, Read, Update, and Delete operations on Firebase databases
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+### Real-time Notifications
+- Notification system to alert users to new or edited records
+- Facilitates timely review and modification
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+### User Authentication and Authorization
+- Secure authentication and authorization mechanisms
+- Control access to the application using Google Sign-In and OAuth 2.0
+
+### Search and Filter Functionality
+- Advanced search and filter options
+- Easily locate records based on specific criteria
+
+### Export and Import Data
+- Export and import data in common formats such as CSV or JSON
+- Enhances data portability
+
+### Data Visualization
+- Data visualization tools
+- Provides visual insights into data transactions and analytics
+
+### Firebase Data Audit Logging System
+- User activity tracking features
+- Monitors and audits interactions with Firebase data
+
+### Batch Operations Editor
+- Support for batch operations
+- Perform CRUD operations on multiple records simultaneously
+
+## Reference and Documentation
+- [Firebase Database Operations](https://firebase.google.com/docs/firestore/reference/rest)
+- [Firebase Notifications](https://firebase.google.com/docs/reference/fcm/rest/v1/projects.messages)
+- Authentication: Google Sign-In and OAuth 2.0
