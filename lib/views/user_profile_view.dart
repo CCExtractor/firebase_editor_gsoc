@@ -80,7 +80,7 @@ class UserProfileView extends StatelessWidget {
                     leading: const Icon(Icons.account_circle_rounded),
                     title: const Text('Switch Accounts'),
                     onTap: () {
-                      // await userController.switchAccount();
+                      userController.handleLogout();
                     },
                   ),
                   Divider(),
@@ -97,15 +97,15 @@ class UserProfileView extends StatelessWidget {
                       );
                     },
                   ),
-                  Divider(),
-                  ListTile(
-                    leading: const Icon(Icons.logout),
-                    title: const Text('Logout'),
-                    onTap: () {
-                      // Handle tap
-                      userController.handleLogout();
-                    },
-                  ),
+                  // Divider(),
+                  // ListTile(
+                  //   leading: const Icon(Icons.logout),
+                  //   title: const Text('Logout'),
+                  //   onTap: () {
+                  //     // Handle tap
+                  //     userController.handleLogout();
+                  //   },
+                  // ),
                   Divider(),
                 ],
               ),

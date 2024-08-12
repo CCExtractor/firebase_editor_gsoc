@@ -133,30 +133,30 @@ class CustomDrawer extends StatelessWidget {
           //     );
           //   },
           // ),
-          const Divider(),
-          ListTile(
-            leading: const Icon(Icons.format_align_left_rounded),
-            title: const Text('Your Schemas'),
-            onTap: () {
-              // Handle tap
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) =>const HomeScreen(),
-                ),
-              );
-            },
-          ),
-          const Divider(),
-          ListTile(
-            leading: const Icon(Icons.settings),
-            title: const Text('Settings'),
-            onTap: () {
-              // Handle tap
-              Navigator.pop(context); // Close the drawer
-              // Navigate to settings screen or perform any other action
-            },
-          ),
+          // const Divider(),
+          // ListTile(
+          //   leading: const Icon(Icons.format_align_left_rounded),
+          //   title: const Text('Your Schemas'),
+          //   onTap: () {
+          //     // Handle tap
+          //     Navigator.push(
+          //       context,
+          //       MaterialPageRoute(
+          //         builder: (context) =>const HomeScreen(),
+          //       ),
+          //     );
+          //   },
+          // ),
+          // const Divider(),
+          // ListTile(
+          //   leading: const Icon(Icons.settings),
+          //   title: const Text('Settings'),
+          //   onTap: () {
+          //     // Handle tap
+          //     Navigator.pop(context); // Close the drawer
+          //     // Navigate to settings screen or perform any other action
+          //   },
+          // ),
           const Divider(),
           ListTile(
             leading: const Icon(Icons.help),
