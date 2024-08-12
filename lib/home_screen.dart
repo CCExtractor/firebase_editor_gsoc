@@ -55,7 +55,7 @@ class _HomeScreenState extends State<HomeScreen> {
       print("DEVICE TOKEN: ");
       print(value);
       // notificationServices.sendNotification(value, accessController.accessToken.text);
-      notificationServices.sendNotification(value);
+      notificationServices.sendNotification(value, "hellos-bc256", "(default)", "bookings", "IfiJOChIueO65UDYPA9Z");
     });
 
   }

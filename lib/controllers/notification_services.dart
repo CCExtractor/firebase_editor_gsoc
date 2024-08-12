@@ -231,10 +231,58 @@ class NotificationServices {
     }
   }
 
-  Future<void> sendNotification(String token) async {
+  // Future<void> sendNotification(String token) async {
+  //   try {
+  //     String projectId = "gsoc-24-3f4d1"; // Replace with your actual project ID
+  //     String url = 'https://fcm.googleapis.com/v1/projects/$projectId/messages:send';
+  //
+  //     // Fetch the access token
+  //     String accessToken = await fetchAccessToken();
+  //     if (accessToken.isEmpty) {
+  //       print('Failed to get access token');
+  //       return;
+  //     }
+  //
+  //     var body = jsonEncode({
+  //       "message": {
+  //         "token": token,
+  //         "notification": {
+  //           "title": "Notification API works",
+  //           "body": "Success",
+  //         },
+  //       }
+  //     });
+  //
+  //     var response = await http.post(
+  //       Uri.parse(url),
+  //       headers: <String, String>{
+  //         'Content-Type': 'application/json',
+  //         'Authorization': 'Bearer $accessToken',
+  //       },
+  //       body: body,
+  //     );
+  //
+  //     if (response.statusCode == 200) {
+  //       print('Notification sent successfully');
+  //     } else {
+  //       print('Failed to send notification. Status code: ${response.statusCode}');
+  //       print('Response body: ${response.body}');
+  //     }
+  //   } catch (e) {
+  //     print('Error sending notification: $e');
+  //   }
+  // }
+
+  Future<void> sendNotification(
+      String token,
+      String projectId,
+      String databaseId,
+      String collectionId,
+      String documentId
+      ) async {
     try {
-      String projectId = "gsoc-24-3f4d1"; // Replace with your actual project ID
-      String url = 'https://fcm.googleapis.com/v1/projects/$projectId/messages:send';
+      String base_project_id = 'gsoc-24-3f4d1';
+      String url = 'https://fcm.googleapis.com/v1/projects/$base_project_id/messages:send';
 
       // Fetch the access token
       String accessToken = await fetchAccessToken();
@@ -247,9 +295,15 @@ class NotificationServices {
         "message": {
           "token": token,
           "notification": {
-            "title": "Notification API works",
-            "body": "Success",
+            "title": "Record Updated",
+            "body": "$projectId/$databaseId/$collectionId",
           },
+          "data": {
+            "project_id": projectId,
+            "database_id": databaseId,
+            "collection_id": collectionId,
+            "document_id": documentId,
+          }
         }
       });
 
@@ -272,4 +326,5 @@ class NotificationServices {
       print('Error sending notification: $e');
     }
   }
+
 }
