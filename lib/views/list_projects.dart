@@ -83,7 +83,6 @@ class _ProjectsPageState extends State<ProjectsPage> {
                             ),
                           ),
                         );
-                        print('Button tapped for project ${project['projectId']}');
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.amber, // Set the background color

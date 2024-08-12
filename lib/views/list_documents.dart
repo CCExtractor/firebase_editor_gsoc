@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:firebase_editor_gsoc/controllers/document_controller.dart';
 import 'package:firebase_editor_gsoc/controllers/history.dart';
+import 'package:firebase_editor_gsoc/controllers/notification_services.dart';
 import 'package:firebase_editor_gsoc/views/list_documents_details.dart';
 import 'package:firebase_editor_gsoc/views/utils/utils.dart';
 import 'package:flutter/material.dart';
@@ -32,6 +33,7 @@ class _DocumentsPageState extends State<DocumentsPage> {
   List<dynamic> _documents = [];
   String? _error;
   final documentController = Get.put(DocumentController());
+  NotificationServices notificationServices = NotificationServices();
 
 
 
@@ -377,7 +379,7 @@ class _DocumentsPageState extends State<DocumentsPage> {
       'integerValue',
       'booleanValue',
       // 'mapValue',
-      'arrayValue',
+      // 'arrayValue',
       'nullValue',
       'timestampValue',
       'geoPointValue',
@@ -688,6 +690,8 @@ class _DocumentsPageState extends State<DocumentsPage> {
       if (response.statusCode == 200) {
         showToast('Field added to selected documents successfully!');
         _fetchDocuments(); // Refresh the documents list
+        // trigger notification for batch operations
+        notificationServices.triggerBatchOpNotification(widget.projectId, widget.databaseId, widget.collectionId);
       } else {
         showErrorDialog(context, 'Failed to add field to documents. Status Code: ${response.statusCode}');
       }
@@ -738,6 +742,8 @@ class _DocumentsPageState extends State<DocumentsPage> {
       if (response.statusCode == 200) {
         showToast('Field deleted from selected documents successfully!');
         _fetchDocuments(); // Refresh the documents list
+        // trigger notification for batch operations
+        notificationServices.triggerBatchOpNotification(widget.projectId, widget.databaseId, widget.collectionId);
       } else {
         showErrorDialog(context, 'Failed to delete field from documents. Status Code: ${response.statusCode}');
       }

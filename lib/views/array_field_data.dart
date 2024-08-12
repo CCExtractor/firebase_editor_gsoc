@@ -1,16 +1,9 @@
 import 'package:firebase_editor_gsoc/controllers/history.dart';
-import 'package:firebase_editor_gsoc/views/datatypes/array.dart';
-import 'package:firebase_editor_gsoc/views/map_field_data.dart';
 import 'package:firebase_editor_gsoc/views/map_within_array.dart';
 import 'package:firebase_editor_gsoc/views/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'dart:convert';
-import 'package:firebase_editor_gsoc/controllers/history.dart';
-import 'package:firebase_editor_gsoc/views/utils/utils.dart';
-import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 
 class ArrayFieldDataPage extends StatefulWidget {
   final String fieldName;
@@ -75,7 +68,7 @@ class _ArrayFieldDataPageState extends State<ArrayFieldDataPage> {
                             ),
                           ),
                           IconButton(
-                            icon: Icon(Icons.edit),
+                            icon: const Icon(Icons.edit),
                             onPressed: () {
                               Navigator.of(context).pop();
                             },
@@ -173,7 +166,7 @@ class _ArrayFieldDataPageState extends State<ArrayFieldDataPage> {
                     ),
                   ),
                   IconButton(
-                    icon: Icon(Icons.edit),
+                    icon: const Icon(Icons.edit),
                     onPressed: () {
                       Navigator.of(context).pop();
                       // Navigator.of(context).push(
@@ -284,7 +277,7 @@ class _ArrayFieldDataPageState extends State<ArrayFieldDataPage> {
                     ),
                   ),
                   IconButton(
-                    icon: Icon(Icons.edit),
+                    icon: const Icon(Icons.edit),
                     onPressed: () {
                       Navigator.of(context).pop();
                       // Navigator.of(context).push(
@@ -394,7 +387,7 @@ class _ArrayFieldDataPageState extends State<ArrayFieldDataPage> {
                     ),
                   ),
                   IconButton(
-                    icon: Icon(Icons.edit),
+                    icon: const Icon(Icons.edit),
                     onPressed: () {
                       Navigator.of(context).pop();
                       // Navigator.of(context).push(
@@ -424,9 +417,9 @@ class _ArrayFieldDataPageState extends State<ArrayFieldDataPage> {
                         width: 2.0), // Change color and width as needed
                   ),
                   child: ListTile(
-                    title: Text('Date'),
+                    title: const Text('Date'),
                     subtitle: Text(selectedDate!.toString().split(' ')[0]),
-                    trailing: Icon(Icons.calendar_month_outlined),
+                    trailing: const Icon(Icons.calendar_month_outlined),
                     onTap: () async {
                       final DateTime? pickedDate = await showDatePicker(
                         context: context,
@@ -454,9 +447,9 @@ class _ArrayFieldDataPageState extends State<ArrayFieldDataPage> {
                         width: 2.0), // Change color and width as needed
                   ),
                   child: ListTile(
-                    title: Text('Time'),
+                    title: const Text('Time'),
                     subtitle: Text(selectedTime!.format(context)),
-                    trailing: Icon(Icons.watch_later_outlined),
+                    trailing: const Icon(Icons.watch_later_outlined),
                     onTap: () async {
                       final TimeOfDay? pickedTime = await showTimePicker(
                         context: context,
@@ -514,20 +507,20 @@ class _ArrayFieldDataPageState extends State<ArrayFieldDataPage> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Confirm Deletion'),
+          title: const Text('Confirm Deletion'),
           content: Text('Are you sure you want to delete the element at index $index?'),
           actions: <Widget>[
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop(false); // User cancelled
               },
-              child: Text('Cancel'),
+              child: const Text('Cancel'),
             ),
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop(true); // User confirmed
               },
-              child: Text('Delete', style: TextStyle(color: Colors.red)),
+              child: const Text('Delete', style: TextStyle(color: Colors.red)),
             ),
           ],
         );
@@ -570,12 +563,9 @@ class _ArrayFieldDataPageState extends State<ArrayFieldDataPage> {
           insertHistory(widget.documentPath, fieldName, updateTime, operationType);
           showToast("Field updated successfully!");
         });
-        print('Field updated successfully');
       } else {
-        print('Failed to update field. Status Code: ${response.statusCode}');
       }
     } catch (error) {
-      print('Error updating field: $error');
     }
   }
 
@@ -585,7 +575,7 @@ class _ArrayFieldDataPageState extends State<ArrayFieldDataPage> {
   void showArrayAddFieldDialog(
       BuildContext context,
       String fieldName,
-      Map<String, dynamic>? _documentDetails,
+      Map<String, dynamic>? documentDetails,
       String documentPath,
       String accessToken,
       final List<dynamic> arrayValue) async {
@@ -800,7 +790,7 @@ class _ArrayFieldDataPageState extends State<ArrayFieldDataPage> {
                         fieldName,
                         fieldType,
                         fieldValue,
-                        _documentDetails,
+                        documentDetails,
                         documentPath,
                         accessToken,
                         arrayValue);
@@ -820,16 +810,16 @@ class _ArrayFieldDataPageState extends State<ArrayFieldDataPage> {
       String fieldName,
       String fieldType,
       String fieldValue,
-      Map<String, dynamic>? _documentDetails,
+      Map<String, dynamic>? documentDetails,
       String documentPath,
       String accessToken,
       final List<dynamic> arrayValue) async {
-    if (_documentDetails!['fields'] == null) {
-      _documentDetails['fields'] = {};
+    if (documentDetails!['fields'] == null) {
+      documentDetails['fields'] = {};
     }
 
     Map<String, dynamic> fields = {
-      ..._documentDetails['fields']
+      ...documentDetails['fields']
     }; // Copy existing fields
 
     // Ensure the value is correctly structured and valid
@@ -839,7 +829,6 @@ class _ArrayFieldDataPageState extends State<ArrayFieldDataPage> {
         case 'stringValue':
           formattedValue = {'stringValue': fieldValue};
           arrayValue.add(formattedValue);
-          print("array after adding str field: $arrayValue");
           break;
         case 'integerValue':
           formattedValue = {'integerValue': int.parse(fieldValue)};
@@ -890,14 +879,11 @@ class _ArrayFieldDataPageState extends State<ArrayFieldDataPage> {
     fields[fieldName] = formattedValue;
     fields[fieldName] = {'arrayValue': {'values': arrayValue}};
 
-    print(fieldName);
-    print(fields[fieldName]);
-    print("FIELDS AFTER ADDED NEW ARRAY FIELD: $fields");
 
     String url =
-        'https://firestore.googleapis.com/v1/${documentPath}?updateMask.fieldPaths=$fieldName';
+        'https://firestore.googleapis.com/v1/$documentPath?updateMask.fieldPaths=$fieldName';
     Map<String, String> headers = {
-      'Authorization': 'Bearer ${accessToken}',
+      'Authorization': 'Bearer $accessToken',
       'Accept': 'application/json',
       'Content-Type': 'application/json',
     };
@@ -911,17 +897,14 @@ class _ArrayFieldDataPageState extends State<ArrayFieldDataPage> {
 
       if (response.statusCode == 200) {
         setState(() {
-          _documentDetails!['fields'] = fields;
+          documentDetails!['fields'] = fields;
           DateTime updateTime = DateTime.now();
           insertHistory(documentPath, fieldName, updateTime, 'add');
           showToast('Field Added!');
         });
-        print('Field added successfully');
       } else {
-        print('Failed to add field. Status Code: ${response.statusCode}');
       }
     } catch (error) {
-      print('Error adding field: $error');
     }
   }
 
@@ -942,7 +925,7 @@ class _ArrayFieldDataPageState extends State<ArrayFieldDataPage> {
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.amber,
             ),
-            child: Text('Add Field'),
+            child: const Text('Add Field'),
           ),
           Expanded(
             child: ListView.builder(
@@ -1024,7 +1007,7 @@ class _ArrayFieldDataPageState extends State<ArrayFieldDataPage> {
                     ],
                   ),
                   child: ListTile(
-                    title: Text('$index', style: TextStyle(color: Colors.grey, fontWeight: FontWeight.bold),),
+                    title: Text('$index', style: const TextStyle(color: Colors.grey, fontWeight: FontWeight.bold),),
                     subtitle: Text('($displayValueType): $displayValue'),
                     trailing: Row(
                       mainAxisSize: MainAxisSize.min,
@@ -1034,8 +1017,6 @@ class _ArrayFieldDataPageState extends State<ArrayFieldDataPage> {
                             icon: const Icon(Icons.edit),
                             onPressed: () {
 
-                              print(value);
-                              print(value.runtimeType);
                               _showTimeStampEditDialog(index.toString(), valueType, value, index);
                             },
                           ),

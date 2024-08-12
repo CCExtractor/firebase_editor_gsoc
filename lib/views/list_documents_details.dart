@@ -1,7 +1,5 @@
-
 import 'package:firebase_editor_gsoc/controllers/history.dart';
 import 'package:firebase_editor_gsoc/views/array_field_data.dart';
-import 'package:firebase_editor_gsoc/views/edit_field_type.dart';
 import 'package:firebase_editor_gsoc/views/map_field_data.dart';
 import 'package:firebase_editor_gsoc/views/utils/utils.dart';
 import 'package:flutter/material.dart';
@@ -60,7 +58,6 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
         setState(() {
           _documentDetails = data;
           _isLoading = false;
-          print(_documentDetails);
         });
       } else {
         setState(() {
@@ -180,7 +177,6 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
 
           DateTime updateTime = DateTime.now();
           insertHistory(widget.documentPath, fieldName, updateTime, 'update');
-
           showToast("Field '$fieldName' updated!");
         });
         //call function for storing history
@@ -330,7 +326,6 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
 
           DateTime updateTime = DateTime.now();
           insertHistory(widget.documentPath, fieldName, updateTime, 'delete');
-
           showToast("Field Deleted!");
         });
         // Call function for storing history or any other actions after successful update
@@ -471,7 +466,6 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
           _documentDetails!['fields'] = fields;
           DateTime updateTime = DateTime.now();
           insertHistory(widget.documentPath, fieldName, updateTime, 'update');
-
           showToast("Field '$fieldName' updated!");
         });
       } else {
@@ -1208,7 +1202,6 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
           // log it
           DateTime updateTime = DateTime.now();
           insertHistory(widget.documentPath, fieldName, updateTime, 'add');
-
           // show toast
           showToast("Field '$fieldName' added!");
         });
@@ -1224,7 +1217,6 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
       _documentDetails!['fields'] = {};
     }
 
-    print("array name: $fieldName");
 
     Map<String, dynamic> fields = {
       ..._documentDetails!['fields']
@@ -1291,7 +1283,6 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
 
       if (response.statusCode == 200) {
         setState(() {
-          print('Field updated successfully');
           _documentDetails!['fields'] = fields;
 
           DateTime updateTime = DateTime.now();
