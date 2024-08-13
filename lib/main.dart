@@ -3,11 +3,13 @@ import 'package:firebase_editor_gsoc/controllers/controllers.dart';
 import 'package:firebase_editor_gsoc/controllers/token_controller.dart';
 import 'package:firebase_editor_gsoc/controllers/user_controller.dart';
 import 'package:firebase_editor_gsoc/firebase_options.dart';
+import 'package:firebase_editor_gsoc/user_login.dart';
 import 'package:firebase_editor_gsoc/views/list_projects.dart';
 import 'package:firebase_editor_gsoc/views/starter_screen_1.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 // navigator key for navigation purposes
 // This key is crucial for navigating without direct access to BuildContext.
@@ -40,11 +42,20 @@ void main() async{
   Get.put(UserController());
   Get.put(TokenController());
   Get.put(AccessController());
-  runApp(const MyApp());
+
+
+  // for showing starter screens only once!
+  final prefs = await SharedPreferences.getInstance();
+  final bool hasSeenStarterScreens = prefs.getBool('hasSeenStarterScreens') ?? false;
+
+  runApp(MyApp(hasSeenStarterScreens: hasSeenStarterScreens));
+
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final bool hasSeenStarterScreens;
+
+  const MyApp({super.key, required this.hasSeenStarterScreens});
 
   // This widget is the root of your application.
   @override
@@ -83,11 +94,11 @@ class MyApp extends StatelessWidget {
           ),
         )
       ),
-      home: StarterScreen1(),
+      home: hasSeenStarterScreens ? const LoginScreen() : const StarterScreen1(),
       navigatorKey: navigatorKey, // Assign the global navigator key
       routes: {
         // '/': (context) => StarterScreen1(),
-        '/list-projects': (context) => ProjectsPage(),
+        '/list-projects': (context) => const ProjectsPage(),
       },
       // initialRoute: '/', // Specify the initial route here if home property is there no need for this
       debugShowCheckedModeBanner: false,

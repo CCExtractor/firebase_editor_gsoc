@@ -50,6 +50,7 @@ dependencies:
   flutter_local_notifications: ^17.2.1
   fluttertoast: ^8.2.6
   fl_chart: ^0.68.0
+  shared_preferences: ^2.2.3
 
 dev_dependencies:
   flutter_test:
