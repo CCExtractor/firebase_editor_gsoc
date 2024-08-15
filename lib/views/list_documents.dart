@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:firebase_editor_gsoc/controllers/document_controller.dart';
 import 'package:firebase_editor_gsoc/controllers/history.dart';
 import 'package:firebase_editor_gsoc/controllers/notification_services.dart';
+import 'package:firebase_editor_gsoc/views/custom_drawer.dart';
 import 'package:firebase_editor_gsoc/views/list_documents_details.dart';
 import 'package:firebase_editor_gsoc/views/utils/utils.dart';
 import 'package:flutter/material.dart';
@@ -796,6 +797,7 @@ class _DocumentsPageState extends State<DocumentsPage> {
       appBar: AppBar(
         title: Text('${widget.collectionId}: documents'),
       ),
+      drawer: CustomDrawer(),
       body: _isLoading
           ? const Center(
         child: Column(
@@ -843,7 +845,7 @@ class _DocumentsPageState extends State<DocumentsPage> {
                     backgroundColor: Colors.blue, // Set the background color
 
                   ),
-                  child: Text(_isBatchOperation ? 'Cancel Batch Operation' : 'Batch Operation',),
+                  child: Text(_isBatchOperation ? 'Cancel Batch Operation' : 'Batch Operation', style: TextStyle(color: Colors.white),),
                 ),
               ),
 
@@ -863,7 +865,7 @@ class _DocumentsPageState extends State<DocumentsPage> {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.green, // Set the background color
                     ),
-                    child: const Text('Add a Field'),
+                    child: const Text('Add a Field', style: TextStyle(color: Colors.white),),
                   ),
                 ),
                 Padding(
@@ -877,7 +879,7 @@ class _DocumentsPageState extends State<DocumentsPage> {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.green, // Set the background color
                     ),
-                    child: const Text('Delete a Field'),
+                    child: const Text('Delete a Field', style: TextStyle(color:Colors.white),),
                   ),
                 ),
               ],

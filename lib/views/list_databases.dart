@@ -1,4 +1,5 @@
 import 'package:firebase_editor_gsoc/API/fetch_databases.dart';
+import 'package:firebase_editor_gsoc/views/custom_drawer.dart';
 import 'package:firebase_editor_gsoc/views/user_collections.dart';
 import 'package:flutter/material.dart';
 
@@ -51,6 +52,7 @@ class _ProjectDetailsScreenState extends State<ProjectDetailsScreen> {
       appBar: AppBar(
         title: const Text('Database Details'),
       ),
+      drawer: CustomDrawer(),
       body: _isLoading
           ? const Center(
         child: Column(

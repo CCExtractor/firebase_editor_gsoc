@@ -43,34 +43,42 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Login'),
-        actions: <Widget>[
-          userController.user != null
-              ? IconButton(
-                  icon: const Icon(Icons.exit_to_app),
-                  onPressed: () {
-                    userController.handleLogout();
-                  },
-                )
-              : Container(),
-        ],
+        title: userController.user != null ? Text("Firebase Editor") : Text("Login"),
+        // actions: <Widget>[
+        //   userController.user != null
+        //       ? IconButton(
+        //           icon: const Icon(Icons.exit_to_app),
+        //           onPressed: () {
+        //             userController.handleLogout();
+        //           },
+        //         )
+        //       : Container(),
+        // ],
       ),
+      backgroundColor: Colors.amber,
       body: userController.user != null ? _userInfo() : _googleSignInButton(),
     );
   }
 
   Widget _googleSignInButton() {
     return Center(
-      child: SizedBox(
-        height: 35,
-        child: SignInButton(
-          Buttons.google,
-          text: "Sign in With Google",
-          onPressed: () {
-            // _showButtonPressDialog(context, 'Google');
-            _handleGoogleSignIn();
-          },
-        ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text("Sign in to your Firebase Account!", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 20.0),),
+          SizedBox(height: 20.0,),
+          SizedBox(
+            height: 35,
+            child: SignInButton(
+              Buttons.google,
+              text: "Sign in With Google",
+              onPressed: () {
+                // _showButtonPressDialog(context, 'Google');
+                _handleGoogleSignIn();
+              },
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -84,55 +92,124 @@ class _LoginScreenState extends State<LoginScreen> {
         child: Column(
           children: [
 
-            Text("Welcome to Firebase Editor", style: TextStyle(fontSize: 24.0),),
-            Divider(),
+            Container(
+              width: double.infinity,
+                height: 100.0,
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Center(child: Text("Welcome ${userController.user!.displayName}!",
+                    style: const TextStyle(fontSize: 30.0, color: Colors.white, fontWeight: FontWeight.bold),)),
+                )),
 
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.max,
-                children: [
-                  Container(
-                    height: 100,
-                    width: 100,
-                    child: ClipOval(
-                      child: Image.network(
-                        userController.user!.photoURL!,
-                        fit: BoxFit.cover,
-                        width: 100.0,
-                        height: 100.0,
-                      ),
+            SizedBox(height: 20.0,),
+            Center(
+              child: Container(
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(10.0),
+                  border: Border.all(color: Colors.grey),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey.withOpacity(0.5),
+                      spreadRadius: 4,
+                      blurRadius: 5,
+                      offset: const Offset(
+                          0, 3), // changes position of shadow
                     ),
-                  ),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  Padding(
+                  ],
+                ),
+                child: Center(
+                  child: Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisSize: MainAxisSize.max,
                       children: [
-                        Text(userController.user!.displayName ?? ""),
-                        Text(userController.user!.email!),
-                        ElevatedButton(
-                            onPressed: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => const HomeScreen(),
-                                ),
-                              );
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.amber,
+                        SizedBox(height: 50.0,),
+                        Container(
+                          height: 200,
+                          width: 200,
+                          child: ClipOval(
+                            child: Image.network(
+                              userController.user!.photoURL!,
+                              fit: BoxFit.cover,
+                              width: 100.0,
+                              height: 100.0,
                             ),
-                            child: const Text("Go to Home")),
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 20,
+                        ),
+                        Divider(),
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Container(
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(5.0),
+                                    border: Border.all(color: Colors.grey),
+                                  ),
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Text("Username: ${userController.user!.displayName}" ?? ""),
+                                  )),
+                            ),
+
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Container(
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(5.0),
+                                    border: Border.all(color: Colors.grey),
+                                  ),
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Text("Email Id: ${userController.user!.email!}"),
+                                  )
+                              ),
+                            ),
+                            SizedBox(height: 40.0,),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                ElevatedButton(
+                                    onPressed: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => const HomeScreen(),
+                                        ),
+                                      );
+                                    },
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: Colors.blue,
+                                    ),
+                                    child: const Text("Home", style: TextStyle(color: Colors.white),)),
+                                SizedBox(width: 30.0,),
+                                ElevatedButton(
+                                    onPressed: () {
+                                      userController.handleLogout();
+                                    },
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: Colors.blue,
+                                    ),
+                                    child: const Text("Logout", style: TextStyle(color: Colors.white),)),
+                              ],
+                            ),
+                          ],
+                        ),
                       ],
                     ),
                   ),
-                ],
+                ),
               ),
             ),
           ],

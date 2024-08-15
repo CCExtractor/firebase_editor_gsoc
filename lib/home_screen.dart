@@ -221,7 +221,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       height: 50.0,
                       child: Padding(
                         padding: const EdgeInsets.all(8.0),
-                        child: Text("Operations in Last 30 days", style: TextStyle(fontSize: 15.0),),
+                        child: Text("Operations Analysis (Last 30 days)", style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),),
                       ),
                     ),
                     SizedBox(height: 20.0,),
@@ -329,7 +329,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       height: 50.0,
                       child: Padding(
                         padding: const EdgeInsets.all(8.0),
-                        child: Text("Recently Accessed Collections", style: TextStyle(fontSize: 20.0),),
+                        child: Text("Recently Accessed", style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),),
                       ),
                     ),
                     Container(

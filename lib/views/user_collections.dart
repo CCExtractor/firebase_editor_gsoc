@@ -1,3 +1,4 @@
+import 'package:firebase_editor_gsoc/views/custom_drawer.dart';
 import 'package:firebase_editor_gsoc/views/list_documents.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -104,21 +105,29 @@ class _UserCollectionsPageState extends State<UserCollectionsPage> {
             onChanged: (value) {
               collectionName = value;
             },
-            decoration: const InputDecoration(hintText: 'Collection Name/ID'),
+            decoration: const InputDecoration(hintText: 'Enter your Collection Name', hintStyle: TextStyle(fontSize: 12.0)),
           ),
           actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: const Text('Cancel'),
-            ),
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-                _addCollection(collectionName);
-              },
-              child: const Text('OK'),
+
+            Text("Note: Collection Name is Case Sensitive"),
+
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: const Text('Cancel'),
+                ),
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                    _addCollection(collectionName);
+                  },
+                  child: const Text('OK'),
+                ),
+              ],
             ),
           ],
         );
@@ -132,6 +141,7 @@ class _UserCollectionsPageState extends State<UserCollectionsPage> {
       appBar: AppBar(
         title: Text('${widget.displayName}:Collections'),
       ),
+      drawer: CustomDrawer(),
       body: Stack(
         children: [
           if (collections.isEmpty && _isLoading == false)

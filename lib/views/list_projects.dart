@@ -1,5 +1,6 @@
 import 'package:firebase_editor_gsoc/API/fetch_projects.dart';
 import 'package:firebase_editor_gsoc/controllers/controllers.dart';
+import 'package:firebase_editor_gsoc/views/custom_drawer.dart';
 import 'package:firebase_editor_gsoc/views/list_databases.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -32,6 +33,7 @@ class _ProjectsPageState extends State<ProjectsPage> {
       appBar: AppBar(
         title: const Text('Projects'),
       ),
+      drawer: CustomDrawer(),
       body: FutureBuilder<Map<String, dynamic>>(
         future: _projectsFuture,
         builder: (context, snapshot) {
