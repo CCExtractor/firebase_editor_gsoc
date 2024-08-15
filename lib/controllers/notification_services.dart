@@ -3,6 +3,7 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:firebase_editor_gsoc/controllers/controllers.dart';
+import 'package:firebase_editor_gsoc/views/list_documents.dart';
 import 'package:firebase_editor_gsoc/views/list_documents_details.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -210,6 +211,20 @@ class NotificationServices {
           ),
         );
       }
+      else if(message.data['type'] == 'batch operation'){
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => DocumentsPage(
+              accessToken: accessController.accessToken.text,
+              projectId: message.data['project_id'],
+              databaseId: message.data['database_id'],
+              collectionId: message.data['collection_id'],
+            ),
+          ),
+        );
+
+      }
   }
 
 
@@ -251,6 +266,12 @@ class NotificationServices {
             "title": "Batch Operation Executed",
             "body": "$projectId/$databaseId/$collectionId",
           },
+          "data": {
+            "type": "batch operation",
+            "project_id": projectId,
+            "database_id": databaseId,
+            "collection_id": collectionId,
+          }
         }
       });
 
@@ -301,6 +322,7 @@ class NotificationServices {
             "body": "$projectId/$databaseId/$collectionId",
           },
           "data": {
+            "type": "record updated",
             "project_id": projectId,
             "database_id": databaseId,
             "collection_id": collectionId,
