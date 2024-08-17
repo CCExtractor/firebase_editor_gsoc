@@ -84,135 +84,137 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Widget _userInfo() {
-    return SizedBox(
-      width: MediaQuery.of(context).size.width,
-      height: 800.0,
-      child: Padding(
-        padding: const EdgeInsets.all(18.0),
-        child: Column(
-          children: [
-
-            Container(
-              width: double.infinity,
-                height: 100.0,
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Center(child: Text("Welcome ${userController.user!.displayName}!",
-                    style: const TextStyle(fontSize: 30.0, color: Colors.white, fontWeight: FontWeight.bold),)),
-                )),
-
-            SizedBox(height: 20.0,),
-            Center(
-              child: Container(
+    return SingleChildScrollView(
+      child: SizedBox(
+        width: MediaQuery.of(context).size.width,
+        height: 800.0,
+        child: Padding(
+          padding: const EdgeInsets.all(18.0),
+          child: Column(
+            children: [
+      
+              Container(
                 width: double.infinity,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(10.0),
-                  border: Border.all(color: Colors.grey),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.grey.withOpacity(0.5),
-                      spreadRadius: 4,
-                      blurRadius: 5,
-                      offset: const Offset(
-                          0, 3), // changes position of shadow
-                    ),
-                  ],
-                ),
-                child: Center(
+                  height: 100.0,
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisSize: MainAxisSize.max,
-                      children: [
-                        SizedBox(height: 50.0,),
-                        Container(
-                          height: 200,
-                          width: 200,
-                          child: ClipOval(
-                            child: Image.network(
-                              userController.user!.photoURL!,
-                              fit: BoxFit.cover,
-                              width: 100.0,
-                              height: 100.0,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(
-                          height: 20,
-                        ),
-                        Divider(),
-                        Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Container(
-                                  decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    borderRadius: BorderRadius.circular(5.0),
-                                    border: Border.all(color: Colors.grey),
-                                  ),
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Text("Username: ${userController.user!.displayName}" ?? ""),
-                                  )),
-                            ),
-
-                            Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Container(
-                                  decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    borderRadius: BorderRadius.circular(5.0),
-                                    border: Border.all(color: Colors.grey),
-                                  ),
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Text("Email Id: ${userController.user!.email!}"),
-                                  )
+                    child: Center(child: Text("Welcome ${userController.user!.displayName}!",
+                      style: const TextStyle(fontSize: 30.0, color: Colors.white, fontWeight: FontWeight.bold),)),
+                  )),
+      
+              SizedBox(height: 20.0,),
+              Center(
+                child: Container(
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(10.0),
+                    border: Border.all(color: Colors.grey),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey.withOpacity(0.5),
+                        spreadRadius: 4,
+                        blurRadius: 5,
+                        offset: const Offset(
+                            0, 3), // changes position of shadow
+                      ),
+                    ],
+                  ),
+                  child: Center(
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisSize: MainAxisSize.max,
+                        children: [
+                          SizedBox(height: 50.0,),
+                          Container(
+                            height: 200,
+                            width: 200,
+                            child: ClipOval(
+                              child: Image.network(
+                                userController.user!.photoURL!,
+                                fit: BoxFit.cover,
+                                width: 100.0,
+                                height: 100.0,
                               ),
                             ),
-                            SizedBox(height: 40.0,),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                ElevatedButton(
-                                    onPressed: () {
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (context) => const HomeScreen(),
-                                        ),
-                                      );
-                                    },
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor: Colors.blue,
+                          ),
+                          const SizedBox(
+                            height: 20,
+                          ),
+                          Divider(),
+                          Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Container(
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.circular(5.0),
+                                      border: Border.all(color: Colors.grey),
                                     ),
-                                    child: const Text("Home", style: TextStyle(color: Colors.white),)),
-                                SizedBox(width: 30.0,),
-                                ElevatedButton(
-                                    onPressed: () {
-                                      userController.handleLogout();
-                                    },
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor: Colors.blue,
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Text("Username: ${userController.user!.displayName}" ?? ""),
+                                    )),
+                              ),
+      
+                              Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Container(
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.circular(5.0),
+                                      border: Border.all(color: Colors.grey),
                                     ),
-                                    child: const Text("Logout", style: TextStyle(color: Colors.white),)),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ],
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Text("Email Id: ${userController.user!.email!}"),
+                                    )
+                                ),
+                              ),
+                              SizedBox(height: 40.0,),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  ElevatedButton(
+                                      onPressed: () {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) => const HomeScreen(),
+                                          ),
+                                        );
+                                      },
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: Colors.blue,
+                                      ),
+                                      child: const Text("Home", style: TextStyle(color: Colors.white),)),
+                                  SizedBox(width: 30.0,),
+                                  ElevatedButton(
+                                      onPressed: () {
+                                        userController.handleLogout();
+                                      },
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: Colors.blue,
+                                      ),
+                                      child: const Text("Logout", style: TextStyle(color: Colors.white),)),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

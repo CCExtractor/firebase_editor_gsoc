@@ -1,5 +1,6 @@
 import 'package:firebase_editor_gsoc/API/fetch_projects.dart';
 import 'package:firebase_editor_gsoc/controllers/controllers.dart';
+import 'package:firebase_editor_gsoc/controllers/user_controller.dart';
 import 'package:firebase_editor_gsoc/views/custom_drawer.dart';
 import 'package:firebase_editor_gsoc/views/list_databases.dart';
 import 'package:flutter/material.dart';
@@ -18,6 +19,7 @@ class ProjectsPage extends StatefulWidget {
 class _ProjectsPageState extends State<ProjectsPage> {
   late Future<Map<String, dynamic>> _projectsFuture;
   final _accessController = Get.put(AccessController());
+  final userController = Get.put(UserController());
 
 
 
@@ -76,6 +78,8 @@ class _ProjectsPageState extends State<ProjectsPage> {
                     trailing: ElevatedButton(
                       onPressed: () {
                         // Add your on tap function here
+                        // add to project id arrays in database
+                        userController.addProjectIdIfNotExists(project['projectId']);
                         Navigator.push(
                           context,
                           MaterialPageRoute(

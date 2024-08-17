@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_editor_gsoc/controllers/controllers.dart';
 import 'package:firebase_editor_gsoc/views/list_documents.dart';
 import 'package:firebase_editor_gsoc/views/list_documents_details.dart';
@@ -351,15 +352,59 @@ class NotificationServices {
     }
   }
 
-  void triggerNotification(String projectId, String databaseId, String collectionId, String documentId){
-    getDeviceToken().then((value){
-      sendNotification(value, projectId, databaseId, collectionId, documentId);
-    });
+  void triggerNotification(String projectId, String databaseId, String collectionId, String documentId) async {
+    try {
+      // Reference to the users collection in Firestore
+      final CollectionReference usersCollectionRef = FirebaseFirestore.instance.collection('users');
+
+      // Query the users collection to find users with the specified projectId in their projectIds array
+      final QuerySnapshot querySnapshot = await usersCollectionRef
+          .where('projectIds', arrayContains: projectId)
+          .get();
+
+      // Loop through the documents in the query result
+      for (var doc in querySnapshot.docs) {
+        // Get the device token from each document
+        String? deviceToken = doc.get('deviceToken');
+
+        if (deviceToken != null && deviceToken.isNotEmpty) {
+          // Trigger the sendNotification function with the device token
+          sendNotification(deviceToken, projectId, databaseId, collectionId, documentId);
+        }
+      }
+
+      print("Notification triggered for users associated with projectId: $projectId");
+    } catch (error) {
+      print("Error triggering notification: $error");
+    }
   }
-  void triggerBatchOpNotification(String projectId, String databaseId, String collectionId){
-    getDeviceToken().then((value) {
-      sendBatchOperationNotification(value, projectId, databaseId, collectionId);
-    });
+
+
+  void triggerBatchOpNotification(String projectId, String databaseId, String collectionId) async {
+    try {
+      // Reference to the users collection in Firestore
+      final CollectionReference usersCollectionRef = FirebaseFirestore.instance.collection('users');
+
+      // Query the users collection to find users with the specified projectId in their projectIds array
+      final QuerySnapshot querySnapshot = await usersCollectionRef
+          .where('projectIds', arrayContains: projectId)
+          .get();
+
+      // Loop through the documents in the query result
+      for (var doc in querySnapshot.docs) {
+        // Get the device token from each document
+        String? deviceToken = doc.get('deviceToken');
+
+        if (deviceToken != null && deviceToken.isNotEmpty) {
+          // Trigger the sendBatchOperationNotification function with the device token
+          sendBatchOperationNotification(deviceToken, projectId, databaseId, collectionId);
+        }
+      }
+
+      print("Batch operation notification triggered for users associated with projectId: $projectId");
+    } catch (error) {
+      print("Error triggering batch operation notification: $error");
+    }
   }
 
 

@@ -4,6 +4,7 @@ import 'package:csv/csv.dart';
 import 'package:firebase_editor_gsoc/controllers/history.dart';
 import 'package:firebase_editor_gsoc/controllers/notification_services.dart';
 import 'package:firebase_editor_gsoc/controllers/recent_entries.dart';
+import 'package:firebase_editor_gsoc/controllers/user_controller.dart';
 import 'package:firebase_editor_gsoc/views/array_field_data.dart';
 import 'package:firebase_editor_gsoc/views/map_field_data.dart';
 import 'package:firebase_editor_gsoc/views/utils/utils.dart';
@@ -13,6 +14,7 @@ import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:firebase_editor_gsoc/views/edit_field_type.dart';
 
 class DocumentDetailsPage extends StatefulWidget {
   final String accessToken;
@@ -43,6 +45,7 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
   TimeOfDay? selectedTime;
   NotificationServices notificationServices = NotificationServices();
   RecentEntryService recentEntryService = RecentEntryService();
+
 
   @override
   void initState() {
@@ -123,18 +126,18 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
                     icon: const Icon(Icons.edit),
                     onPressed: () {
                       Navigator.of(context).pop();
-                      // Navigator.of(context).push(
-                      //   MaterialPageRoute(
-                      //     builder: (context) => EditFieldTypePage(
-                      //       fieldName: fieldName,
-                      //       fieldType: fieldType,
-                      //       fieldValue: fieldValue,
-                      //       accessToken: widget.accessToken,
-                      //       documentPath: widget.documentPath,
-                      //       documentDetails: _documentDetails,
-                      //     ),
-                      //   ),
-                      // );
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => EditFieldTypePage(
+                            fieldName: fieldName,
+                            fieldType: fieldType,
+                            fieldValue: fieldValue,
+                            accessToken: widget.accessToken,
+                            documentPath: widget.documentPath,
+                            documentDetails: _documentDetails,
+                          ),
+                        ),
+                      );
                     },
                   ),
                 ],

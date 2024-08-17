@@ -81,6 +81,9 @@ class _HomeScreenState extends State<HomeScreen> {
 
     _loadData();
     _loadRecentEntries();
+
+    // call store device token fucntion
+    userController.storeDeviceToken();
   }
 
 
