@@ -15,6 +15,8 @@ import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:firebase_editor_gsoc/views/edit_field_type.dart';
+import 'package:dio/dio.dart';
+import 'package:flutter_file_dialog/flutter_file_dialog.dart';
 
 class DocumentDetailsPage extends StatefulWidget {
   final String accessToken;
@@ -75,6 +77,7 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
         var data = json.decode(response.body);
         setState(() {
           _documentDetails = data;
+          print(_documentDetails);
           _isLoading = false;
         });
       } else {
@@ -90,6 +93,179 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
         _isLoading = false;
       });
     }
+  }
+
+
+  // Future<void> _exportDocumentToJson(Map<String, dynamic> documentData, String documentPath) async {
+  //   // Request storage permission before attempting to save the file
+  //   bool permissionGranted = await requestManageExternalStoragePermission(context);
+  //
+  //   if (!permissionGranted) {
+  //     _showErrorDialog('Storage permission is required to save the file.');
+  //     return;
+  //   }
+  //
+  //   try {
+  //     // Convert document data to JSON format
+  //     String jsonString = jsonEncode(documentData);
+  //
+  //     // Get the directory for storing the file
+  //     final directory = Directory('/storage/emulated/0/Download'); // Target the Downloads folder
+  //
+  //     // Ensure the directory exists
+  //     if (!await directory.exists()) {
+  //       await directory.create(recursive: true);
+  //     }
+  //
+  //     // Extract document ID from the documentPath
+  //     String documentId = documentPath.split('/').last;
+  //
+  //     // Set the path for the JSON file
+  //     final path = '${directory.path}/$documentId.json';
+  //
+  //     // Write the JSON string to a file
+  //     final file = File(path);
+  //     await file.writeAsString(jsonString);
+  //
+  //
+  //     // Show success message
+  //     print('Document exported successfully to $path');
+  //     _showExportSuccessDialog(path);
+  //   } catch (e) {
+  //     print('Error exporting document: $e');
+  //     _showErrorDialog('Error exporting document: $e');
+  //   }
+  // }
+
+  Future<void> _exportDocumentToJson(Map<String, dynamic> documentData, String documentPath, BuildContext context) async {
+    try {
+      // Request storage permission before attempting to save the file
+      bool permissionGranted = await requestManageExternalStoragePermission(context);
+
+      if (!permissionGranted) {
+        _showErrorDialog('Storage permission is required to save the file.');
+        return;
+      }
+
+      // Convert document data to JSON format
+      String jsonString = jsonEncode(documentData);
+
+      // Get the temporary directory to save the file initially
+      Directory directory = await getTemporaryDirectory();
+      String documentId = documentPath.split('/').last;
+      String tempPath = '${directory.path}/$documentId.json';
+
+      // Use Dio to save the file
+      File tempFile = File(tempPath);
+      await tempFile.writeAsString(jsonString);
+      print('File temporarily saved at: $tempPath');
+
+      // Prompt the user to save the file to their desired location (Downloads or other)
+      if (Platform.isAndroid) {
+        final params = SaveFileDialogParams(sourceFilePath: tempPath);
+        final filePath = await FlutterFileDialog.saveFile(params: params);
+
+        if (filePath != null) {
+          print('File successfully saved to: $filePath');
+          _showExportSuccessDialog(filePath);
+        } else {
+          print('File save was canceled.');
+          _showErrorDialog('File save was canceled.');
+        }
+      } else if (Platform.isIOS) {
+        // Directly save to the iOS Downloads folder or handle differently if needed
+        final downloadsDirectory = await getDownloadsDirectory();
+        final iosPath = '${downloadsDirectory?.path}/$documentId.json';
+        File iosFile = await tempFile.copy(iosPath);
+        print('File saved at: $iosPath');
+        // _showExportSuccessDialog(iosPath);
+      }
+    } catch (e) {
+      print('Error exporting document: $e');
+      _showErrorDialog('Error exporting document: $e');
+    }
+  }
+
+
+  Future<void> showPermissionDialog(BuildContext context) async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false, // User must tap a button to dismiss the dialog
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Storage Permission Required'),
+          content: const Text(
+              'This app needs storage access to save files. Please enable storage permission in the app settings.'),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Cancel'),
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+              },
+            ),
+            TextButton(
+              child: const Text('OK'),
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+                openAppSettings(); // Open the app-specific settings page
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  // Future<bool> requestStoragePermission(BuildContext context) async {
+  //   if (await Permission.storage.isGranted) {
+  //     print("Storage permission is already granted.");
+  //     return true;
+  //   }
+  //
+  //   PermissionStatus status = await Permission.storage.request();
+  //
+  //   if (status.isGranted) {
+  //     print("Storage permission granted.");
+  //     return true;
+  //   } else if (status.isDenied || status.isPermanentlyDenied) {
+  //     print("Storage permission denied.");
+  //     await showPermissionDialog(context); // Show the dialog if permission is denied
+  //     return false;
+  //   }
+  //
+  //   return false;
+  // }
+  Future<bool> requestManageExternalStoragePermission(BuildContext context) async {
+    if (await Permission.manageExternalStorage.isGranted) {
+      print("Manage External Storage permission is already granted.");
+      return true;
+    }
+
+    PermissionStatus status = await Permission.manageExternalStorage.request();
+
+    if (status.isGranted) {
+      print("Manage External Storage permission granted.");
+      return true;
+    } else if (status.isDenied || status.isPermanentlyDenied) {
+      print("Manage External Storage permission denied.");
+      await showPermissionDialog(context); // Show the dialog if permission is denied
+      return false;
+    }
+
+    return false;
+  }
+
+
+
+  void _showExportSuccessDialog(String filePath) {
+    // Implement your logic to show a dialog with the file path
+    print('File saved at: $filePath');
+    // You can also trigger a notification or alert here
+  }
+
+  void _showErrorDialog(String message) {
+    // Implement your logic to show an error dialog
+    print('Error: $message');
   }
 
 
@@ -1478,15 +1654,27 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
                                     style: TextStyle(
                                         fontWeight: FontWeight.bold,
                                         fontSize: 16.0)),
-                                ElevatedButton(
-                                  onPressed: () {
-                                    // Action to perform when the button is pressed
-                                    showAddFieldDialog(context);
-                                  },
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: Colors.amber,
-                                  ),
-                                  child: const Text('Add Field'),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  children: [
+                                    ElevatedButton(
+                                      onPressed: () {
+                                        // Action to perform when the button is pressed
+                                        showAddFieldDialog(context);
+                                      },
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: Colors.amber,
+                                      ),
+                                      child: const Text('Add Field'),
+                                    ),
+                                    IconButton(
+                                      icon: const Icon(Icons.download),
+                                      onPressed: () {
+                                        // Define your delete action here
+                                        _exportDocumentToJson(_documentDetails!, widget.documentPath, context);
+                                      },
+                                    ),
+                                  ],
                                 ),
                               ],
                             ),
@@ -1686,6 +1874,9 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
                                             _deleteField(fieldName);
                                           },
                                         ),
+
+
+
                                       ],
                                     ),
                                   ),
