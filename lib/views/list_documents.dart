@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:math';
 
 import 'package:firebase_editor_gsoc/controllers/document_controller.dart';
@@ -11,6 +12,10 @@ import 'package:get/get.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
+import 'package:dio/dio.dart';
+import 'package:flutter_file_dialog/flutter_file_dialog.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class DocumentsPage extends StatefulWidget {
   final String accessToken;
@@ -79,6 +84,106 @@ class _DocumentsPageState extends State<DocumentsPage> {
   }
 
 
+  Future<void> _exportCollectionToJson(String projectId, String databaseId, String collectionId, String accessToken, BuildContext context) async {
+    try {
+      // Request storage permission before attempting to save the file
+      bool permissionGranted = await requestManageExternalStoragePermission(context);
+
+      if (!permissionGranted) {
+        _showDownloadErrorDialog('Storage permission is required to save the file.');
+        return;
+      }
+
+      // Fetch all documents in the collection
+      String parent = 'projects/$projectId/databases/$databaseId/documents';
+      String url = 'https://firestore.googleapis.com/v1/$parent/$collectionId';
+      Map<String, String> headers = {
+        'Authorization': 'Bearer $accessToken',
+        'Accept': 'application/json',
+      };
+
+      final response = await Dio().get(url, options: Options(headers: headers));
+
+      if (response.statusCode == 200) {
+        var data = response.data;
+        List<dynamic> documents = data['documents'] ?? [];
+
+        if (documents.isEmpty) {
+          _showDownloadErrorDialog('No documents found in the collection.');
+          return;
+        }
+
+        // Convert the documents list to JSON
+        String jsonString = jsonEncode(documents);
+
+        // Get the temporary directory to save the file initially
+        Directory directory = await getTemporaryDirectory();
+        String fileName = '$collectionId.json';
+        String tempPath = '${directory.path}/$fileName';
+
+        // Use Dio to save the file
+        File tempFile = File(tempPath);
+        await tempFile.writeAsString(jsonString);
+        print('File temporarily saved at: $tempPath');
+
+        // Prompt the user to save the file to their desired location (Downloads or other)
+        if (Platform.isAndroid) {
+          final params = SaveFileDialogParams(sourceFilePath: tempPath);
+          final filePath = await FlutterFileDialog.saveFile(params: params);
+
+          if (filePath != null) {
+            print('File successfully saved to: $filePath');
+            _showExportSuccessDialog(filePath);
+          } else {
+            print('File save was canceled.');
+            _showDownloadErrorDialog('File save was canceled.');
+          }
+        } else if (Platform.isIOS) {
+          // Directly save to the iOS Downloads folder or handle differently if needed
+          final downloadsDirectory = await getDownloadsDirectory();
+          final iosPath = '${downloadsDirectory?.path}/$fileName';
+          File iosFile = await tempFile.copy(iosPath);
+          print('File saved at: $iosPath');
+          _showExportSuccessDialog(iosPath);
+        }
+      } else {
+        _showDownloadErrorDialog('Failed to fetch documents. Status Code: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Error exporting collection: $e');
+      _showDownloadErrorDialog('Error exporting collection: $e');
+    }
+  }
+
+  Future<void> showPermissionDialog(BuildContext context) async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false, // User must tap a button to dismiss the dialog
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Storage Permission Required'),
+          content: const Text(
+              'This app needs storage access to save files. Please enable storage permission in the app settings.'),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Cancel'),
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+              },
+            ),
+            TextButton(
+              child: const Text('OK'),
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+                openAppSettings(); // Open the app-specific settings page
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   void _showDocumentDetails(String documentPath) {
     Navigator.push(
       context,
@@ -92,6 +197,39 @@ class _DocumentsPageState extends State<DocumentsPage> {
         ),
       ),
     );
+  }
+
+  Future<bool> requestManageExternalStoragePermission(BuildContext context) async {
+    if (await Permission.manageExternalStorage.isGranted) {
+      print("Manage External Storage permission is already granted.");
+      return true;
+    }
+
+    PermissionStatus status = await Permission.manageExternalStorage.request();
+
+    if (status.isGranted) {
+      print("Manage External Storage permission granted.");
+      return true;
+    } else if (status.isDenied || status.isPermanentlyDenied) {
+      print("Manage External Storage permission denied.");
+      await showPermissionDialog(context); // Show the dialog if permission is denied
+      return false;
+    }
+
+    return false;
+  }
+
+
+
+  void _showExportSuccessDialog(String filePath) {
+    // Implement your logic to show a dialog with the file path
+    print('File saved at: $filePath');
+    // You can also trigger a notification or alert here
+  }
+
+  void _showDownloadErrorDialog(String message) {
+    // Implement your logic to show an error dialog
+    print('Error: $message');
   }
 
 
@@ -825,9 +963,24 @@ class _DocumentsPageState extends State<DocumentsPage> {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.amber, // Set the background color
                   ),
-                  child: const Text('Create Document'),
+                  child: const Text('Create'),
                 ),
               ),
+
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
+                child: ElevatedButton(
+                  onPressed: () {
+                    // Define your button action here
+                    _exportCollectionToJson(widget.projectId, widget.databaseId, widget.collectionId, widget.accessToken, context);
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.amber, // Set the background color
+                  ),
+                  child: const Text('Download all'),
+                ),
+              ),
+
 
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
@@ -845,8 +998,9 @@ class _DocumentsPageState extends State<DocumentsPage> {
                     backgroundColor: Colors.blue, // Set the background color
 
                   ),
-                  child: Text(_isBatchOperation ? 'Cancel Batch Operation' : 'Batch Operation', style: TextStyle(color: Colors.white),),
+                  child: Text(_isBatchOperation ? 'Cancel' : 'Select', style: TextStyle(color: Colors.white),),
                 ),
+
               ),
 
             ],
