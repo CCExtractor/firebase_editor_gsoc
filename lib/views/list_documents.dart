@@ -155,6 +155,70 @@ class _DocumentsPageState extends State<DocumentsPage> {
     }
   }
 
+  Future<void> _exportSelectedDocumentsToJson(String projectId, String databaseId, List<String> selectedDocumentPaths, String accessToken, BuildContext context) async {
+    try {
+      // Request storage permission before attempting to save the file
+      bool permissionGranted = await requestManageExternalStoragePermission(context);
+
+      if (!permissionGranted) {
+        _showDownloadErrorDialog('Storage permission is required to save the file.');
+        return;
+      }
+
+      if (selectedDocumentPaths.isEmpty) {
+        _showDownloadErrorDialog('No documents selected for export.');
+        return;
+      }
+
+      List<Map<String, dynamic>> selectedDocumentsData = [];
+
+      for (String documentPath in selectedDocumentPaths) {
+        Map<String, dynamic> documentData = await _fetchDownloadDocumentDetails(documentPath);
+        selectedDocumentsData.add(documentData);
+      }
+
+      print(selectedDocumentsData);
+
+      // Convert the selected documents list to JSON
+      String jsonString = jsonEncode(selectedDocumentsData);
+
+      // Get the temporary directory to save the file initially
+      Directory directory = await getTemporaryDirectory();
+      String fileName = 'selected_documents_${DateTime.now().millisecondsSinceEpoch}.json';
+      String tempPath = '${directory.path}/$fileName';
+
+      // Use Dio to save the file
+      File tempFile = File(tempPath);
+      await tempFile.writeAsString(jsonString);
+      print('File temporarily saved at: $tempPath');
+
+      // Prompt the user to save the file to their desired location (Downloads or other)
+      if (Platform.isAndroid) {
+        final params = SaveFileDialogParams(sourceFilePath: tempPath);
+        final filePath = await FlutterFileDialog.saveFile(params: params);
+
+        if (filePath != null) {
+          print('File successfully saved to: $filePath');
+          _showExportSuccessDialog(filePath);
+        } else {
+          print('File save was canceled.');
+          _showDownloadErrorDialog('File save was canceled.');
+        }
+      } else if (Platform.isIOS) {
+        // Directly save to the iOS Downloads folder or handle differently if needed
+        final downloadsDirectory = await getDownloadsDirectory();
+        final iosPath = '${downloadsDirectory?.path}/$fileName';
+        File iosFile = await tempFile.copy(iosPath);
+        print('File saved at: $iosPath');
+        _showExportSuccessDialog(iosPath);
+      }
+    } catch (e) {
+      print('Error exporting selected documents: $e');
+      _showDownloadErrorDialog('Error exporting selected documents: $e');
+    }
+  }
+
+
   Future<void> showPermissionDialog(BuildContext context) async {
     return showDialog<void>(
       context: context,
@@ -484,6 +548,29 @@ class _DocumentsPageState extends State<DocumentsPage> {
       }
     } catch (error) {
       showErrorDialog(context, 'Error fetching document details: $error');
+      return {};
+    }
+  }
+
+  Future<Map<String, dynamic>> _fetchDownloadDocumentDetails(String documentPath) async {
+    String url = 'https://firestore.googleapis.com/v1/$documentPath';
+    Map<String, String> headers = {
+      'Authorization': 'Bearer ${widget.accessToken}',
+      'Accept': 'application/json',
+    };
+
+    try {
+      final response = await http.get(Uri.parse(url), headers: headers);
+
+      if (response.statusCode == 200) {
+        var data = json.decode(response.body);
+        return data; // Return the entire document data, not just the fields
+      } else {
+        print('Failed to fetch document details. Status Code: ${response.statusCode}');
+        return {};
+      }
+    } catch (error) {
+      print('Error fetching document details: $error');
       return {};
     }
   }
@@ -1010,7 +1097,7 @@ class _DocumentsPageState extends State<DocumentsPage> {
             Row(
               children: [
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
+                  padding: const EdgeInsets.symmetric(horizontal: 5.0, vertical: 5.0),
                   child: ElevatedButton(
                     onPressed: () {
                       // Define your button action here
@@ -1023,7 +1110,7 @@ class _DocumentsPageState extends State<DocumentsPage> {
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
+                  padding: const EdgeInsets.symmetric(horizontal: 5.0, vertical: 5.0),
                   child: ElevatedButton(
                     onPressed: () {
                       showDeleteFieldDialog(context, (fieldName) {
@@ -1036,6 +1123,29 @@ class _DocumentsPageState extends State<DocumentsPage> {
                     child: const Text('Delete a Field', style: TextStyle(color:Colors.white),),
                   ),
                 ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 5.0, vertical: 5.0),
+                  child: ElevatedButton(
+                    onPressed: () {
+                      if (_selectedDocuments.isNotEmpty) {
+                        _exportSelectedDocumentsToJson(
+                          widget.projectId,
+                          widget.databaseId,
+                          _selectedDocuments,
+                          widget.accessToken,
+                          context,
+                        );
+                      } else {
+                        _showDownloadErrorDialog('Please select documents to export.');
+                      }
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.green, // Set the background color
+                    ),
+                      child: const Text('Download', style: TextStyle(color:Colors.white),),
+                  ),
+                ),
+
               ],
             ),
 
