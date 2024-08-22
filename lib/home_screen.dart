@@ -7,6 +7,7 @@ import 'package:firebase_editor_gsoc/controllers/recent_entries.dart';
 import 'package:firebase_editor_gsoc/controllers/token_controller.dart';
 import 'package:firebase_editor_gsoc/controllers/user_controller.dart';
 import 'package:firebase_editor_gsoc/views/custom_drawer.dart';
+import 'package:firebase_editor_gsoc/views/help.dart';
 import 'package:firebase_editor_gsoc/views/list_projects.dart';
 import 'package:firebase_editor_gsoc/views/user_profile_view.dart';
 import 'package:firebase_editor_gsoc/views/utils/utils.dart';
@@ -209,7 +210,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       icon: Icons.help,
                       label: 'Help',
                       onPressed: () {
-                        showToast("coming soon");
+                        Get.to(HelpPage());
                         // Add your logic here
                       },
                     ),

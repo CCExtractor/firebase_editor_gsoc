@@ -1,6 +1,7 @@
 import 'package:firebase_editor_gsoc/controllers/user_controller.dart';
 import 'package:firebase_editor_gsoc/home_screen.dart';
 import 'package:firebase_editor_gsoc/views/define_schema.dart';
+import 'package:firebase_editor_gsoc/views/help.dart';
 import 'package:firebase_editor_gsoc/views/list_projects.dart';
 import 'package:firebase_editor_gsoc/views/list_schemas.dart';
 import 'package:flutter/material.dart';
@@ -168,8 +169,7 @@ class CustomDrawer extends StatelessWidget {
             title: const Text('Help'),
             onTap: () {
               // Handle tap
-              Navigator.pop(context); // Close the drawer
-              // Navigate to help screen or perform any other action
+             Get.to(HelpPage());
             },
           ),
           const Divider(),
@@ -180,7 +180,9 @@ class CustomDrawer extends StatelessWidget {
               // Handle tap
                   userController.handleLogout();
             },
+
           ),
+          const Divider(),
         ],
       ),
 
