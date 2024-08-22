@@ -128,11 +128,19 @@ class _HomeScreenState extends State<HomeScreen> {
                     Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        CircleAvatar(
-                          radius: 40,
-                          backgroundImage: NetworkImage(
-                              userController.user!.photoURL ??
-                                  ""), // User image URL
+                        Container(
+                          height: 70,
+                          width: 70,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            border: Border.all(color: Colors.amber, width: 3),
+                          ),
+                          child: ClipOval(
+                            child: Image.network(
+                              userController.user!.photoURL!,
+                              fit: BoxFit.cover,
+                            ),
+                          ),
                         ),
                       ],
                     ),

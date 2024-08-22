@@ -25,17 +25,22 @@ class CustomDrawer extends StatelessWidget {
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.end,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
 
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    CircleAvatar(
-                      radius: 40,
-                      backgroundImage: NetworkImage(userController.user!.photoURL  ?? ""), // User image URL
+                Container(
+                  height: 80,
+                  width: 80,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(color: Colors.blue, width: 3),
+                  ),
+                  child: ClipOval(
+                    child: Image.network(
+                      userController.user!.photoURL!,
+                      fit: BoxFit.cover,
                     ),
-                  ],
+                  ),
                 ),
 
                 const SizedBox(width: 20.0,),
