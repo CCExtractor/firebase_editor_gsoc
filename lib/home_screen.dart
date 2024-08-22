@@ -98,7 +98,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Home'),
+        title: const Text('Home'),
       ),
       drawer: CustomDrawer(),
       body: SingleChildScrollView(
@@ -152,7 +152,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Text(
+                        const Text(
                           "You are currently signed in as:",
                           style: TextStyle(color: Colors.white),
                         ),
@@ -175,7 +175,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ],
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 16,
               ),
               Container(
@@ -194,7 +194,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       icon: Icons.list,
                       label: 'Projects',
                       onPressed: () {
-                        Get.to(ProjectsPage());
+                        Get.to(const ProjectsPage());
                         // Add your logic here
                       },
                     ),
@@ -210,23 +210,24 @@ class _HomeScreenState extends State<HomeScreen> {
                       icon: Icons.help,
                       label: 'Help',
                       onPressed: () {
-                        Get.to(HelpPage());
+                        Get.to(const HelpPage());
                         // Add your logic here
                       },
                     ),
                   ],
                 ),
               ),
-              SizedBox(height: 16), // Space between the two containers
+              const SizedBox(height: 16), // Space between the two containers
 
               Container(
                 decoration: BoxDecoration(
                   color: Colors.amber,
+                  borderRadius: BorderRadius.circular(10.0),
                 ),
                 width: double.infinity,
                 height: 50.0,
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
+                child: const Padding(
+                  padding: EdgeInsets.all(8.0),
                   child: Text(
                     "Operations Analysis (Last 30 days)",
                     style: TextStyle(
@@ -234,131 +235,130 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 20.0,
               ),
               Stack(
                 children: [
-                  Container(
-                    width: MediaQuery.of(context).size.width *
-                        0.9, // 80% of the screen width
-                    height: 300, // Fixed height for the chart
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(15.0),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.grey.withOpacity(0.5),
-                          spreadRadius: 2,
-                          blurRadius: 5,
-                          offset: const Offset(0, 3), // Shadow position
+                  SingleChildScrollView(
+                    scrollDirection: Axis.horizontal, // Enable horizontal scrolling
+                    child: Row(
+                      children: [
+                        Container(
+                          width: _chartData.length * 60.0 < MediaQuery.of(context).size.width
+                              ? MediaQuery.of(context).size.width
+                              : _chartData.length * 60.0, // Dynamic width based on the number of entries
+                          height: 300, // Fixed height for the chart
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(15.0),
+                            border: Border.all(color: Colors.blueAccent, width: 4.0),
+
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: _chartData.isEmpty
+                                ? Center(child: const Text("No operations data available!")) // Empty container if chart data is empty
+                                : BarChart(
+                              BarChartData(
+                                alignment: BarChartAlignment.spaceAround,
+                                maxY: _getMaxY(),
+                                barGroups: _chartData.entries.map((entry) {
+                                  return BarChartGroupData(
+                                    x: entry.key.hashCode,
+                                    barRods: [
+                                      BarChartRodData(
+                                        toY: entry.value.toDouble(),
+                                        width: 15,
+                                        borderRadius: BorderRadius.circular(4),
+                                        rodStackItems: [],
+                                        color: Colors.blueAccent,
+                                      ),
+                                    ],
+                                  );
+                                }).toList(),
+                                titlesData: FlTitlesData(
+                                  bottomTitles: AxisTitles(
+                                    axisNameWidget: const Text(
+                                      'Projects/Collections', // Title for the x-axis
+                                      style: TextStyle(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                    axisNameSize: 30, // Space for the x-axis title
+                                    sideTitles: SideTitles(
+                                      showTitles: true,
+                                      getTitlesWidget: (value, meta) {
+                                        return SideTitleWidget(
+                                          axisSide: meta.axisSide,
+                                          child: Text(
+                                            _chartData.keys
+                                                .elementAt(value.toInt() %
+                                                _chartData.length),
+                                            style: const TextStyle(fontSize: 10),
+                                          ),
+                                        );
+                                      },
+                                    ),
+                                  ),
+                                  leftTitles: AxisTitles(
+                                    axisNameWidget: const Text(
+                                      'Operations Count', // Title for the y-axis
+                                      style: TextStyle(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                    axisNameSize: 30, // Space for the y-axis title
+                                    sideTitles: SideTitles(
+                                      showTitles: true,
+                                      reservedSize: 40,
+                                      getTitlesWidget: (value, meta) {
+                                        return SideTitleWidget(
+                                          axisSide: meta.axisSide,
+                                          child: Text(
+                                            value.toInt().toString(),
+                                            style: const TextStyle(fontSize: 10),
+                                          ),
+                                        );
+                                      },
+                                    ),
+                                  ),
+                                  topTitles: const AxisTitles(
+                                    sideTitles: SideTitles(showTitles: false),
+                                  ),
+                                  rightTitles: const AxisTitles(
+                                    sideTitles: SideTitles(showTitles: false),
+                                  ),
+                                ),
+                                gridData: const FlGridData(show: false),
+                                borderData: FlBorderData(
+                                  show: true,
+                                  border: Border.all(
+                                      color: const Color(0xff37434d), width: 1),
+                                ),
+                              ),
+                            ),
+                          ),
                         ),
                       ],
                     ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: _chartData.isEmpty
-                          ? Container() // Empty container if chart data is empty
-                          : BarChart(
-                        BarChartData(
-                          alignment: BarChartAlignment.spaceAround,
-                          maxY: _getMaxY(),
-                          barGroups: _chartData.entries.map((entry) {
-                            return BarChartGroupData(
-                              x: entry.key.hashCode,
-                              barRods: [
-                                BarChartRodData(
-                                  toY: entry.value.toDouble(),
-                                  width: 15,
-                                  borderRadius: BorderRadius.circular(4),
-                                  rodStackItems: [],
-                                  color: Colors.blueAccent,
-                                ),
-                              ],
-                            );
-                          }).toList(),
-                          titlesData: FlTitlesData(
-                            bottomTitles: AxisTitles(
-                              axisNameWidget: Text(
-                                'Projects/Collections', // Title for the x-axis
-                                style: TextStyle(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.bold),
-                              ),
-                              axisNameSize: 30, // Space for the x-axis title
-                              sideTitles: SideTitles(
-                                showTitles: true,
-                                getTitlesWidget: (value, meta) {
-                                  return SideTitleWidget(
-                                    axisSide: meta.axisSide,
-                                    child: Text(
-                                      _chartData.keys
-                                          .elementAt(value.toInt() %
-                                          _chartData.length),
-                                      style: TextStyle(fontSize: 10),
-                                    ),
-                                  );
-                                },
-                              ),
-                            ),
-                            leftTitles: AxisTitles(
-                              axisNameWidget: Text(
-                                'Operations Count', // Title for the y-axis
-                                style: TextStyle(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.bold),
-                              ),
-                              axisNameSize: 30, // Space for the y-axis title
-                              sideTitles: SideTitles(
-                                showTitles: true,
-                                reservedSize: 40,
-                                getTitlesWidget: (value, meta) {
-                                  return SideTitleWidget(
-                                    axisSide: meta.axisSide,
-                                    child: Text(
-                                      value.toInt().toString(),
-                                      style: TextStyle(fontSize: 10),
-                                    ),
-                                  );
-                                },
-                              ),
-                            ),
-                            topTitles: AxisTitles(
-                              sideTitles: SideTitles(showTitles: false),
-                            ),
-                            rightTitles: AxisTitles(
-                              sideTitles: SideTitles(showTitles: false),
-                            ),
-                          ),
-                          gridData: FlGridData(show: false),
-                          borderData: FlBorderData(
-                            show: true,
-                            border: Border.all(
-                                color: const Color(0xff37434d), width: 1),
-                          ),
-                        ),
-                      ),
-                    ),
                   ),
-                  if (_chartData.isEmpty)
-                    Positioned.fill(
-                      child: Center(
-                        child: CircularProgressIndicator(),
-                      ),
-                    ),
                 ],
               ),
-              SizedBox(
+
+
+              const SizedBox(
                 height: 20.0,
               ),
               Container(
                 decoration: BoxDecoration(
                   color: Colors.amber,
+                  borderRadius: BorderRadius.circular(10.0),
                 ),
                 width: double.infinity,
                 height: 50.0,
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
+                child: const Padding(
+                  padding: EdgeInsets.all(8.0),
                   child: Text(
                     "Recently Accessed",
                     style: TextStyle(
@@ -382,14 +382,14 @@ class _HomeScreenState extends State<HomeScreen> {
                                 'Collection: ${entry['collectionName'] ?? 'Unknown'}\n'
                                 'Update Time: ${formatDateTime(entry['updateTime'])}',
                           ),
-                          SizedBox(height: 16),
+                          const SizedBox(height: 16),
                         ],
                       );
                     },
                   ),
                 ),
               ),
-              Divider(),
+              const Divider(),
             ],
           ),
         ),
@@ -415,7 +415,7 @@ class _HomeScreenState extends State<HomeScreen> {
           Container(
             width: 60,
             height: 60,
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
               shape: BoxShape.circle,
               color: Colors.blueAccent,
             ),
@@ -425,10 +425,10 @@ class _HomeScreenState extends State<HomeScreen> {
               size: 30,
             ),
           ),
-          SizedBox(height: 8), // Space between icon and text
+          const SizedBox(height: 8), // Space between icon and text
           Text(
             label,
-            style: TextStyle(fontSize: 14, color: Colors.black),
+            style: const TextStyle(fontSize: 14, color: Colors.black),
           ),
         ],
       ),
@@ -460,12 +460,12 @@ class _HomeScreenState extends State<HomeScreen> {
         children: [
           Text(
             title,
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,
             ),
           ),
-          SizedBox(height: 8), // Space between title and subtitle
+          const SizedBox(height: 8), // Space between title and subtitle
           Text(
             subtitle,
             style: TextStyle(

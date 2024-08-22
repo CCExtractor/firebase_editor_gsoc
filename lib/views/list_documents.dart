@@ -1101,8 +1101,8 @@ class _DocumentsPageState extends State<DocumentsPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            CircularProgressIndicator(),
-            SizedBox(height: 20),
+            const CircularProgressIndicator(),
+            const SizedBox(height: 20),
             Text(
               _isLoading ? 'Loading documents...' : 'Processing...Please Wait',
             ),
@@ -1115,16 +1115,27 @@ class _DocumentsPageState extends State<DocumentsPage> {
         children: [
 
           Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: TextField(
-                        controller: _searchController,
-                        decoration: const InputDecoration(
-                          labelText: 'Search by field name',
-                          prefixIcon: Icon(Icons.search),
-                          border: OutlineInputBorder(),
-                        ),
-                      ),
-                    ),
+            padding: const EdgeInsets.all(8.0),
+            child: TextField(
+              controller: _searchController,
+              decoration: const InputDecoration(
+                labelText: 'Search by field name',
+                prefixIcon: Icon(Icons.search),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(20.0)), // Set the radius to your desired value
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(20.0)), // Same as above
+                  borderSide: BorderSide(color: Colors.grey), // Optional: set the border color
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(20.0)), // Same as above
+                  borderSide: BorderSide(color: Colors.blue), // Optional: set the border color for focused state
+                ),
+              ),
+            ),
+
+          ),
           Row(
             children: [
               Padding(
@@ -1172,7 +1183,7 @@ class _DocumentsPageState extends State<DocumentsPage> {
                     backgroundColor: Colors.blue, // Set the background color
 
                   ),
-                  child: Text(_isBatchOperation ? 'Cancel' : 'Select', style: TextStyle(color: Colors.white),),
+                  child: Text(_isBatchOperation ? 'Cancel' : 'Select', style: const TextStyle(color: Colors.white),),
                 ),
 
               ),
