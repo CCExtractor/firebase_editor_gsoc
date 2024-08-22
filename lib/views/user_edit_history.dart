@@ -96,6 +96,7 @@ class HistoryPage extends StatelessWidget {
                       Text('Field: ${historyEntry['updatedField']}'),
                       Text('Update Time: ${formattedDateTime(historyEntry['updateTime'])}'),
                       Text('Operation Type: ${historyEntry['operationType']}'),
+                      Text('Edited By: ${historyEntry['editedBy']}')
                     ],
                   ),
                 ),

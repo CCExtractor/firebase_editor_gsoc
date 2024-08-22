@@ -35,6 +35,7 @@ void insertHistory(String documentPath, String updatedField, DateTime updateTime
     'updatedField': updatedField,
     'updateTime': updateTime.toUtc().toIso8601String(),
     'operationType': operationType,
+    'editedBy' : userController.user?.email,
   };
 
   // Add the new history entry to the array
