@@ -27,6 +27,8 @@ class _LoginScreenState extends State<LoginScreen> {
   // final FirebaseAuth _auth = FirebaseAuth.instance;
   final String googleAccessToken = "";
   User? _user;
+  bool _isSigningIn = false;
+
 
   @override
   void initState() {
@@ -43,45 +45,85 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: userController.user != null ? Text("Firebase Editor") : Text("Login"),
-        // actions: <Widget>[
-        //   userController.user != null
-        //       ? IconButton(
-        //           icon: const Icon(Icons.exit_to_app),
-        //           onPressed: () {
-        //             userController.handleLogout();
-        //           },
-        //         )
-        //       : Container(),
-        // ],
+        title: userController.user != null
+            ? const Text("Firebase Editor")
+            : const Text("Login"),
       ),
       backgroundColor: Colors.amber,
       body: userController.user != null ? _userInfo() : _googleSignInButton(),
     );
   }
 
+  // Widget _googleSignInButton() {
+  //   return Center(
+  //     child: Column(
+  //       mainAxisAlignment: MainAxisAlignment.center,
+  //       children: [
+  //         const Text(
+  //           "Sign in to your Firebase Account!",
+  //           style: TextStyle(
+  //               color: Colors.white,
+  //               fontWeight: FontWeight.bold,
+  //               fontSize: 20.0),
+  //         ),
+  //         const SizedBox(
+  //           height: 20.0,
+  //         ),
+  //         SizedBox(
+  //           height: 35,
+  //           child: SignInButton(
+  //             Buttons.google,
+  //             text: "Sign in With Google",
+  //             onPressed: () {
+  //               // _showButtonPressDialog(context, 'Google');
+  //               _handleGoogleSignIn();
+  //             },
+  //           ),
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
   Widget _googleSignInButton() {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text("Sign in to your Firebase Account!", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 20.0),),
-          SizedBox(height: 20.0,),
-          SizedBox(
-            height: 35,
-            child: SignInButton(
-              Buttons.google,
-              text: "Sign in With Google",
-              onPressed: () {
-                // _showButtonPressDialog(context, 'Google');
-                _handleGoogleSignIn();
-              },
-            ),
+          const Text(
+            "Sign in to your Firebase Account!",
+            style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                fontSize: 20.0),
           ),
+          const SizedBox(
+            height: 20.0,
+          ),
+          if (_isSigningIn)
+            Column(
+              children: [
+                const CircularProgressIndicator(), // Show CircularProgressIndicator
+                const SizedBox(height: 20.0),
+                const Text(
+                  "Signing in...",
+                  style: TextStyle(color: Colors.white, fontSize: 18.0),
+                ),
+              ],
+            )
+          else
+            SizedBox(
+              height: 35,
+              child: SignInButton(
+                Buttons.google,
+                text: "Sign in With Google",
+                onPressed: _handleGoogleSignIn,
+              ),
+            ),
         ],
       ),
     );
   }
+
 
   Widget _userInfo() {
     return SingleChildScrollView(
@@ -92,17 +134,23 @@ class _LoginScreenState extends State<LoginScreen> {
           padding: const EdgeInsets.all(18.0),
           child: Column(
             children: [
-      
               Container(
-                width: double.infinity,
+                  width: double.infinity,
                   height: 100.0,
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
-                    child: Center(child: Text("Welcome ${userController.user!.displayName}!",
-                      style: const TextStyle(fontSize: 30.0, color: Colors.white, fontWeight: FontWeight.bold),)),
+                    child: Center(
+                        child: Text(
+                      "Welcome ${userController.user!.displayName}!",
+                      style: const TextStyle(
+                          fontSize: 30.0,
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold),
+                    )),
                   )),
-      
-              SizedBox(height: 20.0,),
+              const SizedBox(
+                height: 20.0,
+              ),
               Center(
                 child: Container(
                   width: double.infinity,
@@ -115,8 +163,8 @@ class _LoginScreenState extends State<LoginScreen> {
                         color: Colors.grey.withOpacity(0.5),
                         spreadRadius: 4,
                         blurRadius: 5,
-                        offset: const Offset(
-                            0, 3), // changes position of shadow
+                        offset:
+                            const Offset(0, 3), // changes position of shadow
                       ),
                     ],
                   ),
@@ -128,7 +176,9 @@ class _LoginScreenState extends State<LoginScreen> {
                         crossAxisAlignment: CrossAxisAlignment.center,
                         mainAxisSize: MainAxisSize.max,
                         children: [
-                          SizedBox(height: 50.0,),
+                          const SizedBox(
+                            height: 50.0,
+                          ),
                           Container(
                             height: 200,
                             width: 200,
@@ -144,7 +194,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           const SizedBox(
                             height: 20,
                           ),
-                          Divider(),
+                          const Divider(),
                           Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -159,10 +209,11 @@ class _LoginScreenState extends State<LoginScreen> {
                                     ),
                                     child: Padding(
                                       padding: const EdgeInsets.all(8.0),
-                                      child: Text("Username: ${userController.user!.displayName}" ?? ""),
+                                      child: Text(
+                                          "Username: ${userController.user!.displayName}" ??
+                                              ""),
                                     )),
                               ),
-      
                               Padding(
                                 padding: const EdgeInsets.all(8.0),
                                 child: Container(
@@ -173,11 +224,13 @@ class _LoginScreenState extends State<LoginScreen> {
                                     ),
                                     child: Padding(
                                       padding: const EdgeInsets.all(8.0),
-                                      child: Text("Email Id: ${userController.user!.email!}"),
-                                    )
-                                ),
+                                      child: Text(
+                                          "Email Id: ${userController.user!.email!}"),
+                                    )),
                               ),
-                              SizedBox(height: 40.0,),
+                              const SizedBox(
+                                height: 40.0,
+                              ),
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
@@ -186,15 +239,21 @@ class _LoginScreenState extends State<LoginScreen> {
                                         Navigator.push(
                                           context,
                                           MaterialPageRoute(
-                                            builder: (context) => const HomeScreen(),
+                                            builder: (context) =>
+                                                const HomeScreen(),
                                           ),
                                         );
                                       },
                                       style: ElevatedButton.styleFrom(
                                         backgroundColor: Colors.blue,
                                       ),
-                                      child: const Text("Home", style: TextStyle(color: Colors.white),)),
-                                  SizedBox(width: 30.0,),
+                                      child: const Text(
+                                        "Home",
+                                        style: TextStyle(color: Colors.white),
+                                      )),
+                                  const SizedBox(
+                                    width: 30.0,
+                                  ),
                                   ElevatedButton(
                                       onPressed: () {
                                         userController.handleLogout();
@@ -202,7 +261,10 @@ class _LoginScreenState extends State<LoginScreen> {
                                       style: ElevatedButton.styleFrom(
                                         backgroundColor: Colors.blue,
                                       ),
-                                      child: const Text("Logout", style: TextStyle(color: Colors.white),)),
+                                      child: const Text(
+                                        "Logout",
+                                        style: TextStyle(color: Colors.white),
+                                      )),
                                 ],
                               ),
                             ],
@@ -220,7 +282,58 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
+  // void _handleGoogleSignIn() async {
+  //   try {
+  //     final GoogleSignIn googleSignIn = GoogleSignIn(scopes: [
+  //       'https://www.googleapis.com/auth/cloud-platform',
+  //       'https://www.googleapis.com/auth/datastore',
+  //       'https://www.googleapis.com/auth/firebase.messaging'
+  //     ]);
+  //
+  //     await googleSignIn.signOut(); // Ensure previous account is signed out
+  //
+  //     final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
+  //     if (googleUser == null) {
+  //       // The user canceled the sign-in
+  //       return;
+  //     }
+  //
+  //     final GoogleSignInAuthentication googleAuth =
+  //         await googleUser.authentication;
+  //     final OAuthCredential credential = GoogleAuthProvider.credential(
+  //       accessToken: googleAuth.accessToken,
+  //       idToken: googleAuth.idToken,
+  //     );
+  //
+  //     final UserCredential userCredential =
+  //         await userController.auth.signInWithCredential(credential);
+  //     // final User user = userCredential.user!;
+  //     final String? googleAccessToken = googleAuth.accessToken;
+  //     // accessController.accessToken.text = googleAccessToken!;
+  //
+  //     // save/update google access token to database for persistence of sessions
+  //     await tokenController.saveTokenData('accessToken', googleAccessToken!);
+  //
+  //     print('Google Access Token: $googleAccessToken');
+  //     if (await isTokenValid(googleAccessToken)) {
+  //       print('Token is valid');
+  //       // callFirestoreAPI(googleAccessToken);
+  //     } else {
+  //       print('Invalid access token');
+  //     }
+  //   } catch (error) {
+  //     print(error);
+  //     print('Error during Google sign-in: $error');
+  //     // Handle sign-in errors here, such as showing an alert dialog
+  //     // or taking appropriate action based on the error.
+  //   }
+  // }
+
   void _handleGoogleSignIn() async {
+    setState(() {
+      _isSigningIn = true; // Start loading
+    });
+
     try {
       final GoogleSignIn googleSignIn = GoogleSignIn(scopes: [
         'https://www.googleapis.com/auth/cloud-platform',
@@ -228,45 +341,45 @@ class _LoginScreenState extends State<LoginScreen> {
         'https://www.googleapis.com/auth/firebase.messaging'
       ]);
 
-
       await googleSignIn.signOut(); // Ensure previous account is signed out
 
       final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
       if (googleUser == null) {
         // The user canceled the sign-in
+        setState(() {
+          _isSigningIn = false; // Stop loading
+        });
         return;
       }
 
       final GoogleSignInAuthentication googleAuth =
-          await googleUser.authentication;
+      await googleUser.authentication;
       final OAuthCredential credential = GoogleAuthProvider.credential(
         accessToken: googleAuth.accessToken,
         idToken: googleAuth.idToken,
       );
 
       final UserCredential userCredential =
-          await userController.auth.signInWithCredential(credential);
-      // final User user = userCredential.user!;
+      await userController.auth.signInWithCredential(credential);
       final String? googleAccessToken = googleAuth.accessToken;
-      // accessController.accessToken.text = googleAccessToken!;
 
-      // save/update google access token to database for persistence of sessions
       await tokenController.saveTokenData('accessToken', googleAccessToken!);
 
       print('Google Access Token: $googleAccessToken');
       if (await isTokenValid(googleAccessToken)) {
         print('Token is valid');
-        // callFirestoreAPI(googleAccessToken);
       } else {
         print('Invalid access token');
       }
     } catch (error) {
-      print(error);
       print('Error during Google sign-in: $error');
-      // Handle sign-in errors here, such as showing an alert dialog
-      // or taking appropriate action based on the error.
+    } finally {
+      setState(() {
+        _isSigningIn = false; // Stop loading
+      });
     }
   }
+
 
   Future<bool> isTokenValid(String accessToken) async {
     final String url =

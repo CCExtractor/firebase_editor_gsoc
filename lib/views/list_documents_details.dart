@@ -40,6 +40,7 @@ class DocumentDetailsPage extends StatefulWidget {
 
 class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
   bool _isLoading = true;
+  bool _isProcessing = false;
   Map<String, dynamic>? _documentDetails;
   String? _error;
 
@@ -96,48 +97,7 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
   }
 
 
-  // Future<void> _exportDocumentToJson(Map<String, dynamic> documentData, String documentPath) async {
-  //   // Request storage permission before attempting to save the file
-  //   bool permissionGranted = await requestManageExternalStoragePermission(context);
-  //
-  //   if (!permissionGranted) {
-  //     _showErrorDialog('Storage permission is required to save the file.');
-  //     return;
-  //   }
-  //
-  //   try {
-  //     // Convert document data to JSON format
-  //     String jsonString = jsonEncode(documentData);
-  //
-  //     // Get the directory for storing the file
-  //     final directory = Directory('/storage/emulated/0/Download'); // Target the Downloads folder
-  //
-  //     // Ensure the directory exists
-  //     if (!await directory.exists()) {
-  //       await directory.create(recursive: true);
-  //     }
-  //
-  //     // Extract document ID from the documentPath
-  //     String documentId = documentPath.split('/').last;
-  //
-  //     // Set the path for the JSON file
-  //     final path = '${directory.path}/$documentId.json';
-  //
-  //     // Write the JSON string to a file
-  //     final file = File(path);
-  //     await file.writeAsString(jsonString);
-  //
-  //
-  //     // Show success message
-  //     print('Document exported successfully to $path');
-  //     _showExportSuccessDialog(path);
-  //   } catch (e) {
-  //     print('Error exporting document: $e');
-  //     _showErrorDialog('Error exporting document: $e');
-  //   }
-  // }
-
-  Future<void> _exportDocumentToJson(Map<String, dynamic> documentData, String documentPath, BuildContext context) async {
+    Future<void> _exportDocumentToJson(Map<String, dynamic> documentData, String documentPath, BuildContext context) async {
     try {
       // Request storage permission before attempting to save the file
       bool permissionGranted = await requestManageExternalStoragePermission(context);
@@ -216,25 +176,6 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
     );
   }
 
-  // Future<bool> requestStoragePermission(BuildContext context) async {
-  //   if (await Permission.storage.isGranted) {
-  //     print("Storage permission is already granted.");
-  //     return true;
-  //   }
-  //
-  //   PermissionStatus status = await Permission.storage.request();
-  //
-  //   if (status.isGranted) {
-  //     print("Storage permission granted.");
-  //     return true;
-  //   } else if (status.isDenied || status.isPermanentlyDenied) {
-  //     print("Storage permission denied.");
-  //     await showPermissionDialog(context); // Show the dialog if permission is denied
-  //     return false;
-  //   }
-  //
-  //   return false;
-  // }
   Future<bool> requestManageExternalStoragePermission(BuildContext context) async {
     if (await Permission.manageExternalStorage.isGranted) {
       print("Manage External Storage permission is already granted.");
@@ -513,6 +454,11 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
       "fields": updatedFields,
     };
 
+    setState(() {
+      _isProcessing = true; // Start loading
+    });
+
+
     try {
       final response = await http.patch(Uri.parse(url),
           headers: headers, body: json.encode(body));
@@ -533,6 +479,10 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
       }
     } catch (error) {
       showErrorDialog(context, "Failed to delete field $error");
+    }finally {
+      setState(() {
+        _isProcessing = false; // Stop loading
+      });
     }
   }
 
@@ -977,11 +927,7 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
     return DateFormat('dd-MM-yyyy HH:mm').format(dateTime);
   }
 
-  // String extractDisplayName(String documentName) {
-  //   List<String> parts = documentName.split("${widget.collectionId}/");
-  //   String displayName = parts.last;
-  //   return displayName;
-  // }
+
   String _updateTimeStampFieldValue(DateTime date, TimeOfDay time) {
     final DateTime newDateTime = DateTime(
       date.year,
@@ -1232,100 +1178,7 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
       },
     );
   }
-  // void _addField(String fieldName, String fieldType, String fieldValue) async {
-  //     if (_documentDetails!['fields'] == null) {
-  //       _documentDetails!['fields'] = {};
-  //     }
-  //
-  //     Map<String, dynamic> fields = {
-  //       ..._documentDetails!['fields']
-  //     }; // Copy existing fields
-  //
-  //     // Ensure the value is correctly structured and valid
-  //     dynamic formattedValue;
-  //     try {
-  //       switch (fieldType) {
-  //         case 'stringValue':
-  //           formattedValue = {'stringValue': fieldValue};
-  //           break;
-  //         case 'integerValue':
-  //           formattedValue = {'integerValue': int.parse(fieldValue)};
-  //           break;
-  //         case 'booleanValue':
-  //           formattedValue = {'booleanValue': fieldValue.toLowerCase() == 'true' || fieldValue.toLowerCase() == 'false'} ;
-  //           break;
-  //         case 'mapValue':
-  //           formattedValue = {'mapValue': ""};
-  //           break;
-  //         case 'arrayValue':
-  //           formattedValue = {'arrayValue': ""};
-  //           break;
-  //         case 'nullValue':
-  //           formattedValue = {'nullValue': ""};
-  //           break;
-  //         case 'timestampValue':
-  //           formattedValue = {'timestampValue': fieldValue};
-  //           break;
-  //         case 'geoPointValue':
-  //           var parts = fieldValue.split(',');
-  //           var value = {
-  //             'latitude': double.parse(parts[0]),
-  //             'longitude': double.parse(parts[1])
-  //           };
-  //           formattedValue = {'geoPointValue': value};
-  //           break;
-  //         case 'referenceValue':
-  //           formattedValue = {'referenceValue': fieldValue};
-  //           break;
-  //         default:
-  //           showErrorDialog(context, 'Unsupported field type');
-  //           return;
-  //       }
-  //     } catch (e) {
-  //       showErrorDialog(
-  //           context, 'Invalid value for the selected field type: $e');
-  //       return;
-  //     }
-  //
-  //     // Add new field
-  //     fields[fieldName] = formattedValue;
-  //
-  //
-  //     String url =
-  //         'https://firestore.googleapis.com/v1/${widget.documentPath}?updateMask.fieldPaths=$fieldName';
-  //     Map<String, String> headers = {
-  //       'Authorization': 'Bearer ${widget.accessToken}',
-  //       'Accept': 'application/json',
-  //       'Content-Type': 'application/json',
-  //     };
-  //     Map<String, dynamic> body = {
-  //       "fields": fields,
-  //     };
-  //
-  //     try {
-  //       final response = await http.patch(Uri.parse(url),
-  //           headers: headers, body: json.encode(body));
-  //
-  //       if (response.statusCode == 200) {
-  //         setState(() {
-  //
-  //           // update state
-  //           _documentDetails!['fields'] = fields;
-  //
-  //           // log it
-  //           DateTime updateTime = DateTime.now();
-  //           insertHistory(widget.documentPath, fieldName, updateTime, 'add');
-  //
-  //           // show toast
-  //           showToast("Field '$fieldName' added!");
-  //         });
-  //       } else {
-  //         showErrorDialog(context, 'Failed to add field. Status Code: ${response.statusCode}');
-  //       }
-  //     } catch (error) {
-  //       showErrorDialog(context, "Failed to add Field $error");
-  //     }
-  //   }
+
   void _addField(String fieldName, String fieldType, dynamic fieldValue) async {
     if (_documentDetails!['fields'] == null) {
       _documentDetails!['fields'] = {};
@@ -1334,6 +1187,7 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
     Map<String, dynamic> fields = {
       ..._documentDetails!['fields']
     }; // Copy existing fields
+
 
     // Ensure the value is correctly structured and valid
     dynamic formattedValue;
@@ -1394,6 +1248,11 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
       "fields": fields,
     };
 
+    setState(() {
+      _isProcessing = true; // Start loading
+    });
+
+
     try {
       final response = await http.patch(Uri.parse(url),
           headers: headers, body: json.encode(body));
@@ -1416,6 +1275,10 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
       }
     } catch (error) {
       showErrorDialog(context, "Failed to add Field $error");
+    }finally {
+    setState(() {
+    _isProcessing = false; // Stop loading
+    });
     }
   }
   void _addArrayField(String fieldName, List<Map<String, String>> arrayFields) async {
@@ -1604,14 +1467,16 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
       appBar: AppBar(
         title: const Text('Document Details'),
       ),
-      body: _isLoading
-          ? const Center(
+      body: _isLoading || _isProcessing
+          ? Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   CircularProgressIndicator(),
                   SizedBox(height: 20),
-                  Text('Loading document details...'),
+                  Text(
+                    _isLoading ? 'Loading document details...' : 'Processing...Please Wait',
+                  ),
                 ],
               ),
             )

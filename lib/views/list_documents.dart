@@ -36,6 +36,9 @@ class DocumentsPage extends StatefulWidget {
 
 class _DocumentsPageState extends State<DocumentsPage> {
   bool _isLoading = true;
+  bool _isProcessing = false;
+
+
   List<dynamic> _documents = [];
   List<dynamic> _filteredDocuments = [];
   String? _error;
@@ -59,38 +62,6 @@ class _DocumentsPageState extends State<DocumentsPage> {
       _filterDocuments();  // Notice the absence of parameters
     });
   }
-
-  // void _fetchDocuments() async {
-  //   String parent = 'projects/${widget.projectId}/databases/${widget.databaseId}/documents';
-  //   String url = 'https://firestore.googleapis.com/v1/$parent/${widget.collectionId}';
-  //   Map<String, String> headers = {
-  //     'Authorization': 'Bearer ${widget.accessToken}',
-  //     'Accept': 'application/json',
-  //   };
-  //
-  //   try {
-  //     final response = await http.get(Uri.parse(url), headers: headers);
-  //
-  //     if (response.statusCode == 200) {
-  //       var data = json.decode(response.body);
-  //       setState(() {
-  //         _documents = data['documents'] ?? [];
-  //         _isLoading = false;
-  //       });
-  //     } else {
-  //       setState(() {
-  //         _error = 'Failed to call Firestore API. Status Code: ${response.statusCode}';
-  //         _isLoading = false;
-  //       });
-  //     }
-  //   } catch (error) {
-  //     setState(() {
-  //       _error = 'Error calling Firestore API: $error';
-  //       _isLoading = false;
-  //     });
-  //   }
-  // }
-
 
   void _filterDocuments() {
     setState(() {
@@ -490,6 +461,10 @@ class _DocumentsPageState extends State<DocumentsPage> {
       // Add your document fields here
     };
 
+    setState(() {
+      _isProcessing = true; // Start loading
+    });
+
     try {
       final response = await http.patch(Uri.parse(url), headers: headers, body: json.encode(body));
       if (response.statusCode == 200) {
@@ -511,7 +486,11 @@ class _DocumentsPageState extends State<DocumentsPage> {
       }
     } catch (error) {
       showErrorDialog(context, 'Error creating document: $error');
-    }
+    }finally {
+      setState(() {
+        _isProcessing = false; // Stop loading
+      });
+  }
   }
 
 
@@ -571,24 +550,36 @@ class _DocumentsPageState extends State<DocumentsPage> {
       'Accept': 'application/json',
     };
 
+
+    setState(() {
+      _isProcessing = true; // Start loading
+    });
+
     try {
       final response = await http.delete(Uri.parse(url), headers: headers);
 
       if (response.statusCode == 200) {
-
         // String docId =
         setState(() {
           _documents.removeWhere((doc) => doc['name'] == documentPath);
 
           DateTime deleteTime = DateTime.now();
-          insertHistory(documentPath, "Document - ${extractDisplayName(documentPath)}", deleteTime, 'delete');
+          insertHistory(
+              documentPath, "Document - ${extractDisplayName(documentPath)}",
+              deleteTime, 'delete');
         });
         showToast('Document deleted successfully!');
       } else {
-        showErrorDialog(context, 'Failed to delete document. Status Code: ${response.statusCode}');
+        showErrorDialog(context,
+            'Failed to delete document. Status Code: ${response.statusCode}');
       }
     } catch (error) {
       showErrorDialog(context, 'Failed to delete document: $error');
+    }
+    finally {
+      setState(() {
+        _isProcessing = false; // Stop loading
+      });
     }
   }
 
@@ -900,6 +891,11 @@ class _DocumentsPageState extends State<DocumentsPage> {
       return;
     }
 
+
+    setState(() {
+      _isProcessing = true; // Start loading
+    });
+
     String url = 'https://firestore.googleapis.com/v1/projects/${widget.projectId}/databases/${widget.databaseId}/documents:batchWrite';
     Map<String, String> headers = {
       'Authorization': 'Bearer ${widget.accessToken}',
@@ -990,6 +986,10 @@ class _DocumentsPageState extends State<DocumentsPage> {
       }
     } catch (error) {
       showErrorDialog(context, 'Error adding field to documents: $error');
+    }finally {
+      setState(() {
+        _isProcessing = false; // Stop loading
+      });
     }
   }
 
@@ -1005,6 +1005,10 @@ class _DocumentsPageState extends State<DocumentsPage> {
       'Accept': 'application/json',
       'Content-Type': 'application/json',
     };
+
+    setState(() {
+      _isProcessing = true; // Start loading
+    });
 
     List<Map<String, dynamic>> writes = [];
     for (var documentPath in _selectedDocuments) {
@@ -1042,6 +1046,10 @@ class _DocumentsPageState extends State<DocumentsPage> {
       }
     } catch (error) {
       showErrorDialog(context, 'Error deleting field from documents: $error');
+    }finally {
+      setState(() {
+        _isProcessing = false; // Stop loading
+      });
     }
   }
 
@@ -1088,14 +1096,16 @@ class _DocumentsPageState extends State<DocumentsPage> {
         title: Text('${widget.collectionId}: documents'),
       ),
       drawer: CustomDrawer(),
-      body: _isLoading
-          ? const Center(
+      body: _isLoading || _isProcessing
+          ? Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             CircularProgressIndicator(),
             SizedBox(height: 20),
-            Text('Loading documents...'),
+            Text(
+              _isLoading ? 'Loading documents...' : 'Processing...Please Wait',
+            ),
           ],
         ),
       )
@@ -1225,125 +1235,6 @@ class _DocumentsPageState extends State<DocumentsPage> {
 
               ],
             ),
-
-          // Expanded(
-          //   child: ListView.builder(
-          //     itemCount: _documents.length,
-          //     itemBuilder: (context, index) {
-          //       var document = _documents[index];
-          //       return Container(
-          //         margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-          //         decoration: BoxDecoration(
-          //           color: Colors.white,
-          //           borderRadius: BorderRadius.circular(15.0),
-          //           boxShadow: [
-          //             BoxShadow(
-          //               color: Colors.grey.withOpacity(0.5),
-          //               spreadRadius: 2,
-          //               blurRadius: 5,
-          //               offset: const Offset(0, 3), // changes position of shadow
-          //             ),
-          //           ],
-          //         ),
-          //         child: ListTile(
-          //           leading: _isBatchOperation
-          //               ? Checkbox(
-          //             value: _selectedDocuments.contains(document['name']),
-          //             onChanged: (bool? value) {
-          //               setState(() {
-          //                 if (value == true) {
-          //                   _selectedDocuments.add(document['name']);
-          //                 } else {
-          //                   _selectedDocuments.remove(document['name']);
-          //                 }
-          //
-          //                 print("checkbox enabled");
-          //                 if (_isBatchOperation && _selectedDocuments.isNotEmpty) {
-          //                   print('Selected Documents: $_selectedDocuments');
-          //                 }
-          //               });
-          //             },
-          //           )
-          //               : null,
-          //           title: Text("Document ID: ${extractDisplayName(document['name'])}"),
-          //           subtitle: Column(
-          //             crossAxisAlignment: CrossAxisAlignment.start,
-          //             children: [
-          //               Text('Created Time: ${_formatDateTime(document['createTime'])}'),
-          //               Text('Updated Time: ${_formatDateTime(document['updateTime'])}'),
-          //               Row(
-          //                 children: [
-          //                   ElevatedButton(
-          //                     onPressed: () {
-          //                       // Define your button action here
-          //                       _showDocumentDetails(document['name']);
-          //                     },
-          //                     style: ElevatedButton.styleFrom(
-          //                       backgroundColor: Colors.amber, // Set the background color
-          //                     ),
-          //                     child: const Text('View Fields'),
-          //                   ),
-          //                   IconButton(
-          //                     onPressed: () {
-          //                       _confirmDeleteDocument(document['name']);
-          //                     },
-          //                     icon: const Icon(Icons.delete),
-          //                   ),
-          //                 ],
-          //               ),
-          //             ],
-          //           ),
-          //         ),
-          //       );
-          //
-          //       // return Container(
-          //       //   margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-          //       //   decoration: BoxDecoration(
-          //       //     color: Colors.white,
-          //       //     borderRadius: BorderRadius.circular(15.0),
-          //       //     boxShadow: [
-          //       //       BoxShadow(
-          //       //         color: Colors.grey.withOpacity(0.5),
-          //       //         spreadRadius: 2,
-          //       //         blurRadius: 5,
-          //       //         offset: const Offset(0, 3), // changes position of shadow
-          //       //       ),
-          //       //     ],
-          //       //   ),
-          //       //   child: ListTile(
-          //       //     title: Text("Document ID: ${extractDisplayName(document['name'])}"),
-          //       //     subtitle: Column(
-          //       //       crossAxisAlignment: CrossAxisAlignment.start,
-          //       //       children: [
-          //       //         Text('Created Time: ${_formatDateTime(document['createTime'])}'),
-          //       //         Text('Updated Time: ${_formatDateTime(document['updateTime'])}'),
-          //       //         Row(
-          //       //           children: [
-          //       //             ElevatedButton(
-          //       //               onPressed: () {
-          //       //                 // Define your button action here
-          //       //                 _showDocumentDetails(document['name']);
-          //       //               },
-          //       //               style: ElevatedButton.styleFrom(
-          //       //                 backgroundColor: Colors.amber, // Set the background color
-          //       //               ),
-          //       //               child: const Text('View Fields'),
-          //       //             ),
-          //       //
-          //       //             IconButton(onPressed: ()
-          //       //             {
-          //       //               _confirmDeleteDocument(document['name']);
-          //       //             },
-          //       //                 icon: const Icon(Icons.delete)),
-          //       //           ],
-          //       //         ),
-          //       //       ],
-          //       //     ),
-          //       //   ),
-          //       // );
-          //     },
-          //   ),
-          // ),
           Expanded(
             child: ListView.builder(
               itemCount: _filteredDocuments.length,
@@ -1414,110 +1305,4 @@ class _DocumentsPageState extends State<DocumentsPage> {
       ),
     );
   }
-  // @override
-  // Widget build(BuildContext context) {
-  //   return Scaffold(
-  //     appBar: AppBar(
-  //       title: Text('${widget.collectionId}: documents'),
-  //     ),
-  //     drawer: CustomDrawer(),
-  //     body: _isLoading
-  //         ? const Center(
-  //       child: Column(
-  //         mainAxisAlignment: MainAxisAlignment.center,
-  //         children: [
-  //           CircularProgressIndicator(),
-  //           SizedBox(height: 20),
-  //           Text('Loading documents...'),
-  //         ],
-  //       ),
-  //     )
-  //         : _error != null
-  //         ? Center(child: Text(_error!))
-  //         : Column(
-  //       children: [
-  //         Padding(
-  //           padding: const EdgeInsets.all(8.0),
-  //           child: TextField(
-  //             controller: _searchController,
-  //             decoration: const InputDecoration(
-  //               labelText: 'Search by field name',
-  //               prefixIcon: Icon(Icons.search),
-  //               border: OutlineInputBorder(),
-  //             ),
-  //           ),
-  //         ),
-  //
-  //         Expanded(
-  //           child: ListView.builder(
-  //             itemCount: _filteredDocuments.length,
-  //             itemBuilder: (context, index) {
-  //               var document = _filteredDocuments[index];
-  //               return Container(
-  //                 margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-  //                 decoration: BoxDecoration(
-  //                   color: Colors.white,
-  //                   borderRadius: BorderRadius.circular(15.0),
-  //                   boxShadow: [
-  //                     BoxShadow(
-  //                       color: Colors.grey.withOpacity(0.5),
-  //                       spreadRadius: 2,
-  //                       blurRadius: 5,
-  //                       offset: const Offset(0, 3), // changes position of shadow
-  //                     ),
-  //                   ],
-  //                 ),
-  //                 child: ListTile(
-  //                   leading: _isBatchOperation
-  //                       ? Checkbox(
-  //                     value: _selectedDocuments.contains(document['name']),
-  //                     onChanged: (bool? value) {
-  //                       setState(() {
-  //                         if (value == true) {
-  //                           _selectedDocuments.add(document['name']);
-  //                         } else {
-  //                           _selectedDocuments.remove(document['name']);
-  //                         }
-  //                       });
-  //                     },
-  //                   )
-  //                       : null,
-  //                   title: Text("Document ID: ${extractDisplayName(document['name'])}"),
-  //                   subtitle: Column(
-  //                     crossAxisAlignment: CrossAxisAlignment.start,
-  //                     children: [
-  //                       Text('Created Time: ${_formatDateTime(document['createTime'])}'),
-  //                       Text('Updated Time: ${_formatDateTime(document['updateTime'])}'),
-  //                       Row(
-  //                         children: [
-  //                           ElevatedButton(
-  //                             onPressed: () {
-  //                               _showDocumentDetails(document['name']);
-  //                             },
-  //                             style: ElevatedButton.styleFrom(
-  //                               backgroundColor: Colors.amber,
-  //                             ),
-  //                             child: const Text('View Fields'),
-  //                           ),
-  //                           IconButton(
-  //                             onPressed: () {
-  //                               _confirmDeleteDocument(document['name']);
-  //                             },
-  //                             icon: const Icon(Icons.delete),
-  //                           ),
-  //                         ],
-  //                       ),
-  //                     ],
-  //                   ),
-  //                 ),
-  //               );
-  //             },
-  //           ),
-  //         ),
-  //       ],
-  //     ),
-  //   );
-  // }
-
-
 }
