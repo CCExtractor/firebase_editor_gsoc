@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:intl/intl.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 String updateTimeStampFieldValue(DateTime date, TimeOfDay time) {
   final DateTime newDateTime = DateTime(
@@ -59,4 +61,73 @@ void showToast(String message) {
     textColor: Colors.white,
     fontSize: 16.0,
   );
+}
+
+Future<void> showPermissionDialog(BuildContext context) async {
+  return showDialog<void>(
+    context: context,
+    barrierDismissible: false, // User must tap a button to dismiss the dialog
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: const Text('Storage Permission Required'),
+        content: const Text(
+            'This app needs storage access to save files. Please enable storage permission in the app settings.'),
+        actions: <Widget>[
+          TextButton(
+            child: const Text('Cancel'),
+            onPressed: () {
+              Navigator.of(context).pop(); // Close the dialog
+            },
+          ),
+          TextButton(
+            child: const Text('OK'),
+            onPressed: () {
+              Navigator.of(context).pop(); // Close the dialog
+              openAppSettings(); // Open the app-specific settings page
+            },
+          ),
+        ],
+      );
+    },
+  );
+}
+
+Future<bool> requestManageExternalStoragePermission(BuildContext context) async {
+  if (await Permission.manageExternalStorage.isGranted) {
+    return true;
+  }
+
+  PermissionStatus status = await Permission.manageExternalStorage.request();
+
+  if (status.isGranted) {
+    return true;
+  } else if (status.isDenied || status.isPermanentlyDenied) {
+    await showPermissionDialog(context); // Show the dialog if permission is denied
+    return false;
+  }
+
+  return false;
+}
+
+
+String extractDisplayName(String documentName, String collectionId) {
+  List<String> parts = documentName.split("$collectionId/");
+  String displayName = parts.last;
+  return displayName;
+}
+
+
+
+void showExportSuccessDialog(String filePath) {
+  // Implement your logic to show a dialog with the file path
+  // You can also trigger a notification or alert here
+}
+
+void showDownloadErrorDialog(String message) {
+  // Implement your logic to show an error dialog
+}
+
+String formatDateTime(String dateTimeString) {
+  DateTime dateTime = DateTime.parse(dateTimeString);
+  return DateFormat('dd-MM-yyyy HH:mm').format(dateTime);
 }

@@ -1,10 +1,8 @@
 import 'dart:io';
 
-import 'package:csv/csv.dart';
 import 'package:firebase_editor_gsoc/controllers/history.dart';
 import 'package:firebase_editor_gsoc/controllers/notification_services.dart';
 import 'package:firebase_editor_gsoc/controllers/recent_entries.dart';
-import 'package:firebase_editor_gsoc/controllers/user_controller.dart';
 import 'package:firebase_editor_gsoc/views/array_field_data.dart';
 import 'package:firebase_editor_gsoc/views/map_field_data.dart';
 import 'package:firebase_editor_gsoc/views/utils/utils.dart';
@@ -15,7 +13,6 @@ import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:firebase_editor_gsoc/views/edit_field_type.dart';
-import 'package:dio/dio.dart';
 import 'package:flutter_file_dialog/flutter_file_dialog.dart';
 
 class DocumentDetailsPage extends StatefulWidget {
@@ -78,7 +75,6 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
         var data = json.decode(response.body);
         setState(() {
           _documentDetails = data;
-          print(_documentDetails);
           _isLoading = false;
         });
       } else {
@@ -118,7 +114,6 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
       // Use Dio to save the file
       File tempFile = File(tempPath);
       await tempFile.writeAsString(jsonString);
-      print('File temporarily saved at: $tempPath');
 
       // Prompt the user to save the file to their desired location (Downloads or other)
       if (Platform.isAndroid) {
@@ -126,10 +121,8 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
         final filePath = await FlutterFileDialog.saveFile(params: params);
 
         if (filePath != null) {
-          print('File successfully saved to: $filePath');
           _showExportSuccessDialog(filePath);
         } else {
-          print('File save was canceled.');
           _showErrorDialog('File save was canceled.');
         }
       } else if (Platform.isIOS) {
@@ -137,11 +130,9 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
         final downloadsDirectory = await getDownloadsDirectory();
         final iosPath = '${downloadsDirectory?.path}/$documentId.json';
         File iosFile = await tempFile.copy(iosPath);
-        print('File saved at: $iosPath');
         // _showExportSuccessDialog(iosPath);
       }
     } catch (e) {
-      print('Error exporting document: $e');
       _showErrorDialog('Error exporting document: $e');
     }
   }
@@ -178,17 +169,14 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
 
   Future<bool> requestManageExternalStoragePermission(BuildContext context) async {
     if (await Permission.manageExternalStorage.isGranted) {
-      print("Manage External Storage permission is already granted.");
       return true;
     }
 
     PermissionStatus status = await Permission.manageExternalStorage.request();
 
     if (status.isGranted) {
-      print("Manage External Storage permission granted.");
       return true;
     } else if (status.isDenied || status.isPermanentlyDenied) {
-      print("Manage External Storage permission denied.");
       await showPermissionDialog(context); // Show the dialog if permission is denied
       return false;
     }
@@ -200,13 +188,11 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
 
   void _showExportSuccessDialog(String filePath) {
     // Implement your logic to show a dialog with the file path
-    print('File saved at: $filePath');
     // You can also trigger a notification or alert here
   }
 
   void _showErrorDialog(String message) {
     // Implement your logic to show an error dialog
-    print('Error: $message');
   }
 
 
