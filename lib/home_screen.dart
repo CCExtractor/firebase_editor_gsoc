@@ -50,9 +50,9 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
-
   Future<void> _loadRecentEntries() async {
-    List<Map<String, dynamic>> recentEntries = await recentEntryService.fetchRecentEntries();
+    List<Map<String, dynamic>> recentEntries =
+        await recentEntryService.fetchRecentEntries();
     setState(() {
       _recentEntries = recentEntries;
     });
@@ -73,14 +73,12 @@ class _HomeScreenState extends State<HomeScreen> {
     // create history for user
     createHistoryArrayIfNotExists();
 
-
     _loadData();
     _loadRecentEntries();
 
     // call store device token fucntion
     userController.storeDeviceToken();
   }
-
 
   String formatDateTime(String dateTimeStr) {
     try {
@@ -91,8 +89,6 @@ class _HomeScreenState extends State<HomeScreen> {
       return 'Unknown';
     }
   }
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -230,8 +226,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   padding: EdgeInsets.all(8.0),
                   child: Text(
                     "Operations Analysis (Last 30 days)",
-                    style: TextStyle(
-                        fontSize: 18.0, fontWeight: FontWeight.bold),
+                    style:
+                        TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
                   ),
                 ),
               ),
@@ -241,103 +237,123 @@ class _HomeScreenState extends State<HomeScreen> {
               Stack(
                 children: [
                   SingleChildScrollView(
-                    scrollDirection: Axis.horizontal, // Enable horizontal scrolling
+                    scrollDirection:
+                        Axis.horizontal, // Enable horizontal scrolling
                     child: Row(
                       children: [
                         Container(
-                          width: _chartData.length * 60.0 < MediaQuery.of(context).size.width
+                          width: _chartData.length * 60.0 <
+                                  MediaQuery.of(context).size.width
                               ? MediaQuery.of(context).size.width
-                              : _chartData.length * 60.0, // Dynamic width based on the number of entries
+                              : _chartData.length *
+                                  60.0, // Dynamic width based on the number of entries
                           height: 300, // Fixed height for the chart
                           decoration: BoxDecoration(
                             color: Colors.white,
                             borderRadius: BorderRadius.circular(15.0),
-                            border: Border.all(color: Colors.blueAccent, width: 4.0),
-
+                            border: Border.all(
+                                color: Colors.blueAccent, width: 4.0),
                           ),
                           child: Padding(
                             padding: const EdgeInsets.all(8.0),
                             child: _chartData.isEmpty
-                                ? Center(child: const Text("No operations data available!")) // Empty container if chart data is empty
+                                ? Center(
+                                    child: const Text(
+                                    "No operations data available!",
+                                    style: TextStyle(
+                                      fontSize: 18.0,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.grey,
+                                    ),
+                                  )) // Empty container if chart data is empty
                                 : BarChart(
-                              BarChartData(
-                                alignment: BarChartAlignment.spaceAround,
-                                maxY: _getMaxY(),
-                                barGroups: _chartData.entries.map((entry) {
-                                  return BarChartGroupData(
-                                    x: entry.key.hashCode,
-                                    barRods: [
-                                      BarChartRodData(
-                                        toY: entry.value.toDouble(),
-                                        width: 15,
-                                        borderRadius: BorderRadius.circular(4),
-                                        rodStackItems: [],
-                                        color: Colors.blueAccent,
+                                    BarChartData(
+                                      alignment: BarChartAlignment.spaceAround,
+                                      maxY: _getMaxY(),
+                                      barGroups:
+                                          _chartData.entries.map((entry) {
+                                        return BarChartGroupData(
+                                          x: entry.key.hashCode,
+                                          barRods: [
+                                            BarChartRodData(
+                                              toY: entry.value.toDouble(),
+                                              width: 15,
+                                              borderRadius:
+                                                  BorderRadius.circular(4),
+                                              rodStackItems: [],
+                                              color: Colors.blueAccent,
+                                            ),
+                                          ],
+                                        );
+                                      }).toList(),
+                                      titlesData: FlTitlesData(
+                                        bottomTitles: AxisTitles(
+                                          axisNameWidget: const Text(
+                                            'Projects/Collections', // Title for the x-axis
+                                            style: TextStyle(
+                                                fontSize: 14,
+                                                fontWeight: FontWeight.bold),
+                                          ),
+                                          axisNameSize:
+                                              30, // Space for the x-axis title
+                                          sideTitles: SideTitles(
+                                            showTitles: true,
+                                            getTitlesWidget: (value, meta) {
+                                              return SideTitleWidget(
+                                                axisSide: meta.axisSide,
+                                                child: Text(
+                                                  _chartData.keys.elementAt(
+                                                      value.toInt() %
+                                                          _chartData.length),
+                                                  style: const TextStyle(
+                                                      fontSize: 10),
+                                                ),
+                                              );
+                                            },
+                                          ),
+                                        ),
+                                        leftTitles: AxisTitles(
+                                          axisNameWidget: const Text(
+                                            'Operations Count', // Title for the y-axis
+                                            style: TextStyle(
+                                                fontSize: 14,
+                                                fontWeight: FontWeight.bold),
+                                          ),
+                                          axisNameSize:
+                                              30, // Space for the y-axis title
+                                          sideTitles: SideTitles(
+                                            showTitles: true,
+                                            reservedSize: 40,
+                                            getTitlesWidget: (value, meta) {
+                                              return SideTitleWidget(
+                                                axisSide: meta.axisSide,
+                                                child: Text(
+                                                  value.toInt().toString(),
+                                                  style: const TextStyle(
+                                                      fontSize: 10),
+                                                ),
+                                              );
+                                            },
+                                          ),
+                                        ),
+                                        topTitles: const AxisTitles(
+                                          sideTitles:
+                                              SideTitles(showTitles: false),
+                                        ),
+                                        rightTitles: const AxisTitles(
+                                          sideTitles:
+                                              SideTitles(showTitles: false),
+                                        ),
                                       ),
-                                    ],
-                                  );
-                                }).toList(),
-                                titlesData: FlTitlesData(
-                                  bottomTitles: AxisTitles(
-                                    axisNameWidget: const Text(
-                                      'Projects/Collections', // Title for the x-axis
-                                      style: TextStyle(
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.bold),
-                                    ),
-                                    axisNameSize: 30, // Space for the x-axis title
-                                    sideTitles: SideTitles(
-                                      showTitles: true,
-                                      getTitlesWidget: (value, meta) {
-                                        return SideTitleWidget(
-                                          axisSide: meta.axisSide,
-                                          child: Text(
-                                            _chartData.keys
-                                                .elementAt(value.toInt() %
-                                                _chartData.length),
-                                            style: const TextStyle(fontSize: 10),
-                                          ),
-                                        );
-                                      },
+                                      gridData: const FlGridData(show: false),
+                                      borderData: FlBorderData(
+                                        show: true,
+                                        border: Border.all(
+                                            color: const Color(0xff37434d),
+                                            width: 1),
+                                      ),
                                     ),
                                   ),
-                                  leftTitles: AxisTitles(
-                                    axisNameWidget: const Text(
-                                      'Operations Count', // Title for the y-axis
-                                      style: TextStyle(
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.bold),
-                                    ),
-                                    axisNameSize: 30, // Space for the y-axis title
-                                    sideTitles: SideTitles(
-                                      showTitles: true,
-                                      reservedSize: 40,
-                                      getTitlesWidget: (value, meta) {
-                                        return SideTitleWidget(
-                                          axisSide: meta.axisSide,
-                                          child: Text(
-                                            value.toInt().toString(),
-                                            style: const TextStyle(fontSize: 10),
-                                          ),
-                                        );
-                                      },
-                                    ),
-                                  ),
-                                  topTitles: const AxisTitles(
-                                    sideTitles: SideTitles(showTitles: false),
-                                  ),
-                                  rightTitles: const AxisTitles(
-                                    sideTitles: SideTitles(showTitles: false),
-                                  ),
-                                ),
-                                gridData: const FlGridData(show: false),
-                                borderData: FlBorderData(
-                                  show: true,
-                                  border: Border.all(
-                                      color: const Color(0xff37434d), width: 1),
-                                ),
-                              ),
-                            ),
                           ),
                         ),
                       ],
@@ -345,7 +361,6 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ],
               ),
-
 
               const SizedBox(
                 height: 20.0,
@@ -361,34 +376,47 @@ class _HomeScreenState extends State<HomeScreen> {
                   padding: EdgeInsets.all(8.0),
                   child: Text(
                     "Recently Accessed",
-                    style: TextStyle(
-                        fontSize: 20.0, fontWeight: FontWeight.bold),
+                    style:
+                        TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
                   ),
                 ),
               ),
               Container(
                 padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  children: List.generate(
-                    _recentEntries.length,
-                        (index) {
-                      var entry = _recentEntries[index];
-                      return Column(
-                        children: [
-                          _buildTextTile(
-                            title: entry['projectName'] ?? 'Unknown Project',
-                            subtitle:
-                            'Database: ${entry['databaseName'] ?? 'Unknown'}\n'
-                                'Collection: ${entry['collectionName'] ?? 'Unknown'}\n'
-                                'Update Time: ${formatDateTime(entry['updateTime'])}',
+                child: _recentEntries.isEmpty
+                    ? Center(
+                        child: Text(
+                          'No data available',
+                          style: TextStyle(
+                            fontSize: 18.0,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.grey,
                           ),
-                          const SizedBox(height: 16),
-                        ],
-                      );
-                    },
-                  ),
-                ),
+                        ),
+                      )
+                    : Column(
+                        children: List.generate(
+                          _recentEntries.length,
+                          (index) {
+                            var entry = _recentEntries[index];
+                            return Column(
+                              children: [
+                                _buildTextTile(
+                                  title:
+                                      entry['projectName'] ?? 'Unknown Project',
+                                  subtitle:
+                                      'Database: ${entry['databaseName'] ?? 'Unknown'}\n'
+                                      'Collection: ${entry['collectionName'] ?? 'Unknown'}\n'
+                                      'Update Time: ${formatDateTime(entry['updateTime'])}',
+                                ),
+                                const SizedBox(height: 16),
+                              ],
+                            );
+                          },
+                        ),
+                      ),
               ),
+
               const Divider(),
             ],
           ),
@@ -396,7 +424,6 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
-
 
   double _getMaxY() {
     if (_chartData.isEmpty) return 1;

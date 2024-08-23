@@ -94,6 +94,52 @@ class _UserCollectionsPageState extends State<UserCollectionsPage> {
     }
   }
 
+  void _deleteCollection(String collectionName) async {
+    if (user != null) {
+      DocumentReference userDocRef = _firestore.collection('users').doc(user!.uid);
+      DocumentSnapshot userDoc = await userDocRef.get();
+
+      Map<String, dynamic> projectData = {
+        widget.projectId: {
+          widget.displayName: FieldValue.arrayRemove([collectionName])
+        }
+      };
+
+      if (userDoc.exists) {
+        await userDocRef.set(projectData, SetOptions(merge: true));
+      }
+
+      _fetchCollections();
+    }
+  }
+
+  void _showDeleteConfirmationDialog(String collectionName) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Delete Collection'),
+          content: Text('Are you sure you want to delete the collection "$collectionName"?'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                _deleteCollection(collectionName);
+              },
+              child: const Text('Delete'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   void _showAddCollectionDialog() {
     showDialog(
       context: context,
@@ -105,12 +151,13 @@ class _UserCollectionsPageState extends State<UserCollectionsPage> {
             onChanged: (value) {
               collectionName = value;
             },
-            decoration: const InputDecoration(hintText: 'Enter your Collection Name', hintStyle: TextStyle(fontSize: 12.0)),
+            decoration: const InputDecoration(
+              hintText: 'Enter your Collection Name',
+              hintStyle: TextStyle(fontSize: 12.0),
+            ),
           ),
           actions: [
-
             Text("Note: Collection Name is Case Sensitive"),
-
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
@@ -139,12 +186,12 @@ class _UserCollectionsPageState extends State<UserCollectionsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('${widget.displayName}:Collections'),
+        title: Text('${widget.displayName}: Collections'),
       ),
       drawer: CustomDrawer(),
       body: Stack(
         children: [
-          if (collections.isEmpty && _isLoading == false)
+          if (collections.isEmpty && !_isLoading)
             Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -189,15 +236,25 @@ class _UserCollectionsPageState extends State<UserCollectionsPage> {
                   ),
                   child: ListTile(
                     title: Text("Collection: ${collections[index]}"),
-                    trailing: ElevatedButton(
-                      onPressed: () {
-                        // Define your button action here
-                        _showDocuments(collections[index]);
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.amber, // Set the background color
-                      ),
-                      child: const Text('Documents'),
+                    subtitle: Row(
+                      children: [
+                        ElevatedButton(
+                          onPressed: () {
+                            _showDocuments(collections[index]);
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.amber, // Set the background color
+                          ),
+                          child: const Text('Documents'),
+                        ),
+                        const SizedBox(width: 8.0), // Space between buttons
+                        IconButton(
+                          icon: Icon(Icons.delete, color: Colors.grey),
+                          onPressed: () {
+                            _showDeleteConfirmationDialog(collections[index]);
+                          },
+                        ),
+                      ],
                     ),
                   ),
                 );
