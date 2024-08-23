@@ -4,7 +4,8 @@ import 'package:firebase_editor_gsoc/views/user_edit_history.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-/// The UserProfileView widget displays the user's profile information and provides options to view projects, switch accounts, and view edit history.
+/// The UserProfileView widget displays the user's profile information and provides options to view projects,
+/// switch accounts, and view edit history.
 class UserProfileView extends StatelessWidget {
   UserProfileView({super.key});
 

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class HelpPage extends StatelessWidget {
-  const HelpPage({Key? key}) : super(key: key);
+  const HelpPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -58,7 +58,7 @@ class HowToUsePage extends StatelessWidget {
               SizedBox(height: 10),
               Text(
                 "This section lists all the projects associated with the account you are currently signed in. "
-                    "In this section, you can navigate to project details, which lists down the databases of that particular project.",
+                "In this section, you can navigate to project details, which lists down the databases of that particular project.",
                 style: TextStyle(fontSize: 16),
               ),
               SizedBox(height: 20),
@@ -69,8 +69,8 @@ class HowToUsePage extends StatelessWidget {
               SizedBox(height: 10),
               Text(
                 "After selecting a database, you can add collections. The collection name should exactly match "
-                    "the collection name in your Firebase project (case sensitive). In the collections, you can view "
-                    "the documents, create new documents, delete existing documents, and perform batch operations.",
+                "the collection name in your Firebase project (case sensitive). In the collections, you can view "
+                "the documents, create new documents, delete existing documents, and perform batch operations.",
                 style: TextStyle(fontSize: 16),
               ),
               SizedBox(height: 20),
@@ -81,7 +81,7 @@ class HowToUsePage extends StatelessWidget {
               SizedBox(height: 10),
               Text(
                 "Batch operations allow you to add or delete fields from multiple documents at once. You can even download "
-                    "the document data (single or multiple) in JSON format and use it in your other applications.",
+                "the document data (single or multiple) in JSON format and use it in your other applications.",
                 style: TextStyle(fontSize: 16),
               ),
               SizedBox(height: 20),
@@ -92,9 +92,9 @@ class HowToUsePage extends StatelessWidget {
               SizedBox(height: 10),
               Text(
                 "This app has a version control system that keeps track of updates in the database, listing details such as "
-                    "project ID, database ID, collection ID, document ID, the field that is updated, operation type (update, add, delete), "
-                    "time and date of the update, and the user who updated it. This ensures transparency, a feature that is not present in "
-                    "the Firebase console.",
+                "project ID, database ID, collection ID, document ID, the field that is updated, operation type (update, add, delete), "
+                "time and date of the update, and the user who updated it. This ensures transparency, a feature that is not present in "
+                "the Firebase console.",
                 style: TextStyle(fontSize: 16),
               ),
               SizedBox(height: 20),

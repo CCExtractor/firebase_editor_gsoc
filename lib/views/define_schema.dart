@@ -46,7 +46,9 @@ class _DefineSchemaState extends State<DefineSchema> {
                 ),
               ),
             ),
-            const SizedBox(height: 15.0,),
+            const SizedBox(
+              height: 15.0,
+            ),
             TextField(
               controller: _schemaControllers.primaryKeyNameController,
               decoration: InputDecoration(
@@ -62,13 +64,18 @@ class _DefineSchemaState extends State<DefineSchema> {
             //     labelText: 'Primary Key Data Type',
             //   ),
             // ),
-            const SizedBox(height: 15.0,),
+            const SizedBox(
+              height: 15.0,
+            ),
             DropdownButtonFormField<String>(
               value: _schemaControllers.primaryKeyType,
               items: ['string', 'number', 'boolean'].map((String value) {
                 return DropdownMenuItem<String>(
                   value: value,
-                  child: Text(value, style: const TextStyle(fontSize: 18.0),),
+                  child: Text(
+                    value,
+                    style: const TextStyle(fontSize: 18.0),
+                  ),
                 );
               }).toList(),
               onChanged: (String? newValue) {
@@ -85,10 +92,13 @@ class _DefineSchemaState extends State<DefineSchema> {
               ),
             ),
             const SizedBox(height: 20.0),
-            ...List.generate(_schemaControllers.attributeNameControllers.length, (index) {
+            ...List.generate(_schemaControllers.attributeNameControllers.length,
+                (index) {
               return AttributeField(
-                attributeNameController: _schemaControllers.attributeNameControllers[index],
-                attributeTypeController: _schemaControllers.attributeTypeControllers[index],
+                attributeNameController:
+                    _schemaControllers.attributeNameControllers[index],
+                attributeTypeController:
+                    _schemaControllers.attributeTypeControllers[index],
               );
             }),
             const SizedBox(height: 20.0),

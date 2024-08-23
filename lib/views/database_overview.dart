@@ -1,5 +1,4 @@
-
-import 'package:firebase_editor_gsoc/views/circle_widget.dart';
+import 'package:firebase_editor_gsoc/widgets/circle_widget.dart';
 import 'package:firebase_editor_gsoc/views/two_circle_row.dart';
 import 'package:flutter/material.dart';
 
@@ -16,15 +15,18 @@ class DatabaseOverview extends StatelessWidget {
       body: Center(
         child: Column(
           children: [
-
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text("CRUD operations", style: Theme.of(context).textTheme.titleMedium,),
-                  const SizedBox(height: 20.0,),
-
+                  Text(
+                    "CRUD operations",
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                  const SizedBox(
+                    height: 20.0,
+                  ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
@@ -33,7 +35,6 @@ class DatabaseOverview extends StatelessWidget {
                         text: 'Create',
                         onTap: () {
                           // Handle Home click
-                          print('Create clicked');
                         },
                       ),
                       CircleWidget(
@@ -41,7 +42,6 @@ class DatabaseOverview extends StatelessWidget {
                         text: 'Read',
                         onTap: () {
                           // Handle Settings click
-                          print('Read clicked');
                         },
                       ),
                       CircleWidget(
@@ -49,7 +49,6 @@ class DatabaseOverview extends StatelessWidget {
                         text: 'Update',
                         onTap: () {
                           // Handle Search click
-                          print('Update clicked');
                         },
                       ),
                       CircleWidget(
@@ -57,7 +56,6 @@ class DatabaseOverview extends StatelessWidget {
                         text: 'Delete',
                         onTap: () {
                           // Handle Notifications click
-                          print('Delete clicked');
                         },
                       ),
                     ],
@@ -65,8 +63,6 @@ class DatabaseOverview extends StatelessWidget {
                 ],
               ),
             ),
-
-
             Container(
               width: 300,
               height: 200,
@@ -94,10 +90,9 @@ class DatabaseOverview extends StatelessWidget {
                             Text(
                               'Customize Schema',
                               style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold
-                              ),
+                                  color: Colors.white,
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold),
                             ),
                             Text(
                               'Manage and edit your \ndatabase schema',
@@ -119,7 +114,6 @@ class DatabaseOverview extends StatelessWidget {
                       child: ElevatedButton(
                         onPressed: () {
                           // Button action
-                          print('Button pressed');
                         },
                         child: const Text('Edit'),
                       ),
@@ -128,7 +122,6 @@ class DatabaseOverview extends StatelessWidget {
                 ],
               ),
             ),
-
             Column(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -150,7 +143,6 @@ class DatabaseOverview extends StatelessWidget {
                     ],
                   ),
                 ),
-
                 Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: DualCircleRow(
@@ -170,12 +162,8 @@ class DatabaseOverview extends StatelessWidget {
                 ),
               ],
             )
-
           ],
         ),
-
-
-
       ),
     );
   }

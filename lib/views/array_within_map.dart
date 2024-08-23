@@ -28,12 +28,25 @@ class ArrayWithinMapFieldDataPage extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  State<ArrayWithinMapFieldDataPage> createState() => _ArrayWithinMapFieldDataPageState();
+  State<ArrayWithinMapFieldDataPage> createState() =>
+      _ArrayWithinMapFieldDataPageState();
 }
 
-class _ArrayWithinMapFieldDataPageState extends State<ArrayWithinMapFieldDataPage> {
-
-  void _showEditDialog(String fieldName, String valueType, dynamic value, int index) {
+class _ArrayWithinMapFieldDataPageState
+    extends State<ArrayWithinMapFieldDataPage> {
+  /// Displays a dialog allowing the user to edit an element within an array field inside a map in a Firestore document.
+  ///
+  /// The `_showEditDialog` function presents an `AlertDialog` where the user can modify the value of an
+  /// array element at a specific index. The dialog displays the field name, type, and current value,
+  /// allowing the user to change the value. After editing, the new value is applied to the array, and the
+  /// `_updateField` function is called to update the array field within the map in Firestore.
+  ///
+  /// [fieldName]: The name of the field being edited.
+  /// [valueType]: The type of the value (e.g., stringValue, integerValue).
+  /// [value]: The current value of the field at the specified index.
+  /// [index]: The index of the element in the array to be edited.
+  void _showEditDialog(
+      String fieldName, String valueType, dynamic value, int index) {
     dynamic newValue = value; // Initial value to display in TextField
 
     showDialog(
@@ -55,7 +68,8 @@ class _ArrayWithinMapFieldDataPageState extends State<ArrayWithinMapFieldDataPag
                     child: TextField(
                       controller: TextEditingController(text: valueType),
                       readOnly: true,
-                      decoration: const InputDecoration(labelText: 'Field Type'),
+                      decoration:
+                          const InputDecoration(labelText: 'Field Type'),
                     ),
                   ),
                   IconButton(
@@ -89,7 +103,8 @@ class _ArrayWithinMapFieldDataPageState extends State<ArrayWithinMapFieldDataPag
                   if (valueType == 'stringValue') {
                     widget.arrayValue[index]['stringValue'] = newValue;
                   } else if (valueType == 'integerValue') {
-                    widget.arrayValue[index]['integerValue'] = int.parse(newValue); // Convert to integer if needed
+                    widget.arrayValue[index]['integerValue'] =
+                        int.parse(newValue); // Convert to integer if needed
                   } else if (valueType == 'timestampValue') {
                     // Handle timestamp update logic
                   } else if (valueType == 'mapValue') {
@@ -101,7 +116,10 @@ class _ArrayWithinMapFieldDataPageState extends State<ArrayWithinMapFieldDataPag
                   } else if (valueType == 'nullValue') {
                     widget.arrayValue[index]['nullValue'] = newValue;
                   } else if (valueType == 'booleanValue') {
-                    widget.arrayValue[index]['booleanValue'] = newValue.toLowerCase() == 'true' || newValue.toLowerCase() == 'false'; // Convert to boolean if needed
+                    widget.arrayValue[index]['booleanValue'] =
+                        newValue.toLowerCase() == 'true' ||
+                            newValue.toLowerCase() ==
+                                'false'; // Convert to boolean if needed
                   } else if (valueType == 'referenceValue') {
                     // Handle reference update logic
                     widget.arrayValue[index]['referenceValue'] = newValue;
@@ -123,10 +141,19 @@ class _ArrayWithinMapFieldDataPageState extends State<ArrayWithinMapFieldDataPag
     );
   }
 
-  void _updateField(String fieldName, List<dynamic> newArrayValue, String operationType) async {
+  /// Updates an array field within a map field in a Firestore document.
+  ///
+  /// The `_updateField` function sends a PATCH request to the Firestore REST API to update a specified
+  /// array field within a map field in a Firestore document. The function updates the array with the new
+  /// value, constructs the necessary JSON body, and sends it to Firestore. It also logs the operation
+  /// (e.g., 'update') and updates the local state with the new field data.
+  ///
+  /// [fieldName]: The name of the field to be updated.
+  /// [newArrayValue]: The updated array value to replace the existing array in the map field.
+  /// [operationType]: A string indicating the type of operation performed (e.g., 'update').
+  void _updateField(String fieldName, List<dynamic> newArrayValue,
+      String operationType) async {
     Map<String, dynamic> fields = widget.documentDetails!['fields'];
-
-
 
     // here i need to update the array within the map
     // fields[widget.fieldName]['mapValue']
@@ -134,10 +161,12 @@ class _ArrayWithinMapFieldDataPageState extends State<ArrayWithinMapFieldDataPag
     // print(fields[widget.mapFieldName]);
 
     // update the array
-    fields[widget.mapFieldName]['mapValue']['fields'][widget.arrayFieldName] = {'arrayValue' :{'values': newArrayValue}};
+    fields[widget.mapFieldName]['mapValue']['fields'][widget.arrayFieldName] = {
+      'arrayValue': {'values': newArrayValue}
+    };
 
-
-    String url = 'https://firestore.googleapis.com/v1/${widget.documentPath}?updateMask.fieldPaths=$fieldName';
+    String url =
+        'https://firestore.googleapis.com/v1/${widget.documentPath}?updateMask.fieldPaths=$fieldName';
     Map<String, String> headers = {
       'Authorization': 'Bearer ${widget.accessToken}',
       'Accept': 'application/json',
@@ -148,13 +177,15 @@ class _ArrayWithinMapFieldDataPageState extends State<ArrayWithinMapFieldDataPag
     };
 
     try {
-      final response = await http.patch(Uri.parse(url), headers: headers, body: json.encode(body));
+      final response = await http.patch(Uri.parse(url),
+          headers: headers, body: json.encode(body));
 
       if (response.statusCode == 200) {
         setState(() {
           widget.documentDetails!['fields'] = fields;
           DateTime updateTime = DateTime.now();
-          insertHistory(widget.documentPath, fieldName, updateTime, operationType);
+          insertHistory(
+              widget.documentPath, fieldName, updateTime, operationType);
         });
         print('Field updated successfully');
       } else {
@@ -162,6 +193,50 @@ class _ArrayWithinMapFieldDataPageState extends State<ArrayWithinMapFieldDataPag
       }
     } catch (error) {
       print('Error updating field: $error');
+    }
+  }
+
+  /// Prompts the user to confirm the deletion of an element from an array within a map field in a Firestore document.
+  ///
+  /// The `_deleteFieldFromArray` function displays a confirmation dialog asking the user whether they
+  /// want to delete an element at a specified index in an array. If the user confirms the deletion, the
+  /// function removes the element from the array and then calls `_updateField` to apply the changes to
+  /// the array within the map field in Firestore.
+  ///
+  /// [index]: The index of the element in the array to be deleted.
+  void _deleteFieldFromArray(int index) async {
+    bool confirmed = await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Confirm Deletion'),
+          content: Text(
+              'Are you sure you want to delete the element at index $index?'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(false); // User cancelled
+              },
+              child: Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(true); // User confirmed
+              },
+              child: Text('Delete', style: TextStyle(color: Colors.red)),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (confirmed == true) {
+      setState(() {
+        widget.arrayValue.removeAt(index);
+      });
+
+      // Update Firestore with the updated array
+      _updateField(widget.mapFieldName, widget.arrayValue, 'delete');
     }
   }
 
@@ -221,7 +296,8 @@ class _ArrayWithinMapFieldDataPageState extends State<ArrayWithinMapFieldDataPag
                   valueType = 'geoPointValue';
                   displayValueType = 'geoPoint';
                   value = valueData['geoPointValue'];
-                  displayValue = "[${value['latitude']}, ${value['longitude']}]";
+                  displayValue =
+                      "[${value['latitude']}, ${value['longitude']}]";
                 } else if (valueData.containsKey('nullValue')) {
                   valueType = 'nullValue';
                   displayValueType = 'null';
@@ -243,7 +319,8 @@ class _ArrayWithinMapFieldDataPageState extends State<ArrayWithinMapFieldDataPag
                 }
 
                 return Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                  margin: const EdgeInsets.symmetric(
+                      horizontal: 16.0, vertical: 8.0),
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(15.0),
@@ -252,12 +329,15 @@ class _ArrayWithinMapFieldDataPageState extends State<ArrayWithinMapFieldDataPag
                         color: Colors.grey.withOpacity(0.5),
                         spreadRadius: 2,
                         blurRadius: 5,
-                        offset: const Offset(0, 3), // changes position of shadow
+                        offset:
+                            const Offset(0, 3), // changes position of shadow
                       ),
                     ],
                   ),
                   child: ListTile(
-                    title: Text('$index', style: TextStyle(color: Colors.grey, fontWeight: FontWeight.bold)),
+                    title: Text('$index',
+                        style: TextStyle(
+                            color: Colors.grey, fontWeight: FontWeight.bold)),
                     subtitle: Text('($displayValueType): $displayValue'),
                     trailing: Row(
                       mainAxisSize: MainAxisSize.min,
@@ -289,21 +369,28 @@ class _ArrayWithinMapFieldDataPageState extends State<ArrayWithinMapFieldDataPag
                           IconButton(
                             icon: const Icon(Icons.remove_red_eye),
                             onPressed: () {
-                              showSnackBar(context, "For further editing visit Firebase.com");
+                              showSnackBar(context,
+                                  "For further editing visit Firebase.com");
                             },
                           ),
                         if (valueType == 'arrayValue')
                           IconButton(
                             icon: const Icon(Icons.remove_red_eye),
                             onPressed: () {
-                              showSnackBar(context, "For further editing visit Firebase.com");
+                              showSnackBar(context,
+                                  "For further editing visit Firebase.com");
                             },
                           ),
-                        if (valueType != 'mapValue' && valueType != 'arrayValue' && valueType != 'geoPointValue' && valueType != 'booleanValue' && valueType != 'timestampValue')
+                        if (valueType != 'mapValue' &&
+                            valueType != 'arrayValue' &&
+                            valueType != 'geoPointValue' &&
+                            valueType != 'booleanValue' &&
+                            valueType != 'timestampValue')
                           IconButton(
                             icon: const Icon(Icons.edit),
                             onPressed: () {
-                              _showEditDialog(index.toString(), valueType, value, index);
+                              _showEditDialog(
+                                  index.toString(), valueType, value, index);
                             },
                           ),
                         IconButton(
@@ -323,40 +410,5 @@ class _ArrayWithinMapFieldDataPageState extends State<ArrayWithinMapFieldDataPag
         ],
       ),
     );
-  }
-
-  void _deleteFieldFromArray(int index) async {
-    bool confirmed = await showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Confirm Deletion'),
-          content: Text('Are you sure you want to delete the element at index $index?'),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop(false); // User cancelled
-              },
-              child: Text('Cancel'),
-            ),
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop(true); // User confirmed
-              },
-              child: Text('Delete', style: TextStyle(color: Colors.red)),
-            ),
-          ],
-        );
-      },
-    );
-
-    if (confirmed == true) {
-      setState(() {
-        widget.arrayValue.removeAt(index);
-      });
-
-      // Update Firestore with the updated array
-      _updateField(widget.mapFieldName, widget.arrayValue, 'delete');
-    }
   }
 }
