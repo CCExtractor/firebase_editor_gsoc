@@ -1,9 +1,9 @@
 import 'dart:convert';
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_editor_gsoc/controllers/controllers.dart';
 import 'package:firebase_editor_gsoc/controllers/token_controller.dart';
 import 'package:firebase_editor_gsoc/home_screen.dart';
+import 'package:firebase_editor_gsoc/views/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -13,6 +13,7 @@ import 'package:glassmorphism/glassmorphism.dart';
 
 import 'controllers/user_controller.dart';
 
+/// The LoginScreen widget is responsible for handling user authentication using Google Sign-In.
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
@@ -20,19 +21,22 @@ class LoginScreen extends StatefulWidget {
   _LoginScreenState createState() => _LoginScreenState();
 }
 
+/// The state class for LoginScreen where the main logic for Google Sign-In is implemented.
 class _LoginScreenState extends State<LoginScreen> {
+  // Controllers for managing access tokens and user data.
   final accessController = Get.put(AccessController());
   final userController = Get.put(UserController()); // Initialize UserController
   final tokenController = Get.put(TokenController());
 
-  // final FirebaseAuth _auth = FirebaseAuth.instance;
-  final String googleAccessToken = "";
-  User? _user;
-  bool _isSigningIn = false;
+  User? _user; // Holds the currently signed-in user
+  bool _isSigningIn =
+      false; // Indicates whether the user is currently signing in
 
+  /// This method is called when the widget is first created.
   @override
   void initState() {
     super.initState();
+    // Listen for authentication state changes and update the user accordingly.
     userController.auth.authStateChanges().listen((event) {
       setState(() {
         userController.user = event;
@@ -41,23 +45,11 @@ class _LoginScreenState extends State<LoginScreen> {
     });
   }
 
-  // @override
-  // Widget build(BuildContext context) {
-  //   return Scaffold(
-  //     appBar: AppBar(
-  //       title: userController.user != null
-  //           ? const Text("Firebase Editor")
-  //           : const Text("Login"),
-  //     ),
-  //     backgroundColor: Colors.amber,
-  //     body: userController.user != null ? _userInfo() : _googleSignInButton(),
-  //   );
-  // }
-
+  /// The build method defines the UI of the LoginScreen.
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.blue,
+      backgroundColor: Colors.blue, // Background color of the screen
       body: Center(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -85,11 +77,12 @@ class _LoginScreenState extends State<LoginScreen> {
                 Colors.white.withOpacity(0.5),
               ],
             ),
+            // Display user information if signed in, otherwise show the Google Sign-In button
             child: Padding(
               padding: const EdgeInsets.all(24.0),
               child: userController.user != null
-                  ? _userInfo()
-                  : _googleSignInButton(),
+                  ? _userInfo() // If user is signed in, display user information
+                  : _googleSignInButton(), // Otherwise, display Google Sign-In button
             ),
           ),
         ),
@@ -97,10 +90,12 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
+  /// This widget displays the Google Sign-In button and handles the sign-in process.
   Widget _googleSignInButton() {
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
+        // Application title
         Column(
           children: [
             Text(
@@ -131,7 +126,8 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
           ],
         ),
-        Spacer(), // Pushes the content below to the center
+        const Spacer(), // Pushes the content below to the center
+        // Google Sign-In button and sign-in status
         Column(
           children: [
             const Text(
@@ -144,6 +140,7 @@ class _LoginScreenState extends State<LoginScreen> {
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 20.0),
+            // Show a loading indicator if signing in, otherwise show the Google Sign-In button
             if (_isSigningIn)
               const Column(
                 children: [
@@ -161,16 +158,17 @@ class _LoginScreenState extends State<LoginScreen> {
                 child: SignInButton(
                   Buttons.google,
                   text: "Sign in With Google",
-                  onPressed: _handleGoogleSignIn,
+                  onPressed: _handleGoogleSignIn, // Handle Google Sign-In
                 ),
               ),
           ],
         ),
-        Spacer(), // Pushes the content above to the center
-        Padding(
-          padding: const EdgeInsets.only(bottom: 20.0),
+        const Spacer(), // Pushes the content above to the center
+        // Footer with developer credits
+        const Padding(
+          padding: EdgeInsets.only(bottom: 20.0),
           child: Text(
-            "By: CCExtractor Development",
+            "By CCExtractor Development",
             style: TextStyle(color: Colors.white, fontSize: 18.0),
           ),
         ),
@@ -178,16 +176,15 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-
-
+  /// This widget displays user information after successful sign-in.
   Widget _userInfo() {
     return Column(
       mainAxisSize: MainAxisSize.max,
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Text(
+        const Text(
           "Welcome!",
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 45.0,
             color: Colors.white,
             fontWeight: FontWeight.bold,
@@ -203,8 +200,8 @@ class _LoginScreenState extends State<LoginScreen> {
           ),
           textAlign: TextAlign.center,
         ),
-
         const SizedBox(height: 20.0),
+        // Display user profile picture
         Container(
           height: 150,
           width: 150,
@@ -220,17 +217,17 @@ class _LoginScreenState extends State<LoginScreen> {
           ),
         ),
         const SizedBox(height: 20),
-        Divider(height: 12.0, color: Colors.amber),
+        const Divider(height: 12.0, color: Colors.amber),
         const SizedBox(height: 20),
+        // Display user details (Username and Email)
         Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Container(
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10.0),
-                border: Border.all(color: Colors.amber, width: 2.0),
-                color: Colors.white
-              ),
+                  borderRadius: BorderRadius.circular(10.0),
+                  border: Border.all(color: Colors.amber, width: 2.0),
+                  color: Colors.white),
               child: Padding(
                 padding: const EdgeInsets.all(12.0),
                 child: Text(
@@ -244,8 +241,7 @@ class _LoginScreenState extends State<LoginScreen> {
               decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(10.0),
                   border: Border.all(color: Colors.amber, width: 2.0),
-                  color: Colors.white
-              ),
+                  color: Colors.white),
               child: Padding(
                 padding: const EdgeInsets.all(12.0),
                 child: Text(
@@ -257,39 +253,13 @@ class _LoginScreenState extends State<LoginScreen> {
           ],
         ),
         const SizedBox(height: 40),
+        // Buttons to navigate to Home screen or sign out
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
             ElevatedButton(
               onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const HomeScreen(),
-                  ),
-                );
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.amber,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20.0),
-                ),
-              ),
-              child:  const Row(
-                mainAxisSize: MainAxisSize.min, // Adjusts the size of the row to the content
-                children: [
-                  Icon(Icons.home, color: Colors.black), // Choose your preferred icon and color
-                  SizedBox(width: 8.0), // Adds some space between the icon and the text
-                  Text(
-                    "Home",
-                    style: TextStyle(color: Colors.black),
-                  ),
-                ],
-              ),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                userController.handleLogout();
+                Get.offAll(const HomeScreen());
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.amber,
@@ -298,14 +268,32 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
               ),
               child: const Row(
-                mainAxisSize: MainAxisSize.min, // Adjusts the size of the row to the content
+                mainAxisSize: MainAxisSize
+                    .min, // Adjusts the size of the row to the content
                 children: [
-                  Icon(Icons.logout, color: Colors.black), // Choose your preferred icon and color
-                  SizedBox(width: 8.0), // Adds some space between the icon and the text
-                  Text(
-                    "Logout",
-                    style: TextStyle(color: Colors.black),
-                  ),
+                  Icon(Icons.home, color: Colors.black), // Home icon
+                  SizedBox(width: 8.0), // Space between the icon and the text
+                  Text("Home", style: TextStyle(color: Colors.black)),
+                ],
+              ),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                userController.handleLogout(); // Handle logout
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.amber,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20.0),
+                ),
+              ),
+              child: const Row(
+                mainAxisSize: MainAxisSize
+                    .min, // Adjusts the size of the row to the content
+                children: [
+                  Icon(Icons.logout, color: Colors.black), // Logout icon
+                  SizedBox(width: 8.0), // Space between the icon and the text
+                  Text("Logout", style: TextStyle(color: Colors.black)),
                 ],
               ),
             ),
@@ -315,6 +303,7 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
+  /// Handles Google Sign-In process and authentication.
   void _handleGoogleSignIn() async {
     setState(() {
       _isSigningIn = true; // Start loading
@@ -345,20 +334,23 @@ class _LoginScreenState extends State<LoginScreen> {
         idToken: googleAuth.idToken,
       );
 
+      // Sign in to Firebase with Google credentials
       final UserCredential userCredential =
           await userController.auth.signInWithCredential(credential);
       final String? googleAccessToken = googleAuth.accessToken;
 
       await tokenController.saveTokenData('accessToken', googleAccessToken!);
 
-      print('Google Access Token: $googleAccessToken');
-      if (await isTokenValid(googleAccessToken)) {
-        print('Token is valid');
-      } else {
-        print('Invalid access token');
-      }
+      // Validate the token
+      // can be used this for debugging
+      // if (await isTokenValid(googleAccessToken)) {
+      //   print('Token is valid');
+      // } else {
+      //   print('Invalid access token');
+      // }
     } catch (error) {
-      print('Error during Google sign-in: $error');
+      showToast("Error during Google sign-in");
+      // print('Error during Google sign-in: $error'); // Log any errors
     } finally {
       setState(() {
         _isSigningIn = false; // Stop loading
@@ -366,6 +358,7 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
+  /// Validates the Google access token by sending a request to Google's OAuth2 API.
   Future<bool> isTokenValid(String accessToken) async {
     final String url =
         'https://oauth2.googleapis.com/tokeninfo?access_token=$accessToken';
@@ -376,13 +369,13 @@ class _LoginScreenState extends State<LoginScreen> {
       if (response.statusCode == 200) {
         final Map<String, dynamic> tokenInfo = json.decode(response.body);
         print('Token Info: $tokenInfo');
-        return true; // You can add additional checks here if needed
+        return true; // Return true if the token is valid
       } else {
         print('Invalid token. Status Code: ${response.statusCode}');
-        return false;
+        return false; // Return false if the token is invalid
       }
     } catch (error) {
-      print('Error validating token: $error');
+      print('Error validating token: $error'); // Log any errors
       return false;
     }
   }

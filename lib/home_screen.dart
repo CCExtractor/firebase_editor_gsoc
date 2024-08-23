@@ -1,4 +1,3 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_editor_gsoc/controllers/controllers.dart';
 import 'package:firebase_editor_gsoc/controllers/data_visualization.dart';
 import 'package:firebase_editor_gsoc/controllers/history.dart';
@@ -10,13 +9,13 @@ import 'package:firebase_editor_gsoc/views/custom_drawer.dart';
 import 'package:firebase_editor_gsoc/views/help.dart';
 import 'package:firebase_editor_gsoc/views/list_projects.dart';
 import 'package:firebase_editor_gsoc/views/user_profile_view.dart';
-import 'package:firebase_editor_gsoc/views/utils/utils.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:intl/intl.dart'; // Import the intl package
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:intl/intl.dart'; // Import the intl package for date formatting
 
+/// The HomeScreen widget is the main screen of the application.
+/// It displays user information, recent entries, and a bar chart of operations analysis.
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
@@ -24,84 +23,87 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
+/// The state class for HomeScreen where the main logic is implemented.
 class _HomeScreenState extends State<HomeScreen> {
-  final FirebaseAuth _auth = FirebaseAuth.instance;
-
+  // Controllers for managing user data, access tokens, and notifications
   final userController = Get.put(UserController());
-
   final accessController = Get.put(AccessController());
-
   final tokenController = Get.put(TokenController());
 
+  // Service classes for handling notifications, data visualization, and recent entries
   NotificationServices notificationServices = NotificationServices();
-
-  final DataVisualizationService _dataVisualizationService =
-      DataVisualizationService();
-
+  final DataVisualizationService _dataVisualizationService = DataVisualizationService();
   RecentEntryService recentEntryService = RecentEntryService();
+
+  // Variables to hold chart data and recent entries
   Map<String, int> _chartData = {};
   List<Map<String, dynamic>> _recentEntries = [];
 
+  /// This method loads the chart data from Firebase and processes it for display.
   Future<void> _loadData() async {
-    List<Map<String, dynamic>> firebaseData =
-        await _dataVisualizationService.fetchFilteredData();
+    List<Map<String, dynamic>> firebaseData = await _dataVisualizationService.fetchFilteredData();
     setState(() {
       _chartData = processDataForChart(firebaseData);
     });
   }
 
+  /// This method loads the recent entries data from Firebase.
   Future<void> _loadRecentEntries() async {
-    List<Map<String, dynamic>> recentEntries =
-        await recentEntryService.fetchRecentEntries();
+    List<Map<String, dynamic>> recentEntries = await recentEntryService.fetchRecentEntries();
     setState(() {
       _recentEntries = recentEntries;
     });
   }
 
+  /// This method is called when the widget is first created.
   @override
   void initState() {
     super.initState();
+
+    // Request notification permission and set up notifications
     notificationServices.requestNotificationPermission();
     notificationServices.firebaseInit(context);
     notificationServices.setUpInteractMessage(context);
-    // notificationServices.isTokenRefresh();
+    // notificationServices.isTokenRefresh(); // Commented out, can be used if needed
 
-    // you need access token first before sending the notification
-    // fetch and set access token
+    // Fetch access token for sending notifications
     tokenController.fetchAccessTokenData();
 
-    // create history for user
+    // Create a history array for the user if it doesn't exist
     createHistoryArrayIfNotExists();
 
+    // Load chart data and recent entries
     _loadData();
     _loadRecentEntries();
 
-    // call store device token fucntion
+    // Store the device token for notifications
     userController.storeDeviceToken();
   }
 
+  /// Utility method to format date and time strings.
   String formatDateTime(String dateTimeStr) {
     try {
       DateTime dateTime = DateTime.parse(dateTimeStr);
       return DateFormat('dd-MM-yyyy HH:mm').format(dateTime);
     } catch (e) {
-      print('Error parsing date: $e');
-      return 'Unknown';
+      return 'Error';
     }
   }
 
+  /// The build method defines the UI of the HomeScreen.
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Home'),
       ),
-      drawer: CustomDrawer(),
+      drawer: CustomDrawer(), // Custom navigation drawer
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
             children: [
+              // Container displaying user profile information
               Container(
                 width: double.infinity,
                 height: 150.0,
@@ -114,7 +116,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       color: Colors.grey.withOpacity(0.5),
                       spreadRadius: 2,
                       blurRadius: 5,
-                      offset: const Offset(0, 3), // changes position of shadow
+                      offset: const Offset(0, 3), // Shadow positioning
                     ),
                   ],
                 ),
@@ -122,6 +124,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
+                    // User profile picture
                     Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -144,6 +147,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     const SizedBox(
                       width: 20.0,
                     ),
+                    // User display name and email
                     Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.center,
@@ -174,6 +178,7 @@ class _HomeScreenState extends State<HomeScreen> {
               const SizedBox(
                 height: 16,
               ),
+              // Container with quick access buttons for Projects, Profile, and Help
               Container(
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(15.0),
@@ -186,28 +191,28 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
+                    // Button to navigate to Projects page
                     _buildCircleButton(
                       icon: Icons.list,
                       label: 'Projects',
                       onPressed: () {
                         Get.to(const ProjectsPage());
-                        // Add your logic here
                       },
                     ),
+                    // Button to navigate to User Profile page
                     _buildCircleButton(
                       icon: Icons.account_circle_rounded,
                       label: 'Profile',
                       onPressed: () {
                         Get.to(UserProfileView());
-                        // Add your logic here
                       },
                     ),
+                    // Button to navigate to Help page
                     _buildCircleButton(
                       icon: Icons.help,
                       label: 'Help',
                       onPressed: () {
                         Get.to(const HelpPage());
-                        // Add your logic here
                       },
                     ),
                   ],
@@ -215,6 +220,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               const SizedBox(height: 16), // Space between the two containers
 
+              // Container displaying the Operations Analysis header
               Container(
                 decoration: BoxDecoration(
                   color: Colors.amber,
@@ -226,27 +232,25 @@ class _HomeScreenState extends State<HomeScreen> {
                   padding: EdgeInsets.all(8.0),
                   child: Text(
                     "Operations Analysis (Last 30 days)",
-                    style:
-                        TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
+                    style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
                   ),
                 ),
               ),
               const SizedBox(
                 height: 20.0,
               ),
+              // Bar chart displaying operations data
               Stack(
                 children: [
                   SingleChildScrollView(
-                    scrollDirection:
-                        Axis.horizontal, // Enable horizontal scrolling
+                    scrollDirection: Axis.horizontal, // Enable horizontal scrolling
                     child: Row(
                       children: [
                         Container(
                           width: _chartData.length * 60.0 <
-                                  MediaQuery.of(context).size.width
+                              MediaQuery.of(context).size.width
                               ? MediaQuery.of(context).size.width
-                              : _chartData.length *
-                                  60.0, // Dynamic width based on the number of entries
+                              : _chartData.length * 60.0, // Dynamic width based on the number of entries
                           height: 300, // Fixed height for the chart
                           decoration: BoxDecoration(
                             color: Colors.white,
@@ -257,103 +261,96 @@ class _HomeScreenState extends State<HomeScreen> {
                           child: Padding(
                             padding: const EdgeInsets.all(8.0),
                             child: _chartData.isEmpty
-                                ? Center(
-                                    child: const Text(
-                                    "No operations data available!",
-                                    style: TextStyle(
-                                      fontSize: 18.0,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.grey,
-                                    ),
-                                  )) // Empty container if chart data is empty
+                                ? const Center(
+                                child: Text(
+                                  "No operations data available!",
+                                  style: TextStyle(
+                                    fontSize: 18.0,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.grey,
+                                  ),
+                                )) // Displayed if no chart data is available
                                 : BarChart(
-                                    BarChartData(
-                                      alignment: BarChartAlignment.spaceAround,
-                                      maxY: _getMaxY(),
-                                      barGroups:
-                                          _chartData.entries.map((entry) {
-                                        return BarChartGroupData(
-                                          x: entry.key.hashCode,
-                                          barRods: [
-                                            BarChartRodData(
-                                              toY: entry.value.toDouble(),
-                                              width: 15,
-                                              borderRadius:
-                                                  BorderRadius.circular(4),
-                                              rodStackItems: [],
-                                              color: Colors.blueAccent,
-                                            ),
-                                          ],
+                              BarChartData(
+                                alignment: BarChartAlignment.spaceAround,
+                                maxY: _getMaxY(), // Calculate the max value for the y-axis
+                                barGroups: _chartData.entries.map((entry) {
+                                  return BarChartGroupData(
+                                    x: entry.key.hashCode,
+                                    barRods: [
+                                      BarChartRodData(
+                                        toY: entry.value.toDouble(),
+                                        width: 15,
+                                        borderRadius: BorderRadius.circular(4),
+                                        rodStackItems: [],
+                                        color: Colors.blueAccent,
+                                      ),
+                                    ],
+                                  );
+                                }).toList(),
+                                titlesData: FlTitlesData(
+                                  bottomTitles: AxisTitles(
+                                    axisNameWidget: const Text(
+                                      'Projects/Collections', // Title for the x-axis
+                                      style: TextStyle(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                    axisNameSize: 30, // Space for the x-axis title
+                                    sideTitles: SideTitles(
+                                      showTitles: true,
+                                      getTitlesWidget: (value, meta) {
+                                        return SideTitleWidget(
+                                          axisSide: meta.axisSide,
+                                          child: Text(
+                                            _chartData.keys.elementAt(value.toInt() %
+                                                _chartData.length),
+                                            style: const TextStyle(
+                                                fontSize: 10),
+                                          ),
                                         );
-                                      }).toList(),
-                                      titlesData: FlTitlesData(
-                                        bottomTitles: AxisTitles(
-                                          axisNameWidget: const Text(
-                                            'Projects/Collections', // Title for the x-axis
-                                            style: TextStyle(
-                                                fontSize: 14,
-                                                fontWeight: FontWeight.bold),
-                                          ),
-                                          axisNameSize:
-                                              30, // Space for the x-axis title
-                                          sideTitles: SideTitles(
-                                            showTitles: true,
-                                            getTitlesWidget: (value, meta) {
-                                              return SideTitleWidget(
-                                                axisSide: meta.axisSide,
-                                                child: Text(
-                                                  _chartData.keys.elementAt(
-                                                      value.toInt() %
-                                                          _chartData.length),
-                                                  style: const TextStyle(
-                                                      fontSize: 10),
-                                                ),
-                                              );
-                                            },
-                                          ),
-                                        ),
-                                        leftTitles: AxisTitles(
-                                          axisNameWidget: const Text(
-                                            'Operations Count', // Title for the y-axis
-                                            style: TextStyle(
-                                                fontSize: 14,
-                                                fontWeight: FontWeight.bold),
-                                          ),
-                                          axisNameSize:
-                                              30, // Space for the y-axis title
-                                          sideTitles: SideTitles(
-                                            showTitles: true,
-                                            reservedSize: 40,
-                                            getTitlesWidget: (value, meta) {
-                                              return SideTitleWidget(
-                                                axisSide: meta.axisSide,
-                                                child: Text(
-                                                  value.toInt().toString(),
-                                                  style: const TextStyle(
-                                                      fontSize: 10),
-                                                ),
-                                              );
-                                            },
-                                          ),
-                                        ),
-                                        topTitles: const AxisTitles(
-                                          sideTitles:
-                                              SideTitles(showTitles: false),
-                                        ),
-                                        rightTitles: const AxisTitles(
-                                          sideTitles:
-                                              SideTitles(showTitles: false),
-                                        ),
-                                      ),
-                                      gridData: const FlGridData(show: false),
-                                      borderData: FlBorderData(
-                                        show: true,
-                                        border: Border.all(
-                                            color: const Color(0xff37434d),
-                                            width: 1),
-                                      ),
+                                      },
                                     ),
                                   ),
+                                  leftTitles: AxisTitles(
+                                    axisNameWidget: const Text(
+                                      'Operations Count', // Title for the y-axis
+                                      style: TextStyle(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                    axisNameSize: 30, // Space for the y-axis title
+                                    sideTitles: SideTitles(
+                                      showTitles: true,
+                                      reservedSize: 40,
+                                      getTitlesWidget: (value, meta) {
+                                        return SideTitleWidget(
+                                          axisSide: meta.axisSide,
+                                          child: Text(
+                                            value.toInt().toString(),
+                                            style: const TextStyle(
+                                                fontSize: 10),
+                                          ),
+                                        );
+                                      },
+                                    ),
+                                  ),
+                                  topTitles: const AxisTitles(
+                                    sideTitles: SideTitles(showTitles: false),
+                                  ),
+                                  rightTitles: const AxisTitles(
+                                    sideTitles: SideTitles(showTitles: false),
+                                  ),
+                                ),
+                                gridData: const FlGridData(show: false), // Disable grid lines
+                                borderData: FlBorderData(
+                                  show: true,
+                                  border: Border.all(
+                                      color: const Color(0xff37434d),
+                                      width: 1),
+                                ),
+                              ),
+                            ),
                           ),
                         ),
                       ],
@@ -361,10 +358,10 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ],
               ),
-
               const SizedBox(
                 height: 20.0,
               ),
+              // Container displaying the Recently Accessed header
               Container(
                 decoration: BoxDecoration(
                   color: Colors.amber,
@@ -376,48 +373,45 @@ class _HomeScreenState extends State<HomeScreen> {
                   padding: EdgeInsets.all(8.0),
                   child: Text(
                     "Recently Accessed",
-                    style:
-                        TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
+                    style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
                   ),
                 ),
               ),
+              // Display recent entries or a message if no data is available
               Container(
                 padding: const EdgeInsets.all(16.0),
                 child: _recentEntries.isEmpty
-                    ? Center(
-                        child: Text(
-                          'No data available',
-                          style: TextStyle(
-                            fontSize: 18.0,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.grey,
-                          ),
-                        ),
-                      )
+                    ? const Center(
+                  child: Text(
+                    'No data available',
+                    style: TextStyle(
+                      fontSize: 18.0,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.grey,
+                    ),
+                  ),
+                )
                     : Column(
-                        children: List.generate(
-                          _recentEntries.length,
-                          (index) {
-                            var entry = _recentEntries[index];
-                            return Column(
-                              children: [
-                                _buildTextTile(
-                                  title:
-                                      entry['projectName'] ?? 'Unknown Project',
-                                  subtitle:
-                                      'Database: ${entry['databaseName'] ?? 'Unknown'}\n'
-                                      'Collection: ${entry['collectionName'] ?? 'Unknown'}\n'
-                                      'Update Time: ${formatDateTime(entry['updateTime'])}',
-                                ),
-                                const SizedBox(height: 16),
-                              ],
-                            );
-                          },
-                        ),
-                      ),
+                  children: List.generate(
+                    _recentEntries.length,
+                        (index) {
+                      var entry = _recentEntries[index];
+                      return Column(
+                        children: [
+                          _buildTextTile(
+                            title: entry['projectName'] ?? 'Unknown Project',
+                            subtitle: 'Database: ${entry['databaseName'] ?? 'Unknown'}\n'
+                                'Collection: ${entry['collectionName'] ?? 'Unknown'}\n'
+                                'Update Time: ${formatDateTime(entry['updateTime'])}',
+                          ),
+                          const SizedBox(height: 16),
+                        ],
+                      );
+                    },
+                  ),
+                ),
               ),
-
-              const Divider(),
+              const Divider(), // Divider between sections
             ],
           ),
         ),
@@ -425,11 +419,13 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  /// Helper method to get the maximum y-value for the bar chart.
   double _getMaxY() {
     if (_chartData.isEmpty) return 1;
     return _chartData.values.reduce((a, b) => a > b ? a : b).toDouble() + 1;
   }
 
+  /// Helper method to build circular buttons with icons and labels.
   Widget _buildCircleButton({
     required IconData icon,
     required String label,
@@ -462,6 +458,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  /// Helper method to build text tiles for displaying project information.
   Widget _buildTextTile({
     required String title,
     required String subtitle,
@@ -473,12 +470,13 @@ class _HomeScreenState extends State<HomeScreen> {
         color: Colors.white,
         borderRadius: BorderRadius.circular(10.0),
         border: Border.all(color: Colors.blueAccent),
+        // Uncomment to add shadow to the container
         // boxShadow: [
         //   BoxShadow(
         //     color: Colors.grey.withOpacity(0.5),
         //     spreadRadius: 1,
         //     blurRadius: 5,
-        //     offset: const Offset(0, 2), // changes position of shadow
+        //     offset: const Offset(0, 2), // Shadow positioning
         //   ),
         // ],
       ),
