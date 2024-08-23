@@ -2,7 +2,7 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:firebase_editor_gsoc/controllers/document_controller.dart';
-import 'package:firebase_editor_gsoc/controllers/history.dart';
+import 'package:firebase_editor_gsoc/controllers/history_controller.dart';
 import 'package:firebase_editor_gsoc/controllers/notification_services.dart';
 import 'package:firebase_editor_gsoc/views/custom_drawer.dart';
 import 'package:firebase_editor_gsoc/views/list_documents_details.dart';

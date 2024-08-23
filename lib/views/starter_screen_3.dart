@@ -14,15 +14,7 @@ class StarterScreen3 extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.blue, // Set the background color of the screen
-      body: GestureDetector(
-        // GestureDetector listens for tap events on the entire screen
-        onTap: () async {
-          final prefs = await SharedPreferences.getInstance();
-          await prefs.setBool('hasSeenStarterScreens',
-              true); // Mark that the starter screens have been seen
-          Get.offAll(
-              const LoginScreen()); // Navigate to the LoginScreen and clear navigation stack
-        },
+      body: SingleChildScrollView(
         child: Stack(
           children: [
             Center(
@@ -72,7 +64,7 @@ class StarterScreen3 extends StatelessWidget {
                                 child: Padding(
                                   padding: const EdgeInsets.only(
                                       right:
-                                          40.0), // Right padding to center the text
+                                      40.0), // Right padding to center the text
                                   child: Text(
                                     'Phone!',
                                     style: Theme.of(context)
@@ -102,8 +94,7 @@ class StarterScreen3 extends StatelessWidget {
                   final prefs = await SharedPreferences.getInstance();
                   await prefs.setBool('hasSeenStarterScreens',
                       true); // Mark that the starter screens have been seen
-                  Get.offAll(
-                      const LoginScreen()); // Navigate to the LoginScreen and clear navigation stack
+                  Get.offAll(LoginScreen()); // Navigate to the LoginScreen and clear navigation stack
                 },
               ),
             ),

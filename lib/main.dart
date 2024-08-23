@@ -1,5 +1,5 @@
 import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_editor_gsoc/controllers/controllers.dart';
+import 'package:firebase_editor_gsoc/controllers/access_controller.dart';
 import 'package:firebase_editor_gsoc/controllers/token_controller.dart';
 import 'package:firebase_editor_gsoc/controllers/user_controller.dart';
 import 'package:firebase_editor_gsoc/firebase_options.dart';
@@ -98,7 +98,7 @@ class MyApp extends StatelessWidget {
             ),
           )),
       home:
-          hasSeenStarterScreens ? const LoginScreen() : const StarterScreen1(),
+          hasSeenStarterScreens ?  LoginScreen() : const StarterScreen1(),
       navigatorKey: navigatorKey, // Assign the global navigator key
       debugShowCheckedModeBanner: false,
     );

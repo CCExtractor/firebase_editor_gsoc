@@ -4,8 +4,10 @@ import 'package:flutter/material.dart';
 
 class SchemaControllers {
   final TextEditingController dbNameController = TextEditingController();
-  final TextEditingController primaryKeyNameController = TextEditingController();
-  final TextEditingController primaryKeyTypeController = TextEditingController();
+  final TextEditingController primaryKeyNameController =
+      TextEditingController();
+  final TextEditingController primaryKeyTypeController =
+      TextEditingController();
   final List<TextEditingController> attributeNameControllers = [];
   final List<TextEditingController> attributeTypeControllers = [];
 

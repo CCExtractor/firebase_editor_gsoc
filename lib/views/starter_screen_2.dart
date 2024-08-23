@@ -14,17 +14,7 @@ class StarterScreen2 extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.blue, // Set the background color of the screen
-      body: GestureDetector(
-        // GestureDetector listens for tap events on the entire screen
-        onTap: () {
-          // Navigate to StarterScreen3 using traditional navigation
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => const StarterScreen3(),
-            ),
-          );
-        },
+      body: SingleChildScrollView(
         child: Stack(
           children: [
             Center(
@@ -35,7 +25,7 @@ class StarterScreen2 extends StatelessWidget {
                   // Display an image at the center-top of the screen
                   Image.asset('assets/cloud.png'),
                   const SizedBox(height: 20.0), // Space between the image and text
-
+        
                   // Column for displaying text content
                   Column(
                     mainAxisAlignment: MainAxisAlignment.start,

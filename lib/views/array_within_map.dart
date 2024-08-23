@@ -1,4 +1,4 @@
-import 'package:firebase_editor_gsoc/controllers/history.dart';
+import 'package:firebase_editor_gsoc/controllers/history_controller.dart';
 import 'package:firebase_editor_gsoc/views/datatypes/array.dart';
 import 'package:firebase_editor_gsoc/views/map_field_data.dart';
 import 'package:firebase_editor_gsoc/views/map_within_array.dart';

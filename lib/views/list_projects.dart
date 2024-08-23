@@ -1,5 +1,5 @@
 import 'package:firebase_editor_gsoc/API/fetch_projects.dart';
-import 'package:firebase_editor_gsoc/controllers/controllers.dart';
+import 'package:firebase_editor_gsoc/controllers/access_controller.dart';
 import 'package:firebase_editor_gsoc/controllers/user_controller.dart';
 import 'package:firebase_editor_gsoc/views/custom_drawer.dart';
 import 'package:firebase_editor_gsoc/views/list_databases.dart';
@@ -32,7 +32,7 @@ class _ProjectsPageState extends State<ProjectsPage> {
   void initState() {
     super.initState();
     _projectsFuture =
-        callFirebaseProjectsAPI(_accessController.accessToken.text);
+        callFirebaseProjectsAPI(context, _accessController.accessToken.text);
   }
 
   /// The build method defines the UI of the ProjectsPage.

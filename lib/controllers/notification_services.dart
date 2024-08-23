@@ -3,7 +3,7 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_editor_gsoc/controllers/controllers.dart';
+import 'package:firebase_editor_gsoc/controllers/access_controller.dart';
 import 'package:firebase_editor_gsoc/views/list_documents.dart';
 import 'package:firebase_editor_gsoc/views/list_documents_details.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -12,251 +12,264 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 
-
+/// A service class that handles notification-related functionalities,
+/// including initializing notifications, handling incoming notifications,
+/// and sending notifications using Firebase Cloud Messaging (FCM).
 class NotificationServices {
-
   final accessController = Get.put(AccessController());
   FirebaseMessaging messaging = FirebaseMessaging.instance;
 
-  /// for showing notifications when app is in active state
-  final FlutterLocalNotificationsPlugin _flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+  /// Instance of FlutterLocalNotificationsPlugin to manage local notifications
+  /// when the app is in an active state.
+  final FlutterLocalNotificationsPlugin _flutterLocalNotificationsPlugin =
+      FlutterLocalNotificationsPlugin();
 
-  /// function to initialize the _flutterLocalNotificationsPlugin instance
-  // provide context and message
-  void initLocalNotifications(BuildContext context, RemoteMessage message) async {
+  /// Initializes the local notification settings for Android and iOS.
+  ///
+  /// This method is used to set up the notification settings when the app is
+  /// in the foreground. It configures the notification icon, initialization
+  /// settings for Android and iOS, and specifies what happens when a notification
+  /// is received while the app is active.
+  ///
+  /// [context]: The build context from the calling widget.
+  /// [message]: The incoming remote message that contains the notification data.
+  void initLocalNotifications(
+      BuildContext context, RemoteMessage message) async {
+    // Android initialization settings, using the app icon as the notification icon.
+    var androidInitializationSettings =
+        const AndroidInitializationSettings("@mipmap/ic_launcher");
 
-    print("local notifications called");
-
-    /// ANDROID INITIALIZATION
-    // provide the icon you want to show in the notification right now it comes from res folder in android
-    // if you want to add yours, add it to drawable icon
-    // and then use drawable/ic_launcher
-    var androidInitializationSettings = const AndroidInitializationSettings("@mipmap/ic_launcher");
-
-    /// IOS INITIALIZATION
+    // iOS initialization settings.
     var iosInitializationSettings = const DarwinInitializationSettings();
 
-    /// BIND THE SETTINGS TOGETHER
+    // Combine Android and iOS settings into one initialization settings object.
     var initializationSetting = InitializationSettings(
-      android: androidInitializationSettings,
-      iOS: iosInitializationSettings
-    );
+        android: androidInitializationSettings, iOS: iosInitializationSettings);
 
-    /// initialize the _flutterLocalNotificationsPlugin instance
-    /// provide the initialization settings
-    await _flutterLocalNotificationsPlugin.initialize(
-      initializationSetting,
-      /// handle on received msg
-      onDidReceiveNotificationResponse: (payload){
-          handleMessage(context, message);
-      }
-    );
+    // Initialize the FlutterLocalNotificationsPlugin with the settings.
+    await _flutterLocalNotificationsPlugin.initialize(initializationSetting,
+        // Define what happens when a notification is tapped.
+        onDidReceiveNotificationResponse: (payload) {
+      handleMessage(context, message);
+    });
   }
 
-
-  /// this listens to broadcast service of fcm to listen for notifications
+  /// Initializes Firebase Messaging to listen for incoming messages.
+  ///
+  /// This method sets up a listener for Firebase messages that are received
+  /// while the app is in the foreground. It triggers the display of a local
+  /// notification when a message is received.
+  ///
+  /// [context]: The build context from the calling widget.
   void firebaseInit(BuildContext context) {
-
-    // listens on to notifications coming
+    // Listen for incoming messages while the app is in the foreground.
     FirebaseMessaging.onMessage.listen((message) {
-
-      print("NOTIFICATION TITLE: ${message.notification?.title.toString()}");
-      print("NOTIFICATION BODY: ${message.notification?.body.toString()}");
-      print("DATA: ${message.data.toString()}");
-      print(message.data['project_id']);
-      print(message.data['database_id']);
-      print(message.data['collection_id']);
-      print(message.data['document_id']);
-      // show in app notifications
+      // Show in-app notifications when a message is received.
       if (Platform.isAndroid) {
         initLocalNotifications(context, message);
         showInAppNotifications(message);
       }
     });
-
   }
 
+  /// Displays an in-app notification using the FlutterLocalNotificationsPlugin.
+  ///
+  /// This method is called when a message is received while the app is active.
+  /// It sets up the notification details for both Android and iOS and then
+  /// displays the notification to the user.
+  ///
+  /// [message]: The incoming remote message that contains the notification data.
+  Future<void> showInAppNotifications(RemoteMessage message) async {
+    // Define the notification channel for Android.
+    AndroidNotificationChannel androidNotificationChannel =
+        AndroidNotificationChannel(
+            Random.secure().nextInt(100000).toString(), // Random channel ID
+            "High Priority Notification", // Channel name
+            importance: Importance.max // Importance level
+            );
 
-  /// show notifications when app active
-  Future<void> showInAppNotifications(RemoteMessage message) async{
+    // Set up the Android notification details.
+    AndroidNotificationDetails androidNotificationDetails =
+        AndroidNotificationDetails(
+            androidNotificationChannel.id, // Channel ID
+            androidNotificationChannel.name, // Channel name
+            channelDescription:
+                "Your channel description", // Channel description
+            importance: Importance.high, // Importance level
+            priority: Priority.high, // Priority level
+            ticker: "ticker");
 
-    print("show in app notifications called");
+    // Set up the iOS notification details.
+    DarwinNotificationDetails darwinNotificationDetails =
+        const DarwinNotificationDetails(
+            presentAlert: true, presentBadge: true, presentSound: true);
 
-    ///  SET ANDROID NOTIFICATIONS AND CHANNEL DETAILS
-    // set a channel id and name for now
-    AndroidNotificationChannel androidNotificationChannel = AndroidNotificationChannel(
-      // for now provide a random channel id
-      Random.secure().nextInt(100000).toString(),
-      // for now you can give the name anything
-      "High Priority Notification",
-      importance: Importance.max // don't set it high, or it will not show
-    );
-
-    AndroidNotificationDetails androidNotificationDetails = AndroidNotificationDetails(
-        // access channel id
-        androidNotificationChannel.id,
-        // access channel Name
-        androidNotificationChannel.name,
-        channelDescription: "Your channel description",
-        importance: Importance.high,
-        priority: Priority.high,
-        ticker: "ticker"
-    );
-
-    /// SET IOS NOTIFICATIONS AND CHANNEL DETAILS
-    /// ios handles it by itself, firebase doesn't uses this
-    DarwinNotificationDetails darwinNotificationDetails = const DarwinNotificationDetails(
-      presentAlert: true,
-      presentBadge: true,
-      presentSound: true
-    );
-
-    /// BIND THE SETTINGS TOGETHER
+    // Combine Android and iOS notification details into one object.
     NotificationDetails notificationDetails = NotificationDetails(
-      android: androidNotificationDetails,
-      iOS: darwinNotificationDetails
-    );
+        android: androidNotificationDetails, iOS: darwinNotificationDetails);
 
-    // provide duration and callback function
+    // Show the notification immediately.
     Future.delayed(Duration.zero, () {
       _flutterLocalNotificationsPlugin.show(
-          0,   // id
-          message.notification!.title.toString(), // title
-          message.notification!.body.toString(), // body
+          0, // Notification ID
+          message.notification!.title.toString(), // Notification title
+          message.notification!.body.toString(), // Notification body
           notificationDetails);
     });
-
   }
 
-
-  // request permissions
+  /// Requests notification permissions from the user.
+  ///
+  /// This method requests permission from the user to display notifications.
+  /// It handles the different permission levels available on Android and iOS.
   void requestNotificationPermission() async {
-
     NotificationSettings settings = await messaging.requestPermission(
-      alert: true,  // notifications are shown in the device, if false, not shown even if permission given
-      announcement: true, // in earphones etc, notification can be read
-      badge: true, // number shown on top of app icon
-      carPlay: true, //
-      criticalAlert: true,
-      provisional: true, // request for permission when notifications are sent first time, for iOS
-      sound: true
-    );
+        alert: true, // Display notifications in the device's notification bar
+        announcement:
+            true, // Read notifications through connected devices like earphones
+        badge: true, // Display a badge on the app icon
+        carPlay: true, // Allow notifications in CarPlay
+        criticalAlert: true, // Allow critical alerts
+        provisional:
+            true, // Request permission the first time a notification is sent (iOS)
+        sound: true // Play a sound with the notification
+        );
 
-    if(settings.authorizationStatus == AuthorizationStatus.authorized) {
-        print("user granted permission");
-      }
-    // for iOS
-    else if(settings.authorizationStatus == AuthorizationStatus.provisional){
-      print("user granted permission");
-    }else{
-      print("user denied permission");
+    if (settings.authorizationStatus == AuthorizationStatus.authorized) {
+      // User granted permission
+    } else if (settings.authorizationStatus ==
+        AuthorizationStatus.provisional) {
+      // User granted provisional permission (iOS)
+    } else {
+      // User denied permission
     }
-
   }
 
-
-  // firebase sends notifications based on device token/device ID
+  /// Retrieves the device token used for Firebase Cloud Messaging.
+  ///
+  /// This method gets the unique device token for the current device, which
+  /// is used by Firebase Cloud Messaging to send notifications to this device.
+  ///
+  /// Returns the device token as a [String].
   Future<String> getDeviceToken() async {
-    String? token = await  messaging.getToken();
+    String? token = await messaging.getToken();
     return token!;
   }
-  // use this function to listen to token expiration and update it in the database.
+
+  /// Listens for token refresh events and updates the token in the database.
+  ///
+  /// This method listens for changes to the device's Firebase Cloud Messaging
+  /// token, which can happen if the token expires or is refreshed. It updates
+  /// the token in the Firestore database if necessary.
   void isTokenRefresh() {
     messaging.onTokenRefresh.listen((event) {
-      event.toString();
-      print("refreshed token: $event");
-  });
-}
+      event.toString(); // Log or handle the token refresh event
+    });
+  }
 
-  // redirect on tap on background notification or terminated state
+  /// Sets up interaction handling for when the app is opened via a notification.
+  ///
+  /// This method handles notifications that the user interacts with while the
+  /// app is in the background or terminated state. It ensures the correct
+  /// screen or action is triggered based on the notification data.
+  ///
+  /// [context]: The build context from the calling widget.
   Future<void> setUpInteractMessage(BuildContext context) async {
-
-    // when app is in terminated state
-    RemoteMessage? initialMessage = await FirebaseMessaging.instance.getInitialMessage();
-
-    if(initialMessage != null){
+    // Handle notifications that opened the app from a terminated state.
+    RemoteMessage? initialMessage =
+        await FirebaseMessaging.instance.getInitialMessage();
+    if (initialMessage != null) {
       handleMessage(context, initialMessage);
     }
 
-    // when app in background
+    // Handle notifications that opened the app from a background state.
     FirebaseMessaging.onMessageOpenedApp.listen((event) {
       handleMessage(context, event);
     });
-
   }
 
-
-  // redirect on tap on in app notification
-  void handleMessage(BuildContext context, RemoteMessage message){
-      if(message.data['type'] == 'record updated'){
-        // redirect to the document updated page
-        // access all ids from the payload
-        print(accessController.accessToken.text);
-        print("Project id: ${message.data['project_id']}");
-        print("DB id: ${message.data['database_id']}");
-        print("Collection id: ${message.data['collection_id']}");
-        print("Document id: ${message.data['document_id']}");
-
-        print("Hard document path: projects/hellos-bc256/databases/(default)/documents/bookings/UkbGIXCwLSWD0YQtosM2");
-        print("Format document path: projects/${message.data['project_id']}/databases/${message.data['database_id']}/documents/${message.data['collection_id']}/${message.data['document_id']}");
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => DocumentDetailsPage(
-              accessToken: accessController.accessToken.text,
-              projectId: message.data['project_id'],
-              databaseId: message.data['database_id'],
-              collectionId: message.data['collection_id'],
-              documentPath: "projects/${message.data['project_id']}/databases/${message.data['database_id']}/documents/${message.data['collection_id']}/${message.data['document_id']}",
-            ),
+  /// Handles notification taps and redirects to the appropriate screen.
+  ///
+  /// This method processes the notification data and determines the appropriate
+  /// action or screen to navigate to based on the type of notification received.
+  ///
+  /// [context]: The build context from the calling widget.
+  /// [message]: The incoming remote message that contains the notification data.
+  void handleMessage(BuildContext context, RemoteMessage message) {
+    if (message.data['type'] == 'record updated') {
+      // Navigate to the document details page.
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => DocumentDetailsPage(
+            accessToken: accessController.accessToken.text,
+            projectId: message.data['project_id'],
+            databaseId: message.data['database_id'],
+            collectionId: message.data['collection_id'],
+            documentPath:
+                "projects/${message.data['project_id']}/databases/${message.data['database_id']}/documents/${message.data['collection_id']}/${message.data['document_id']}",
           ),
-        );
-      }
-      else if(message.data['type'] == 'batch operation'){
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => DocumentsPage(
-              accessToken: accessController.accessToken.text,
-              projectId: message.data['project_id'],
-              databaseId: message.data['database_id'],
-              collectionId: message.data['collection_id'],
-            ),
+        ),
+      );
+    } else if (message.data['type'] == 'batch operation') {
+      // Navigate to the documents page.
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => DocumentsPage(
+            accessToken: accessController.accessToken.text,
+            projectId: message.data['project_id'],
+            databaseId: message.data['database_id'],
+            collectionId: message.data['collection_id'],
           ),
-        );
-
-      }
+        ),
+      );
+    }
   }
 
-
-
+  /// Fetches the OAuth access token from the server.
+  ///
+  /// This method sends a GET request to the server to retrieve an OAuth access
+  /// token, which is used to authenticate requests to Firebase Cloud Messaging.
+  ///
+  /// Returns the access token as a [String] or an empty string if the request fails.
   Future<String> fetchAccessToken() async {
-    const url = 'https://us-central1-gsoc-24-3f4d1.cloudfunctions.net/getOAuthToken';
+    const url =
+        'https://us-central1-gsoc-24-3f4d1.cloudfunctions.net/getOAuthToken';
 
     try {
       final response = await http.get(Uri.parse(url));
-
       if (response.statusCode == 200) {
         return response.body;
       } else {
-        print('Failed to fetch access token. Status code: ${response.statusCode}');
         return '';
       }
     } catch (e) {
-      print('Error fetching access token: $e');
       return '';
     }
   }
 
-  Future<void> sendBatchOperationNotification(String token, String projectId, String databaseId, String collectionId) async {
+  /// Sends a batch operation notification to a specific device.
+  ///
+  /// This method constructs and sends a batch operation notification to a device
+  /// using Firebase Cloud Messaging. It includes information about the project,
+  /// database, and collection related to the batch operation.
+  ///
+  /// [token]: The device token to which the notification will be sent.
+  /// [projectId]: The ID of the project associated with the operation.
+  /// [databaseId]: The ID of the database associated with the operation.
+  /// [collectionId]: The ID of the collection associated with the operation.
+  Future<void> sendBatchOperationNotification(String token, String projectId,
+      String databaseId, String collectionId) async {
     try {
-      String baseProjectId = "gsoc-24-3f4d1"; // Replace with your actual project ID
-      String url = 'https://fcm.googleapis.com/v1/projects/$baseProjectId/messages:send';
+      String baseProjectId =
+          "gsoc-24-3f4d1"; // Replace with your actual project ID
+      String url =
+          'https://fcm.googleapis.com/v1/projects/$baseProjectId/messages:send';
 
-      // Fetch the access token
+      // Fetch the access token.
       String accessToken = await fetchAccessToken();
       if (accessToken.isEmpty) {
-        print('Failed to get access token');
         return;
       }
 
@@ -286,32 +299,36 @@ class NotificationServices {
       );
 
       if (response.statusCode == 200) {
-        print('Notification sent successfully');
+        // Notification sent successfully.
       } else {
-        print('Failed to send notification. Status code: ${response.statusCode}');
-        print('Response body: ${response.body}');
+        // Failed to send notification.
       }
     } catch (e) {
-      print('Error sending notification: $e');
+      // Handle errors.
     }
   }
 
-
-  Future<void> sendNotification(
-      String token,
-      String projectId,
-      String databaseId,
-      String collectionId,
-      String documentId
-      ) async {
+  /// Sends a record update notification to a specific device.
+  ///
+  /// This method constructs and sends a record update notification to a device
+  /// using Firebase Cloud Messaging. It includes information about the project,
+  /// database, collection, and document that was updated.
+  ///
+  /// [token]: The device token to which the notification will be sent.
+  /// [projectId]: The ID of the project associated with the updated record.
+  /// [databaseId]: The ID of the database associated with the updated record.
+  /// [collectionId]: The ID of the collection associated with the updated record.
+  /// [documentId]: The ID of the document that was updated.
+  Future<void> sendNotification(String token, String projectId,
+      String databaseId, String collectionId, String documentId) async {
     try {
       String baseProjectId = 'gsoc-24-3f4d1';
-      String url = 'https://fcm.googleapis.com/v1/projects/$baseProjectId/messages:send';
+      String url =
+          'https://fcm.googleapis.com/v1/projects/$baseProjectId/messages:send';
 
-      // Fetch the access token
+      // Fetch the access token.
       String accessToken = await fetchAccessToken();
       if (accessToken.isEmpty) {
-        print('Failed to get access token');
         return;
       }
 
@@ -342,70 +359,87 @@ class NotificationServices {
       );
 
       if (response.statusCode == 200) {
-        print('Notification sent successfully');
+        // Notification sent successfully.
       } else {
-        print('Failed to send notification. Status code: ${response.statusCode}');
-        print('Response body: ${response.body}');
+        // Failed to send notification.
       }
     } catch (e) {
-      print('Error sending notification: $e');
+      // Handle errors.
     }
   }
 
-  void triggerNotification(String projectId, String databaseId, String collectionId, String documentId) async {
+  /// Triggers a notification for a record update based on a project ID.
+  ///
+  /// This method queries the Firestore database to find users associated with
+  /// the specified project ID. It then sends a notification to each user's device
+  /// informing them of the record update.
+  ///
+  /// [projectId]: The ID of the project associated with the record update.
+  /// [databaseId]: The ID of the database associated with the record update.
+  /// [collectionId]: The ID of the collection associated with the record update.
+  /// [documentId]: The ID of the document that was updated.
+  void triggerNotification(String projectId, String databaseId,
+      String collectionId, String documentId) async {
     try {
-      // Reference to the users collection in Firestore
-      final CollectionReference usersCollectionRef = FirebaseFirestore.instance.collection('users');
+      // Reference to the users collection in Firestore.
+      final CollectionReference usersCollectionRef =
+          FirebaseFirestore.instance.collection('users');
 
-      // Query the users collection to find users with the specified projectId in their projectIds array
+      // Query the users collection to find users with the specified projectId in their projectIds array.
       final QuerySnapshot querySnapshot = await usersCollectionRef
           .where('projectIds', arrayContains: projectId)
           .get();
 
-      // Loop through the documents in the query result
+      // Loop through the documents in the query result.
       for (var doc in querySnapshot.docs) {
-        // Get the device token from each document
+        // Get the device token from each document.
         String? deviceToken = doc.get('deviceToken');
 
         if (deviceToken != null && deviceToken.isNotEmpty) {
-          // Trigger the sendNotification function with the device token
-          sendNotification(deviceToken, projectId, databaseId, collectionId, documentId);
+          // Trigger the sendNotification function with the device token.
+          sendNotification(
+              deviceToken, projectId, databaseId, collectionId, documentId);
         }
       }
-
-      print("Notification triggered for users associated with projectId: $projectId");
     } catch (error) {
-      print("Error triggering notification: $error");
+      // Handle errors.
     }
   }
 
-
-  void triggerBatchOpNotification(String projectId, String databaseId, String collectionId) async {
+  /// Triggers a notification for a batch operation based on a project ID.
+  ///
+  /// This method queries the Firestore database to find users associated with
+  /// the specified project ID. It then sends a notification to each user's device
+  /// informing them of the batch operation.
+  ///
+  /// [projectId]: The ID of the project associated with the batch operation.
+  /// [databaseId]: The ID of the database associated with the batch operation.
+  /// [collectionId]: The ID of the collection associated with the batch operation.
+  void triggerBatchOpNotification(
+      String projectId, String databaseId, String collectionId) async {
     try {
-      // Reference to the users collection in Firestore
-      final CollectionReference usersCollectionRef = FirebaseFirestore.instance.collection('users');
+      // Reference to the users collection in Firestore.
+      final CollectionReference usersCollectionRef =
+          FirebaseFirestore.instance.collection('users');
 
-      // Query the users collection to find users with the specified projectId in their projectIds array
+      // Query the users collection to find users with the specified projectId in their projectIds array.
       final QuerySnapshot querySnapshot = await usersCollectionRef
           .where('projectIds', arrayContains: projectId)
           .get();
 
-      // Loop through the documents in the query result
+      // Loop through the documents in the query result.
       for (var doc in querySnapshot.docs) {
-        // Get the device token from each document
+        // Get the device token from each document.
         String? deviceToken = doc.get('deviceToken');
 
         if (deviceToken != null && deviceToken.isNotEmpty) {
-          // Trigger the sendBatchOperationNotification function with the device token
-          sendBatchOperationNotification(deviceToken, projectId, databaseId, collectionId);
+          // Trigger the sendBatchOperationNotification function with the device token.
+          sendBatchOperationNotification(
+              deviceToken, projectId, databaseId, collectionId);
         }
       }
-
-      print("Batch operation notification triggered for users associated with projectId: $projectId");
     } catch (error) {
-      print("Error triggering batch operation notification: $error");
+      // Handle errors.
     }
   }
-
-
 }

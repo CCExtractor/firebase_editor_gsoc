@@ -40,7 +40,7 @@ class _ProjectDetailsScreenState extends State<ProjectDetailsScreen> {
     try {
       // Call the API to fetch the database information
       Map<String, dynamic> response =
-          await fetchDatabaseInfo(widget.projectId, widget.accessToken);
+          await fetchDatabaseInfo(context, widget.projectId, widget.accessToken);
 
       setState(() {
         _databaseInfo = response; // Store the fetched database info

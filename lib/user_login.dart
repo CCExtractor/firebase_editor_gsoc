@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_editor_gsoc/controllers/controllers.dart';
+import 'package:firebase_editor_gsoc/controllers/access_controller.dart';
 import 'package:firebase_editor_gsoc/controllers/token_controller.dart';
 import 'package:firebase_editor_gsoc/home_screen.dart';
 import 'package:firebase_editor_gsoc/views/utils/utils.dart';
@@ -15,7 +15,7 @@ import 'controllers/user_controller.dart';
 
 /// The LoginScreen widget is responsible for handling user authentication using Google Sign-In.
 class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+  LoginScreen({super.key});
 
   @override
   _LoginScreenState createState() => _LoginScreenState();
@@ -30,7 +30,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   User? _user; // Holds the currently signed-in user
   bool _isSigningIn =
-      false; // Indicates whether the user is currently signing in
+  false; // Indicates whether the user is currently signing in
 
   /// This method is called when the widget is first created.
   @override
@@ -321,6 +321,7 @@ class _LoginScreenState extends State<LoginScreen> {
       final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
       if (googleUser == null) {
         // The user canceled the sign-in
+        _logSignInCancel(); // Custom method to log cancellation
         setState(() {
           _isSigningIn = false; // Stop loading
         });
@@ -328,7 +329,7 @@ class _LoginScreenState extends State<LoginScreen> {
       }
 
       final GoogleSignInAuthentication googleAuth =
-          await googleUser.authentication;
+      await googleUser.authentication;
       final OAuthCredential credential = GoogleAuthProvider.credential(
         accessToken: googleAuth.accessToken,
         idToken: googleAuth.idToken,
@@ -336,27 +337,32 @@ class _LoginScreenState extends State<LoginScreen> {
 
       // Sign in to Firebase with Google credentials
       final UserCredential userCredential =
-          await userController.auth.signInWithCredential(credential);
+      await userController.auth.signInWithCredential(credential);
+
       final String? googleAccessToken = googleAuth.accessToken;
 
       await tokenController.saveTokenData('accessToken', googleAccessToken!);
 
-      // Validate the token
-      // can be used this for debugging
-      // if (await isTokenValid(googleAccessToken)) {
-      //   print('Token is valid');
-      // } else {
-      //   print('Invalid access token');
-      // }
-    } catch (error) {
-      showToast("Error during Google sign-in");
-      // print('Error during Google sign-in: $error'); // Log any errors
+    } catch (error, stacktrace) {
+      // Improved error handling
+      _logSignInError(error, stacktrace);
+      showToast("Error during Google sign-in: $error");
     } finally {
       setState(() {
         _isSigningIn = false; // Stop loading
       });
     }
   }
+
+  void _logSignInCancel() {
+    print("User canceled the Google sign-in process.");
+  }
+
+  void _logSignInError(dynamic error, StackTrace stacktrace) {
+    print("Error during Google sign-in: $error");
+    print("Stacktrace: $stacktrace");
+  }
+
 
   /// Validates the Google access token by sending a request to Google's OAuth2 API.
   Future<bool> isTokenValid(String accessToken) async {

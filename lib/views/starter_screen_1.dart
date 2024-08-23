@@ -14,18 +14,12 @@ class StarterScreen1 extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.blue, // Set the background color of the screen
-      body: GestureDetector(
-        // GestureDetector listens for tap events on the entire screen
-        onTap: () {
-          // Navigate to StarterScreen2 using GetX for navigation
-          Get.to(const StarterScreen2());
-        },
-        child: Stack(
-          children: [
-            Center(
+      body: Stack(
+        children: [
+          Center(
+            child: SingleChildScrollView(
               child: Column(
-                mainAxisAlignment:
-                    MainAxisAlignment.end, // Align content to the bottom
+                mainAxisAlignment: MainAxisAlignment.end, // Align content to the bottom
                 children: [
                   // Column to display the app's name
                   Column(
@@ -45,11 +39,9 @@ class StarterScreen1 extends StatelessWidget {
                             height: 70,
                             width: 200,
                             decoration: BoxDecoration(
-                              color: Colors.amber
-                                  .withOpacity(1.0), // Background color
+                              color: Colors.amber.withOpacity(1.0), // Background color
                               shape: BoxShape.rectangle,
-                              borderRadius: BorderRadius.circular(
-                                  40), // Rounded corners to make it oval
+                              borderRadius: BorderRadius.circular(40), // Rounded corners to make it oval
                             ),
                           ),
                           // Positioned text "Editor" inside the background container
@@ -70,31 +62,30 @@ class StarterScreen1 extends StatelessWidget {
                     height: 50.0, // Space between the app name and the image
                   ),
                   // Stack to display the welcome image
-                  Stack(
-                    children: [
-                      const SizedBox(height: 2.0),
-                      Image.asset(
-                          'assets/welcome.png'), // Display welcome image
-                    ],
-                  ),
+
+                      Stack(
+                          children: [
+                            Image.asset('assets/welcome.png'),
+                          ]
+                      ), // Display welcome image
+
                 ],
               ),
             ),
-            // Positioned icon in the top-right corner for navigation
-            Positioned(
-              top: 16.0,
-              right: 16.0,
-              child: IconButton(
-                icon: const Icon(Icons.arrow_forward_ios_rounded,
-                    color: Colors.white), // Forward arrow icon
-                onPressed: () {
-                  // Navigate to StarterScreen2 using GetX for navigation
-                  Get.to(const StarterScreen2());
-                },
-              ),
+          ),
+          // Positioned icon in the top-right corner for navigation
+          Positioned(
+            top: 30.0,
+            right: 16.0,
+            child: IconButton(
+              icon: const Icon(Icons.arrow_forward_ios_rounded, color: Colors.white), // Forward arrow icon
+              onPressed: () {
+                // Navigate to StarterScreen2 using GetX for navigation
+                Get.to(const StarterScreen2());
+              },
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

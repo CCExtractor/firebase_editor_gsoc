@@ -1,6 +1,6 @@
-import 'package:firebase_editor_gsoc/controllers/controllers.dart';
+import 'package:firebase_editor_gsoc/controllers/access_controller.dart';
 import 'package:firebase_editor_gsoc/controllers/data_visualization.dart';
-import 'package:firebase_editor_gsoc/controllers/history.dart';
+import 'package:firebase_editor_gsoc/controllers/history_controller.dart';
 import 'package:firebase_editor_gsoc/controllers/notification_services.dart';
 import 'package:firebase_editor_gsoc/controllers/recent_entries.dart';
 import 'package:firebase_editor_gsoc/controllers/token_controller.dart';

@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:firebase_editor_gsoc/controllers/history.dart';
+import 'package:firebase_editor_gsoc/controllers/history_controller.dart';
 import 'package:firebase_editor_gsoc/views/array_field_data.dart';
 import 'package:firebase_editor_gsoc/views/array_within_map.dart';
 import 'package:firebase_editor_gsoc/views/utils/utils.dart';
