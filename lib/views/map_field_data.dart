@@ -1116,7 +1116,7 @@ class _MapFieldDataPageState extends State<MapFieldDataPage> {
                             // Implement delete functionality
                             _deleteFieldWithinMap(key);
                           },
-                        ),
+                        ),  
                       ],
                     ),
                   ),

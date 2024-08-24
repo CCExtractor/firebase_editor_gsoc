@@ -1910,6 +1910,7 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
                                 String displayFieldType;
                                 dynamic displayValue;
                                 dynamic fieldValue;
+                                print(_documentDetails!['fields']);
 
                                 if (fieldData.containsKey('stringValue')) {
                                   fieldType = 'stringValue';
@@ -2002,7 +2003,7 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
                                                     builder: (context) =>
                                                         MapFieldDataPage(
                                                       fieldName: fieldName,
-                                                      mapValue: fieldValue,
+                                                      mapValue: fieldValue ?? {},
                                                       documentDetails:
                                                           _documentDetails,
                                                       accessToken:
