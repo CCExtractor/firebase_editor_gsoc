@@ -3,7 +3,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:get/get.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import '../user_login.dart';
+import '../views/user_sign_in/user_login.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 /// The `UserController` class manages user-related operations, including

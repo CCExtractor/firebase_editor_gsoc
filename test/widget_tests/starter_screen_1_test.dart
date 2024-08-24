@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
-import 'package:firebase_editor_gsoc/views/starter_screen_1.dart';
-import 'package:firebase_editor_gsoc/views/starter_screen_2.dart';
+import 'package:firebase_editor_gsoc/views/screens/starter_screens/starter_screen_1.dart';
+import 'package:firebase_editor_gsoc/views/screens/starter_screens/starter_screen_2.dart';
 
 void main() {
   testWidgets('StarterScreen1 renders correctly and navigates on tap', (WidgetTester tester) async {

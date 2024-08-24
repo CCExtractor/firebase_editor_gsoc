@@ -4,8 +4,8 @@ import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_editor_gsoc/controllers/access_controller.dart';
-import 'package:firebase_editor_gsoc/views/list_documents.dart';
-import 'package:firebase_editor_gsoc/views/list_documents_details.dart';
+import 'package:firebase_editor_gsoc/views/documents/list_documents.dart';
+import 'package:firebase_editor_gsoc/views/documents/list_documents_details.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';

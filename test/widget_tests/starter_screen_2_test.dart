@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
-import 'package:firebase_editor_gsoc/views/starter_screen_2.dart';
-import 'package:firebase_editor_gsoc/views/starter_screen_3.dart';
+import 'package:firebase_editor_gsoc/views/screens/starter_screens/starter_screen_2.dart';
+import 'package:firebase_editor_gsoc/views/screens/starter_screens/starter_screen_3.dart';
 
 void main() {
   testWidgets('Tapping on screen navigates to StarterScreen3', (WidgetTester tester) async {
