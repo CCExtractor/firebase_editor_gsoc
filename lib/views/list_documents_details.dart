@@ -143,12 +143,16 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
                       Navigator.of(context).push(
                         MaterialPageRoute(
                           builder: (context) => EditFieldTypePage(
+
                             fieldName: fieldName,
                             fieldType: fieldType,
                             fieldValue: fieldValue,
                             accessToken: widget.accessToken,
                             documentPath: widget.documentPath,
                             documentDetails: _documentDetails,
+                            projectId: widget.projectId,
+                            databaseId: widget.databaseId,
+                            collectionId: widget.collectionId,
                           ),
                         ),
                       );
@@ -710,6 +714,21 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
                         icon: const Icon(Icons.edit),
                         onPressed: () {
                           Navigator.of(context).pop();
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => EditFieldTypePage(
+                                fieldName: fieldName,
+                                fieldType: fieldType,
+                                fieldValue: fieldValue,
+                                accessToken: widget.accessToken,
+                                documentPath: widget.documentPath,
+                                documentDetails: _documentDetails,
+                                projectId: widget.projectId,
+                                databaseId: widget.databaseId,
+                                collectionId: widget.collectionId,
+                              ),
+                            ),
+                          );
                           // Navigation to the edit field type page is currently commented out.
                         },
                       ),
@@ -891,18 +910,21 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
                     icon: const Icon(Icons.edit),
                     onPressed: () {
                       Navigator.of(context).pop();
-                      // Navigator.of(context).push(
-                      //   MaterialPageRoute(
-                      //     builder: (context) => EditFieldTypePage(
-                      //       fieldName: fieldName,
-                      //       fieldType: fieldType,
-                      //       fieldValue: fieldValue,
-                      //       accessToken: widget.accessToken,
-                      //       documentPath: widget.documentPath,
-                      //       documentDetails: _documentDetails,
-                      //     ),
-                      //   ),
-                      // );
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => EditFieldTypePage(
+                            fieldName: fieldName,
+                            fieldType: fieldType,
+                            fieldValue: fieldValue,
+                            accessToken: widget.accessToken,
+                            documentPath: widget.documentPath,
+                            documentDetails: _documentDetails,
+                            projectId: widget.projectId,
+                            databaseId: widget.databaseId,
+                            collectionId: widget.collectionId,
+                          ),
+                        ),
+                      );
                     },
                   ),
                 ],
@@ -2068,11 +2090,20 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
                                                   fieldType, fieldValue);
                                             },
                                           ),
+                                        if (fieldType == 'integerValue')
+                                          IconButton(
+                                            icon: const Icon(Icons.edit),
+                                            onPressed: () {
+                                              _showEditDialog(fieldName,
+                                                  fieldType, fieldValue);
+                                            },
+                                          ),
                                         if (fieldType != 'mapValue' &&
                                             fieldType != 'arrayValue' &&
                                             fieldType != 'geoPointValue' &&
                                             fieldType != 'booleanValue' &&
                                             fieldType != 'timestampValue' &&
+                                            fieldType != 'integerValue' &&
                                             fieldType != 'nullValue')
                                           IconButton(
                                             icon: const Icon(Icons.edit),

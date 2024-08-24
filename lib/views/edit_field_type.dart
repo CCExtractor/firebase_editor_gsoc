@@ -1,10 +1,17 @@
 import 'dart:convert';
 
+import 'package:firebase_editor_gsoc/controllers/history_controller.dart';
+import 'package:firebase_editor_gsoc/controllers/notification_services.dart';
+import 'package:firebase_editor_gsoc/controllers/recent_entries.dart';
+import 'package:firebase_editor_gsoc/views/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
 
 class EditFieldTypePage extends StatefulWidget {
+  final String projectId;
+  final String databaseId;
+  final String collectionId;
   final String fieldName;
   final String fieldType;
   final dynamic fieldValue;
@@ -16,6 +23,9 @@ class EditFieldTypePage extends StatefulWidget {
 
   EditFieldTypePage({
     super.key,
+    required this.projectId,
+    required this.databaseId,
+    required this.collectionId,
     required this.fieldName,
     required this.fieldType,
     required this.fieldValue,
@@ -30,13 +40,12 @@ class EditFieldTypePage extends StatefulWidget {
 
 class _EditFieldTypePageState extends State<EditFieldTypePage> {
   late String newFieldType;
-  late String newFieldValue;
+  late dynamic newFieldValue;
+  bool _isProcessing = false;
   final List<String> fieldTypes = [
     'stringValue',
     'integerValue',
     'booleanValue',
-    'mapValue',
-    'arrayValue',
     'nullValue',
     'timestampValue',
     'geoPointValue',
@@ -48,6 +57,9 @@ class _EditFieldTypePageState extends State<EditFieldTypePage> {
   late TextEditingController longitudeController;
   DateTime? selectedDate;
   TimeOfDay? selectedTime;
+
+  NotificationServices notificationServices = NotificationServices();
+  RecentEntryService recentEntryService = RecentEntryService();
 
 
   void _updateField(String fieldName, String fieldType, String fieldValue) async {
@@ -124,12 +136,29 @@ class _EditFieldTypePageState extends State<EditFieldTypePage> {
       "fields": fields,
     };
 
+    setState(() {
+      _isProcessing = true; // Start loading
+    });
+
     try {
       final response = await http.patch(Uri.parse(url), headers: headers, body: json.encode(body));
 
       if (response.statusCode == 200) {
         setState(() {
           widget.documentDetails!['fields'] = fields;
+          // update state
+          // log it
+          DateTime updateTime = DateTime.now();
+          insertHistory(widget.documentPath, fieldName, updateTime, 'update field type');
+          // show toast
+          showToast("Field '$fieldName' updated!");
+          notificationServices.triggerNotification(
+              widget.projectId,
+              widget.databaseId,
+              widget.collectionId,
+              extractDisplayName(widget.documentPath, widget.collectionId));
+          recentEntryService.triggerRecentEntry(
+              widget.projectId, widget.databaseId, widget.collectionId);
         });
         print('Field updated successfully');
       } else {
@@ -137,6 +166,10 @@ class _EditFieldTypePageState extends State<EditFieldTypePage> {
       }
     } catch (error) {
       print('Error updating field: $error');
+    } finally {
+      setState(() {
+        _isProcessing = false; // Stop loading
+      });
     }
   }
 
@@ -282,7 +315,19 @@ class _EditFieldTypePageState extends State<EditFieldTypePage> {
       appBar: AppBar(
         title: Text('Edit Field Type'),
       ),
-      body: Padding(
+      body: _isProcessing
+          ? Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const CircularProgressIndicator(),
+            const SizedBox(height: 20),
+            Text(
+               'Processing...Please Wait',
+            ),
+          ],
+        ),
+      ): Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
@@ -372,7 +417,8 @@ class _EditFieldTypePageState extends State<EditFieldTypePage> {
                               onPressed: () => _selectDate(context),
                               child: const Text('Select Date'),
                             ),
-                            Text(selectedDate.toString()),
+                            Text(selectedDate?.toString() ?? 'YYYY-MM-DD')
+
                           ],
                         ),
                       ),
@@ -392,7 +438,7 @@ class _EditFieldTypePageState extends State<EditFieldTypePage> {
                               onPressed: () => _selectTime(context),
                               child: const Text('Select Time'),
                             ),
-                            Text(selectedTime.toString()),
+                            Text(selectedTime?.toString() ?? "HH:MM"),
                           ],
                         ),
                       ),
