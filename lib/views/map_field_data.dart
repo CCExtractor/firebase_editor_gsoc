@@ -66,8 +66,8 @@ class _MapFieldDataPageState extends State<MapFieldDataPage> {
       'integerValue',
       'booleanValue',
       'mapValue',
-      'arrayValue'
-          'nullValue',
+      'arrayValue',
+      'nullValue',
       'timestampValue',
       'geoPointValue',
       'referenceValue',
@@ -914,22 +914,32 @@ class _MapFieldDataPageState extends State<MapFieldDataPage> {
       ),
       body: Column(
         children: [
-          ElevatedButton(
-            onPressed: () {
-              // Action to perform when the button is pressed
-              showMapAddFieldDialog(
-                  context,
-                  widget.fieldName,
-                  widget.documentDetails,
-                  widget.documentPath,
-                  widget.accessToken,
-                  widget.mapValue);
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.amber,
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text("Fields:", style: TextStyle(fontSize: 20.0),),
+                ElevatedButton(
+                  onPressed: () {
+                    // Action to perform when the button is pressed
+                    showMapAddFieldDialog(
+                        context,
+                        widget.fieldName,
+                        widget.documentDetails,
+                        widget.documentPath,
+                        widget.accessToken,
+                        widget.mapValue);
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.amber,
+                  ),
+                  child: const Text('Add Field'),
+                ),
+              ],
             ),
-            child: const Text('Add Field'),
           ),
+          Divider(),
           Expanded(
             child: ListView.builder(
               itemCount: fields.length,

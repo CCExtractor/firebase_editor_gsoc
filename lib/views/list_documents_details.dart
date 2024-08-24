@@ -968,7 +968,7 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
       'stringValue',
       'integerValue',
       'booleanValue',
-      // 'mapValue',
+      'mapValue',
       'arrayValue',
       'nullValue',
       'timestampValue',
@@ -1200,7 +1200,7 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
                 TextButton(
                   child: const Text('Add'),
                   onPressed: () {
-                    if (fieldType == 'arrayValue' || fieldType == "mapValue") {
+                    if (fieldType == 'arrayValue') {
                       // since we are creating empty array and empty map, field value won't matter
                       _addField(fieldName, fieldType, fieldType);
                     } else {
@@ -1233,6 +1233,19 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
       _documentDetails!['fields'] = {};
     }
 
+    // Handle arrayValue by calling _addArrayField
+    if (fieldType == 'arrayValue') {
+      _addArrayField(fieldName, []);  // Pass an empty list to initialize the array
+      return;  // Return early since the array field is handled by _addArrayField
+    }
+
+    // Handle mapValue by calling _addMapField
+    if (fieldType == 'mapValue') {
+      _addMapField(fieldName, []);  // Pass an empty list to initialize the map
+      return;  // Return early since the map field is handled by _addMapField
+    }
+
+    // Proceed with adding other types of fields
     Map<String, dynamic> fields = {
       ..._documentDetails!['fields']
     }; // Copy existing fields
@@ -1252,16 +1265,6 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
             'booleanValue': fieldValue.toLowerCase() == 'true' ||
                 fieldValue.toLowerCase() == 'false'
           };
-          break;
-        case 'mapValue':
-          formattedValue = {
-            'mapValue': {'fields': {}}
-          }; // Create an empty map
-          break;
-        case 'arrayValue':
-          formattedValue = {
-            'arrayValue': {'values': []}
-          }; // Create an empty array
           break;
         case 'nullValue':
           formattedValue = {'nullValue': null};
@@ -1342,6 +1345,7 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
     }
   }
 
+
   /// Adds a new array field to a Firestore document and handles related tasks.
   ///
   /// The `_addArrayField` function adds a new array field to the specified Firestore document by
@@ -1406,7 +1410,6 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
       return;
     }
 
-    // fields[fieldName] = {'values': {'arrayValue': arrayValue}};
     fields[fieldName] = {
       'arrayValue': {'values': arrayValue}
     };
@@ -1447,6 +1450,7 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
     }
   }
 
+
   /// Adds a new map field to a Firestore document and handles related tasks.
   ///
   /// The `_addMapField` function adds a new map field to the specified Firestore document by
@@ -1485,7 +1489,7 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
             };
             break;
           case 'mapValue':
-            mapValue[field['name']!] = {'mapValue': {}};
+            mapValue[field['name']!] = {'mapValue': {'fields': {}}}; // Create an empty nested map
             break;
           case 'nullValue':
             mapValue[field['name']!] = {'nullValue': null};
@@ -1514,6 +1518,7 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
       return;
     }
 
+    // Add the map to the document fields
     fields[fieldName] = {
       'mapValue': {'fields': mapValue}
     };
@@ -1553,6 +1558,7 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
       showErrorDialog(context, "Failed to add Field $error");
     }
   }
+
 
   /// ----------------------------------------------- DELETE A FIELD ----------------------------------------------------- ///
   /// Prompts the user to confirm the deletion of a field from a Firestore document.
