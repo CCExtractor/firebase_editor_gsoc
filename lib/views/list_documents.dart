@@ -650,7 +650,7 @@ class _DocumentsPageState extends State<DocumentsPage> {
       'integerValue',
       'booleanValue',
       // 'mapValue',
-      // 'arrayValue',
+      'arrayValue',
       'nullValue',
       'timestampValue',
       'geoPointValue',
@@ -881,12 +881,12 @@ class _DocumentsPageState extends State<DocumentsPage> {
                 TextButton(
                   child: const Text('Add'),
                   onPressed: () {
-                    // if(fieldType == 'arrayValue' || fieldType == "mapValue") {
-                    //   // since we are creating empty array and empty map, field value won't matter
-                    //   _addField(fieldName, fieldType, fieldType);
-                    // } else {
-                    //   _addField(fieldName, fieldType, fieldValue);
-                    // }
+                    if(fieldType == 'arrayValue' || fieldType == "mapValue") {
+                      // since we are creating empty array and empty map, field value won't matter
+                      _addFieldToSelectedDocuments(fieldName, fieldType, fieldType);
+                    } else {
+                      _addFieldToSelectedDocuments(fieldName, fieldType, fieldValue);
+                    }
                     _addFieldToSelectedDocuments(
                         fieldName, fieldType, fieldValue);
                     Navigator.of(context).pop();

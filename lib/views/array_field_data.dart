@@ -13,13 +13,13 @@ class ArrayFieldDataPage extends StatefulWidget {
   final String documentPath;
 
   const ArrayFieldDataPage({
-    Key? key,
+    super.key,
     required this.fieldName,
     required this.arrayValue,
     required this.documentDetails,
     required this.accessToken,
     required this.documentPath,
-  }) : super(key: key);
+  });
 
   @override
   State<ArrayFieldDataPage> createState() => _ArrayFieldDataPageState();
@@ -28,6 +28,8 @@ class ArrayFieldDataPage extends StatefulWidget {
 class _ArrayFieldDataPageState extends State<ArrayFieldDataPage> {
   DateTime? selectedDate;
   TimeOfDay? selectedTime;
+
+
 
   /// -------------------------------------- ADD A FIELD TO ARRAY --------------------------------------------------------- ///
 
@@ -1024,22 +1026,32 @@ class _ArrayFieldDataPageState extends State<ArrayFieldDataPage> {
       ),
       body: Column(
         children: [
-          ElevatedButton(
-            onPressed: () {
-              // Action to perform when the button is pressed
-              showArrayAddFieldDialog(
-                  context,
-                  widget.fieldName,
-                  widget.documentDetails,
-                  widget.documentPath,
-                  widget.accessToken,
-                  widget.arrayValue);
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.amber,
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text("Fields:", style: TextStyle(fontSize: 20.0),),
+                ElevatedButton(
+                  onPressed: () {
+                    // Action to perform when the button is pressed
+                    showArrayAddFieldDialog(
+                        context,
+                        widget.fieldName,
+                        widget.documentDetails,
+                        widget.documentPath,
+                        widget.accessToken,
+                        widget.arrayValue);
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.amber,
+                  ),
+                  child: const Text('Add Field'),
+                ),
+              ],
             ),
-            child: const Text('Add Field'),
           ),
+          Divider(),
           Expanded(
             child: ListView.builder(
               itemCount: widget.arrayValue.length,

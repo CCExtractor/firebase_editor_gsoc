@@ -2011,23 +2011,17 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
                                                   Icons.remove_red_eye)),
                                         if (fieldType == 'arrayValue')
                                           IconButton(
-                                            icon: const Icon(
-                                                Icons.remove_red_eye),
+                                            icon: const Icon(Icons.remove_red_eye),
                                             onPressed: () {
                                               Navigator.push(
                                                 context,
                                                 MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      ArrayFieldDataPage(
+                                                  builder: (context) => ArrayFieldDataPage(
                                                     fieldName: fieldName,
-                                                    arrayValue:
-                                                        fieldValue['values'],
-                                                    accessToken:
-                                                        widget.accessToken,
-                                                    documentDetails:
-                                                        _documentDetails,
-                                                    documentPath:
-                                                        widget.documentPath,
+                                                    arrayValue: fieldValue['values'] ?? [],
+                                                    accessToken: widget.accessToken,
+                                                    documentDetails: _documentDetails,
+                                                    documentPath: widget.documentPath,
                                                   ),
                                                 ),
                                               );
