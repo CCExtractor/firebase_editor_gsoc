@@ -81,7 +81,7 @@ class StarterScreen2 extends StatelessWidget {
             ),
             // Positioned icon in the top-right corner for navigation
             Positioned(
-              top: 16.0,
+              top: 30.0,
               right: 16.0,
               child: IconButton(
                 icon: const Icon(Icons.arrow_forward_ios_rounded, color: Colors.white), // Forward arrow icon
