@@ -22,7 +22,7 @@ class UserProfileView extends StatelessWidget {
         padding: const EdgeInsets.all(16.0), // Padding around the body content
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
+          children: <Widget> [
             // Row to display user's profile picture and basic information
             Row(
               children: [

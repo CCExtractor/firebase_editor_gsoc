@@ -1,4 +1,6 @@
+import 'package:firebase_editor_gsoc/views/privacy_policy.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class HelpPage extends StatelessWidget {
   const HelpPage({super.key});
@@ -15,10 +17,7 @@ class HelpPage extends StatelessWidget {
             leading: const Icon(Icons.help_outline, color: Colors.blue),
             title: const Text("How to Use"),
             onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const HowToUsePage()),
-              );
+             Get.to(HowToUsePage());
             },
           ),
           const Divider(),
@@ -27,6 +26,7 @@ class HelpPage extends StatelessWidget {
             title: const Text("Privacy Policy"),
             onTap: () {
               // Handle Privacy Policy tap
+              Get.to(PrivacyPolicyPage());
             },
           ),
           const Divider(),
