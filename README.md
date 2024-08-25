@@ -84,6 +84,32 @@ You can go to each document to update field values and types, add or delete fiel
 
 ### Analytics (Exclusive Feature)
 View simple analytics of operations performed in the last 30 days. This feature provides insight into your database activity.
+<details>
+<summary>📷 <b>Screenshots</b> </summary>
+<br/>
+
+
+Onboarding Screen 1          | Onboarding Screen 2      | Onboarding Screen 3      |  Login Screen
+:-------------------------:|:-------------------------:|:-------------------------:|:-------------------------:
+![splash_screen1](https://drive.google.com/uc?export=view&id=1kdflpZXEZ59Bpc06JiB06nYej5n5jfzM)|![splash_screen2](https://drive.google.com/uc?export=view&id=1n2BAS8UFomljXutzBqXJXE5GcK28wQRH)|![splash_screen3](https://drive.google.com/uc?export=view&id=1B1rxPxmVXLOpFKMXhwtGZPSBXszRLpuT)|![login_screen](https://drive.google.com/uc?export=view&id=1_Tjm9E8mdr6qUx8kDEdf2Xa6A7A3e46d)|
+
+Welcome Screen         |  Home Screen 1        |   Home Screen 2              |  Drawer Screen
+:-------------------------:|:-------------------------:|:-------------------------:|:-------------------------:
+![welcome_screen](https://drive.google.com/uc?export=view&id=1cNx8fiF8q-3pkh8FvANJnTKMOb5VwKXQ)|![home_screen1](https://drive.google.com/uc?export=view&id=1WmIMNJ3m_8FhRPsAkKXTdJ6OaGBQjKQ4)|![home_screen2](https://drive.google.com/uc?export=view&id=1tqvh58mmjCFhdNMJN2Ddr2qQ7Iz_CMVy)|![drawer_screen](https://drive.google.com/uc?export=view&id=1bskO3Ih6PdzC9pXYBGplwPZCQc2tPRyt)|
+  
+ Projects Screen         |  Databases Screen        |   Collections Screen               |  Documents Screen
+:-------------------------:|:-------------------------:|:-------------------------:|:-------------------------:
+![projects_view](https://drive.google.com/uc?export=view&id=1DhSkyip6XkhoGM8I0ViDc8jSwYsS7HgH)|![database_view](https://drive.google.com/uc?export=view&id=1zQHn-wSNmqqD05BW-ClC6iA-5-BWIBDN)|![collection_view](https://drive.google.com/uc?export=view&id=1ju-Z42sYAIjHBcPW31ZqPvFHZf7OKFvM)|![document_view](https://drive.google.com/uc?export=view&id=1Q2exy6sJYFwppV_oxXJ-s56XS3h7TI7f)|
+  
+ Batch Operations Screen         |  User Profile Screen        |   Help Screen               |  Enable Notification Screen
+:-------------------------:|:-------------------------:|:-------------------------:|:-------------------------:
+![batch_operations_screen](https://drive.google.com/uc?export=view&id=1M8RDcvSuJCuWTJl-ve5PvTqyiYnomkjV)|![user_profile_screen](https://drive.google.com/uc?export=view&id=1V8tLEFhQjVswWi-6WVTySo-Xjf_lg0s2)|![help_screen](https://drive.google.com/uc?export=view&id=1gALxQE-vVwRkFvMDLXAKFT_VvGcNAVd4)|![enable_notifications_screen](https://drive.google.com/uc?export=view&id=1rUD4pqwGnyVc6HrxUJcJJ0H3Tdq92JQQ)|
+  
+  Edit Field Data Type Screen         |  Edit Field Value Screen       |   Add Field Screen              |  History Screen
+:-------------------------:|:-------------------------:|:-------------------------:|:-------------------------:
+![edit_field_type](https://drive.google.com/uc?export=view&id=1ylkfJdy6mhwFd-njxECJN0j15lzXauRr)|![edit_field_value](https://drive.google.com/uc?export=view&id=1zPhG_hEvddfezZwX2fC9o5Cr77ZbYGK8)|![add_field_view](https://drive.google.com/uc?export=view&id=1nYy6qt-N_VXIOV_dzdewFhc3FJ2j5BjQ)|![history_screen](https://drive.google.com/uc?export=view&id=1QjjoGB85o8SWrvvgu_7Mt1nu8Ohv_zfJ)|
+
+</details>
 
 ## How to Run 📍
 
