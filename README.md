@@ -13,65 +13,24 @@ Firebase Editor is a mobile application built using Flutter and Firebase. It pro
 - **Analytics (Exclusive Feature)**: Provides insights into database activity over the last 30 days.
 
 
-## Project Structure
+## How the App Works
 
-### lib
-- **api**
-  - `fetch_databases.dart`
-  - `fetch_projects.dart`
-- **controllers**
-  - `access_controller.dart`
-  - `data_visualization.dart`
-  - `define_schema_controllers.dart`
-  - `document_controller.dart`
-  - `history_controller.dart`
-  - `notification_services.dart`
-  - `recent_entries.dart`
-  - `token_controller.dart`
-  - `user_controller.dart`
-- **models**
-  - `_profile.dart`
-- **utils**
-- **views**
-  - **collections**
-    - `user_collections.dart`
-  - **databases**
-    - `database_overview.dart`
-    - `list_databases.dart`
-  - **documents**
-    - `batch_operations.dart`
-    - `list_documents.dart`
-    - `list_documents_details.dart`
-  - **fields**
-    - `array_field_data.dart`
-    - `edit_field_type.dart`
-    - `map_field_data.dart`
-  - **home**
-    - `help.dart`
-    - `home_screen.dart`
-    - `privacy_policy.dart`
-  - **nested_fields**
-    - `array_within_map.dart`
-    - `map_within_array.dart`
-    - `map_within_map.dart`
-  - **projects**
-    - `list_projects.dart`
-  - **schemas**
-    - `define_schema.dart`
-    - `list_schemas.dart`
-  - **screens**
-    - **starter_screens**
-      - `starter_screen_1.dart`
-      - `starter_screen_2.dart`
-      - `starter_screen_3.dart`
-    - **user_profile**
-      - `user_edit_history.dart`
-      - `user_profile_view.dart`
-    - **user_sign_in**
-      - `user_login.dart`
-- **widgets**
-- `firebase_options.dart`
-- `main.dart`
+### Authentication
+The app uses Google OAuth 2.0 for user authentication, allowing access to your Firebase projects. A short-lived access token is obtained to interact with your Firebase data securely.
+
+### Data Management
+- **Device Tokens**: Temporarily stored to send real-time notifications regarding updates to Firebase projects.
+- **Operations Data**: Tracks and stores information about the actions performed within the app, which is used for analytics and user history.
+
+### Scopes Used
+- **Google Cloud Platform**: Accesses and manages your Google Cloud data.
+- **Cloud Datastore API**: Views and manages your Google Cloud Datastore data.
+
+### User Rights
+Users have the right to access, control, and request the deletion of their data. Access granted through Google OAuth 2.0 can be revoked at any time.
+
+### Notifications
+The app uses Cloud Functions to handle notifications, ensuring real-time updates on Firebase projects.
 
 ## How to Use
 
@@ -96,3 +55,24 @@ You can go to each document to update field values and types, add or delete fiel
 ### Analytics (Exclusive Feature)
 View simple analytics of operations performed in the last 30 days. This feature provides insight into your database activity.
 
+## How to Run
+
+### Step 1: Fork the Repository
+Start by forking the repository to your own GitHub account. This will allow you to make changes and deploy the app from your own copy of the code.
+
+### Step 2: Set Up a Firebase Project
+- Use the Firebase CLI to set up a new Firebase project.
+- Follow the instructions to connect the Firebase Editor app to your Firebase project.
+
+### Step 3: Configure Google Cloud Console
+- Go to the Google Cloud Console and navigate to the Firebase project you set up.
+- Enable OAuth and set up OAuth credentials.
+- Make sure to include the following OAuth scopes:
+  - `https://www.googleapis.com/auth/datastore`
+  - `https://www.googleapis.com/auth/cloud-platform`
+  - `https://www.googleapis.com/auth/firebase.messaging`
+
+### Step 4: Set Up Notifications (Optional but Recommended)
+- For real-time notifications, you need to set up your own server to manage OAuth 2.0 credentials.
+- In this project, we have used Google Cloud Functions, which is the recommended approach.
+- Set up Cloud Functions in your Firebase project to handle notifications and other server-side operations.
