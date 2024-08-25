@@ -1,8 +1,8 @@
-# Firebase Editor
+# Firebase Editor ✏
 
 Firebase Editor is a mobile application built using Flutter and Firebase. It provides an intuitive interface for managing Firebase databases, collections, and documents. The app also includes advanced features like batch operations, real-time notifications, analytics, and a version control system, making it a powerful tool for developers working with Firebase.
 
-## Features
+## Features 📃
 
 - **Comprehensive CRUD Operations**
   - Easily create, read, update, and delete documents within your Firebase databases.
@@ -43,7 +43,7 @@ Firebase Editor is a mobile application built using Flutter and Firebase. It pro
   - In-app help and documentation to guide users through different features and operations.
   
 
-## How the App Works
+## How the App Works 📲
 
 ### Authentication
 The app uses Google OAuth 2.0 for user authentication, allowing access to your Firebase projects. A short-lived access token is obtained to interact with your Firebase data securely.
@@ -62,7 +62,7 @@ Users have the right to access, control, and request the deletion of their data.
 ### Notifications
 The app uses Cloud Functions to handle notifications, ensuring real-time updates on Firebase projects.
 
-## How to Use
+## How to Use ⚙
 
 ### Your Projects
 This section lists all the projects associated with the account you are currently signed in to. You can navigate to project details, which lists the databases of that particular project.
@@ -85,7 +85,7 @@ You can go to each document to update field values and types, add or delete fiel
 ### Analytics (Exclusive Feature)
 View simple analytics of operations performed in the last 30 days. This feature provides insight into your database activity.
 
-## How to Run
+## How to Run 📍
 
 ### Step 1: Fork the Repository
 Start by forking the repository to your own GitHub account. This will allow you to make changes and deploy the app from your own copy of the code.
