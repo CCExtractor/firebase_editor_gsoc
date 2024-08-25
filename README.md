@@ -4,13 +4,55 @@ Firebase Editor is a mobile application built using Flutter and Firebase. It pro
 
 ## Features
 
-- **Your Projects**: Lists all the Firebase projects associated with the currently signed-in account. You can navigate to project details and view the databases within each project.
-- **Adding Collections**: Add collections to your databases. The collection names must exactly match the names in your Firebase project (case sensitive). You can view, create, and delete documents within these collections and perform batch operations.
-- **Batch Operations (Exclusive Feature)**: Add or delete fields from multiple documents at once. You can also download document data in JSON format.
-- **Version Control System (Exclusive Feature)**: Tracks updates in the database, including project ID, database ID, collection ID, document ID, field updates, operation type, date and time of update, and the user who performed the operation. This feature provides transparency that is not available in the Firebase console.
-- **Real-time Notifications (Exclusive Feature)**: Sends real-time notifications to all users when a record is updated, a feature not available in the Firebase console.
-- **Document Operations**: Update field values and types, add or delete fields, and perform other document-related tasks.
-- **Analytics (Exclusive Feature)**: Provides insights into database activity over the last 30 days.
+- **Comprehensive CRUD Operations**
+  - Easily create, read, update, and delete documents within your Firebase databases.
+  - Support for batch operations to perform CRUD actions on multiple records simultaneously.
+  - Inline editing capabilities for quick modifications.
+  
+- **Real-time Notifications**
+  - Receive instant notifications for any additions, updates, or deletions in your Firebase records.
+  - Customize notification preferences based on specific collections or documents.
+  - Leverages Firebase Cloud Messaging and Cloud Functions for efficient and reliable notification delivery.
+  
+- **Secure Authentication and Authorization**
+  - Utilizes Google OAuth 2.0 for secure user authentication.
+  - Access control mechanisms to manage user permissions and roles within the app.
+  - Short-lived access tokens ensure enhanced security during data interactions.
+  
+- **Advanced Search and Filter**
+  - Powerful search functionality to quickly locate records across projects, databases, and collections.
+  - Multiple filter options based on field values, update times, and user activity.
+  - Supports saving frequent search queries for repeated use.
+  
+- **Data Export and Import**
+  - Export data in popular formats such as JSON and CSV for external use and backups.
+  - Import data seamlessly to populate your databases or migrate data between projects.
+  - Supports bulk data operations with error handling and validation.
+  
+- **Data Visualization and Analytics**
+  - Interactive dashboards providing visual insights into your database activities and trends.
+  - Charts and graphs showcasing operations performed over customizable timeframes.
+  - Monitor key metrics such as data growth, user activity, and operation frequencies.
+  
+- **Audit Logging and History Tracking**
+  - Detailed logs of all operations performed within the app, including timestamps and user information.
+  - Version control system to track changes and revert to previous states if necessary.
+  - Enhances accountability and facilitates debugging by maintaining a comprehensive activity history.
+  
+- **Project and Database Management**
+  - View and manage all your Firebase projects in one centralized interface.
+  - Navigate through different databases, collections, and documents with ease.
+  - Supports adding and removing collections dynamically as per project requirements.
+  
+- **User-friendly Interface**
+  - Clean and intuitive design ensuring a smooth user experience across all functionalities.
+  - Responsive layouts optimized for various mobile devices and screen sizes.
+  - In-app help and documentation to guide users through different features and operations.
+  
+- **Notifications Setup via Cloud Functions**
+  - Easy setup for real-time notifications using Google Cloud Functions.
+  - Provides templates and guides for deploying and configuring necessary cloud functions.
+  - Ensures scalability and reliability in handling notification workloads.
 
 
 ## How the App Works
