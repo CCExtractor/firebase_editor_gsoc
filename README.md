@@ -16,44 +16,32 @@ Firebase Editor is a mobile application built using Flutter and Firebase. It pro
   
 - **Secure Authentication and Authorization**
   - Utilizes Google OAuth 2.0 for secure user authentication.
-  - Access control mechanisms to manage user permissions and roles within the app.
   - Short-lived access tokens ensure enhanced security during data interactions.
   
 - **Advanced Search and Filter**
   - Powerful search functionality to quickly locate records across projects, databases, and collections.
-  - Multiple filter options based on field values, update times, and user activity.
-  - Supports saving frequent search queries for repeated use.
   
 - **Data Export and Import**
-  - Export data in popular formats such as JSON and CSV for external use and backups.
-  - Import data seamlessly to populate your databases or migrate data between projects.
+  - Export data in popular formats such as JSON for external use and backups.
   - Supports bulk data operations with error handling and validation.
   
 - **Data Visualization and Analytics**
   - Interactive dashboards providing visual insights into your database activities and trends.
-  - Charts and graphs showcasing operations performed over customizable timeframes.
-  - Monitor key metrics such as data growth, user activity, and operation frequencies.
+  - Monitor key metrics such as user activity, and operation frequencies.
   
 - **Audit Logging and History Tracking**
   - Detailed logs of all operations performed within the app, including timestamps and user information.
-  - Version control system to track changes and revert to previous states if necessary.
   - Enhances accountability and facilitates debugging by maintaining a comprehensive activity history.
   
 - **Project and Database Management**
   - View and manage all your Firebase projects in one centralized interface.
   - Navigate through different databases, collections, and documents with ease.
-  - Supports adding and removing collections dynamically as per project requirements.
   
 - **User-friendly Interface**
   - Clean and intuitive design ensuring a smooth user experience across all functionalities.
   - Responsive layouts optimized for various mobile devices and screen sizes.
   - In-app help and documentation to guide users through different features and operations.
   
-- **Notifications Setup via Cloud Functions**
-  - Easy setup for real-time notifications using Google Cloud Functions.
-  - Provides templates and guides for deploying and configuring necessary cloud functions.
-  - Ensures scalability and reliability in handling notification workloads.
-
 
 ## How the App Works
 
