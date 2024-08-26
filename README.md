@@ -132,3 +132,8 @@ Start by forking the repository to your own GitHub account. This will allow you 
 - For real-time notifications, you need to set up your own server to manage OAuth 2.0 credentials.
 - In this project, we have used Google Cloud Functions, which is the recommended approach.
 - Set up Cloud Functions in your Firebase project to handle notifications and other server-side operations.
+
+#  References:
+- Firebase Database API ![Firebase Database API](https://firebase.google.com/docs/firestore/reference/rest)
+- Google Oauth 2.0 ![Google Oaauth 2.0](https://developers.google.com/identity/protocols/oauth2)
+- Firebase Cloud Messaging API ![FCM API](https://firebase.google.com/docs/reference/fcm/rest/v1/projects.messages)
