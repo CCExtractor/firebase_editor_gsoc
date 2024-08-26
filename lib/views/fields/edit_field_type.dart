@@ -474,6 +474,8 @@ class _EditFieldTypePageState extends State<EditFieldTypePage> {
                 // _saveChanges();
                 _updateField(widget.fieldName,newFieldType,newFieldValue);
               },
+              style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.amber,),
               child: const Text('Save'),
             ),
           ],

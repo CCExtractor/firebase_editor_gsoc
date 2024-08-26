@@ -65,18 +65,24 @@ class _ArrayFieldDataPageState extends State<ArrayFieldDataPage> {
     DateTime selectedDate = DateTime.now();
     TimeOfDay selectedTime = TimeOfDay.now();
 
+    // Map to convert field types to user-friendly names
+    Map<String, String> fieldTypeDisplayMap = {
+      'stringValue': 'String',
+      'integerValue': 'Integer',
+      'booleanValue': 'Boolean',
+      'nullValue': 'Null',
+      'timestampValue': 'Timestamp',
+      'geoPointValue': 'GeoPoint',
+      'referenceValue': 'Reference',
+    };
+
+    // Reverse map to easily get label from value
+    Map<String, String> reverseFieldTypesMap = {
+      for (var entry in fieldTypeDisplayMap.entries) entry.value: entry.key
+    };
+
     // Dropdown menu items for field types
-    /// NESTED ARRAYS NOT ALLOWED IN FIREBASE
-    List<String> fieldTypes = [
-      'stringValue',
-      'integerValue',
-      'booleanValue',
-      // 'mapValue',
-      'nullValue',
-      'timestampValue',
-      'geoPointValue',
-      'referenceValue',
-    ];
+    List<String> fieldTypes = fieldTypeDisplayMap.values.toList();
 
     await showDialog(
       context: context,
@@ -90,7 +96,7 @@ class _ArrayFieldDataPageState extends State<ArrayFieldDataPage> {
                   mainAxisSize: MainAxisSize.min,
                   children: <Widget>[
                     DropdownButtonFormField<String>(
-                      value: fieldType,
+                      value: fieldTypeDisplayMap[fieldType], // Show the label
                       items: fieldTypes.map((type) {
                         return DropdownMenuItem<String>(
                           value: type,
@@ -103,17 +109,16 @@ class _ArrayFieldDataPageState extends State<ArrayFieldDataPage> {
                           ),
                         );
                       }).toList(),
-                      onChanged: (value) {
+                      onChanged: (label) {
                         setState(() {
-                          fieldType = value!;
+                          fieldType = reverseFieldTypesMap[label]!; // Get the actual value
                           fieldValue = '';
                           fieldValueController.text = '';
                           latitudeController.clear();
                           longitudeController.clear();
                         });
                       },
-                      decoration:
-                          const InputDecoration(labelText: 'Field Type'),
+                      decoration: const InputDecoration(labelText: 'Field Type'),
                     ),
                     if (fieldType == 'booleanValue')
                       DropdownButtonFormField<bool>(
@@ -146,8 +151,7 @@ class _ArrayFieldDataPageState extends State<ArrayFieldDataPage> {
                             fieldValue = value.toString();
                           });
                         },
-                        decoration:
-                            const InputDecoration(labelText: 'Field Value'),
+                        decoration: const InputDecoration(labelText: 'Field Value'),
                       )
                     else if (fieldType == 'geoPointValue')
                       Column(
@@ -155,113 +159,93 @@ class _ArrayFieldDataPageState extends State<ArrayFieldDataPage> {
                           TextField(
                             controller: latitudeController,
                             keyboardType: TextInputType.number,
-                            decoration:
-                                const InputDecoration(labelText: 'Latitude'),
+                            decoration: const InputDecoration(labelText: 'Latitude'),
                             onChanged: (value) {
                               setState(() {
-                                fieldValue =
-                                    '${latitudeController.text},${longitudeController.text}';
+                                fieldValue = '${latitudeController.text},${longitudeController.text}';
                               });
                             },
                           ),
                           TextField(
                             controller: longitudeController,
                             keyboardType: TextInputType.number,
-                            decoration:
-                                const InputDecoration(labelText: 'Longitude'),
+                            decoration: const InputDecoration(labelText: 'Longitude'),
                             onChanged: (value) {
                               setState(() {
-                                fieldValue =
-                                    '${latitudeController.text},${longitudeController.text}';
+                                fieldValue = '${latitudeController.text},${longitudeController.text}';
                               });
                             },
                           ),
                         ],
                       )
                     else if (fieldType == 'timestampValue')
-                      Column(
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: ListTile(
-                              title: const Text('Date'),
-                              subtitle:
-                                  Text(selectedDate.toString().split(' ')[0]),
-                              trailing:
-                                  const Icon(Icons.calendar_month_outlined),
-                              onTap: () async {
-                                final DateTime? pickedDate =
-                                    await showDatePicker(
-                                  context: context,
-                                  initialDate: selectedDate,
-                                  firstDate: DateTime(1900),
-                                  lastDate: DateTime(2100),
-                                );
-                                if (pickedDate != null &&
-                                    pickedDate != selectedDate) {
-                                  setState(() {
-                                    selectedDate = pickedDate;
-                                    fieldValue = updateTimeStampFieldValue(
-                                        selectedDate, selectedTime);
-                                  });
-                                }
-                              },
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: ListTile(
-                              title: const Text('Time'),
-                              subtitle: Text(selectedTime.format(context)),
-                              trailing: const Icon(Icons.watch_later_outlined),
-                              onTap: () async {
-                                final TimeOfDay? pickedTime =
-                                    await showTimePicker(
-                                  context: context,
-                                  initialTime: selectedTime,
-                                );
-                                if (pickedTime != null &&
-                                    pickedTime != selectedTime) {
-                                  setState(() {
-                                    selectedTime = pickedTime;
-                                    fieldValue = updateTimeStampFieldValue(
-                                        selectedDate, selectedTime);
-                                  });
-                                }
-                              },
-                            ),
-                          ),
-                          if (fieldValue.isNotEmpty)
-                            Text('Selected DateTime: $fieldValue'),
-                        ],
-                      )
-                    else if (fieldType == 'nullValue')
-                      TextField(
-                        controller: fieldValueController,
-                        readOnly: true,
-                        decoration:
-                            const InputDecoration(labelText: 'Field Value'),
-                        onChanged: (value) {
-                          setState(() {
-                            fieldValue = 'null';
-                          });
-                        },
-                      )
-                        else if (fieldType == 'mapValue')
+                        Column(
+                          children: [
                             Padding(
                               padding: const EdgeInsets.all(8.0),
-                              child: Text(
-                                  "You can add fields after creating the $fieldType"),
-                            )
-                      else
-                      TextField(
-                        controller: fieldValueController,
-                        onChanged: (value) {
-                          fieldValue = value;
-                        },
-                        decoration:
-                            const InputDecoration(labelText: 'Field Value'),
-                      ),
+                              child: ListTile(
+                                title: const Text('Date'),
+                                subtitle: Text(selectedDate.toString().split(' ')[0]),
+                                trailing: const Icon(Icons.calendar_month_outlined),
+                                onTap: () async {
+                                  final DateTime? pickedDate = await showDatePicker(
+                                    context: context,
+                                    initialDate: selectedDate,
+                                    firstDate: DateTime(1900),
+                                    lastDate: DateTime(2100),
+                                  );
+                                  if (pickedDate != null && pickedDate != selectedDate) {
+                                    setState(() {
+                                      selectedDate = pickedDate;
+                                      fieldValue = updateTimeStampFieldValue(selectedDate, selectedTime);
+                                    });
+                                  }
+                                },
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: ListTile(
+                                title: const Text('Time'),
+                                subtitle: Text(selectedTime.format(context)),
+                                trailing: const Icon(Icons.watch_later_outlined),
+                                onTap: () async {
+                                  final TimeOfDay? pickedTime = await showTimePicker(
+                                    context: context,
+                                    initialTime: selectedTime,
+                                  );
+                                  if (pickedTime != null && pickedTime != selectedTime) {
+                                    setState(() {
+                                      selectedTime = pickedTime;
+                                      fieldValue = updateTimeStampFieldValue(selectedDate, selectedTime);
+                                    });
+                                  }
+                                },
+                              ),
+                            ),
+                            if (fieldValue.isNotEmpty)
+                              Text('Selected DateTime: $fieldValue'),
+                          ],
+                        )
+                      else if (fieldType == 'nullValue')
+                          TextField(
+                            controller: fieldValueController,
+                            readOnly: true,
+                            decoration: const InputDecoration(labelText: 'Field Value'),
+                            onChanged: (value) {
+                              setState(() {
+                                fieldValue = 'null';
+                              });
+                            },
+                          )
+                        else
+                          TextField(
+                            controller: fieldValueController,
+                            onChanged: (value) {
+                              fieldValue = value;
+                            },
+                            decoration: const InputDecoration(labelText: 'Field Value'),
+                          ),
                   ],
                 ),
               ),
@@ -275,8 +259,7 @@ class _ArrayFieldDataPageState extends State<ArrayFieldDataPage> {
                 TextButton(
                   child: const Text('Add'),
                   onPressed: () {
-                    addArrayField(context, fieldName, fieldType, fieldValue,
-                        documentDetails, documentPath, accessToken, arrayValue);
+                    addArrayField(context, fieldName, fieldType, fieldValue, documentDetails, documentPath, accessToken, arrayValue);
                     Navigator.of(context).pop();
                   },
                 ),
@@ -287,6 +270,7 @@ class _ArrayFieldDataPageState extends State<ArrayFieldDataPage> {
       },
     );
   }
+
 
   /// Adds a new field to an existing array in a Firestore document and handles the update process.
   ///

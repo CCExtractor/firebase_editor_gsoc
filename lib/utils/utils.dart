@@ -131,3 +131,11 @@ String formatDateTime(String dateTimeString) {
   DateTime dateTime = DateTime.parse(dateTimeString);
   return DateFormat('dd-MM-yyyy HH:mm').format(dateTime);
 }
+
+// Function to strip the "Value" suffix from the fieldType
+String stripValueSuffix(String fieldType) {
+  if (fieldType.endsWith('Value')) {
+    return fieldType.replaceAll('Value', '');
+  }
+  return fieldType;
+}

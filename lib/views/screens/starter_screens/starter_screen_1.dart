@@ -16,62 +16,51 @@ class StarterScreen1 extends StatelessWidget {
       backgroundColor: Colors.blue, // Set the background color of the screen
       body: Stack(
         children: [
-          Center(
-            child: SingleChildScrollView(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.end, // Align content to the bottom
+          Column(
+            children: [
+              const Spacer(), // Pushes the app name to the top
+              // Column to display the app's name
+              Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  // Column to display the app's name
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                  // Display the word "Firebase"
+                  Text(
+                    'Firebase',
+                    style: Theme.of(context).textTheme.displayLarge,
+                  ),
+                  const SizedBox(height: 20.0), // Space between "Firebase" and "Editor"
+                  // Stack to create a highlighted background effect around the word "Editor"
+                  Stack(
                     children: [
-                      // Display the word "Firebase"
-                      Text(
-                        'Firebase',
-                        style: Theme.of(context).textTheme.displayLarge,
+                      // Background container for the word "Editor"
+                      Container(
+                        height: 70,
+                        width: 200,
+                        decoration: BoxDecoration(
+                          color: Colors.amber.withOpacity(1.0), // Background color
+                          shape: BoxShape.rectangle,
+                          borderRadius: BorderRadius.circular(40), // Rounded corners to make it oval
+                        ),
                       ),
-                      // Stack to create a highlighted background effect around the word "Editor"
-                      Stack(
-                        children: [
-                          // Background container for the word "Editor"
-                          Container(
-                            height: 70,
-                            width: 200,
-                            decoration: BoxDecoration(
-                              color: Colors.amber.withOpacity(1.0), // Background color
-                              shape: BoxShape.rectangle,
-                              borderRadius: BorderRadius.circular(40), // Rounded corners to make it oval
-                            ),
+                      // Positioned text "Editor" inside the background container
+                      Positioned.fill(
+                        child: Align(
+                          alignment: Alignment.center,
+                          child: Text(
+                            'Editor',
+                            style: Theme.of(context).textTheme.displayLarge,
                           ),
-                          // Positioned text "Editor" inside the background container
-                          Positioned.fill(
-                            child: Align(
-                              alignment: Alignment.center,
-                              child: Text(
-                                'Editor',
-                                style: Theme.of(context).textTheme.displayLarge,
-                              ),
-                            ),
-                          ),
-                        ],
+                        ),
                       ),
                     ],
                   ),
-                  const SizedBox(
-                    height: 50.0, // Space between the app name and the image
-                  ),
-                  // Stack to display the welcome image
-
-                      Stack(
-                          children: [
-                            Image.asset('assets/welcome.png'),
-                          ]
-                      ), // Display welcome image
-
                 ],
               ),
-            ),
+              const Spacer(), // Pushes the image to the bottom
+              // Stack to display the welcome image
+              Image.asset('assets/welcome.png'), // Display welcome image
+            ],
           ),
           // Positioned icon in the top-right corner for navigation
           Positioned(
