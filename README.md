@@ -135,5 +135,5 @@ Start by forking the repository to your own GitHub account. This will allow you 
 
 #  References:
 - Firebase Database API [Firebase Database API](https://firebase.google.com/docs/firestore/reference/rest)
-- Google Oauth 2.0 [Google Oaauth 2.0](https://developers.google.com/identity/protocols/oauth2)
+- Google Oauth 2.0 [Google Oauth 2.0](https://developers.google.com/identity/protocols/oauth2)
 - Firebase Cloud Messaging API [FCM API](https://firebase.google.com/docs/reference/fcm/rest/v1/projects.messages)
