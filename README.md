@@ -134,6 +134,6 @@ Start by forking the repository to your own GitHub account. This will allow you 
 - Set up Cloud Functions in your Firebase project to handle notifications and other server-side operations.
 
 #  References:
-- Firebase Database API ![Firebase Database API](https://firebase.google.com/docs/firestore/reference/rest)
-- Google Oauth 2.0 ![Google Oaauth 2.0](https://developers.google.com/identity/protocols/oauth2)
-- Firebase Cloud Messaging API ![FCM API](https://firebase.google.com/docs/reference/fcm/rest/v1/projects.messages)
+- Firebase Database API [Firebase Database API](https://firebase.google.com/docs/firestore/reference/rest)
+- Google Oauth 2.0 [Google Oaauth 2.0](https://developers.google.com/identity/protocols/oauth2)
+- Firebase Cloud Messaging API [FCM API](https://firebase.google.com/docs/reference/fcm/rest/v1/projects.messages)
