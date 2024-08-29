@@ -69,7 +69,7 @@ The app uses Cloud Functions to handle notifications, ensuring real-time updates
 
 ## How to Use ⚙
 
-## For Detailed Guide, Click the Dropdown
+### For Detailed Guide, Click the Dropdown
 <details>
 <summary> 🖥💻 <b>Detailed Guide</b> </summary>
 <br/>
@@ -109,7 +109,7 @@ Step 16     | Step 17          | Step 18
 
 </details>
 
-## Description of App's Features Functionality
+### Description of App's Features Functionality
 ### Your Projects
 This section lists all the projects associated with the account you are currently signed in to. You can navigate to project details, which lists the databases of that particular project.
 
