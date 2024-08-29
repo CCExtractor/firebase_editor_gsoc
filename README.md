@@ -69,10 +69,23 @@ The app uses Cloud Functions to handle notifications, ensuring real-time updates
 <summary>📷 <b>Detailed Guide</b> </summary>
 <br/>
 
+#### If you don't have any project in the Firebase or you want to add a new project in Firebase:
+1. Go to [Firebase](https://firebase.google.com/)
+2. Follow From Step 1 to Step 12
+
+#### If you already have a project in Firebase you want to use, you can skip Step 1 to Step 12.
 
 Step 1          | Step 2      | Step 3      |  step 4
 :-------------------------:|:-------------------------:|:-------------------------:|:-------------------------:
 ![step 1](https://drive.google.com/uc?export=view&id=1utx8qu9HsLy09y69QtLVUgAi0BaiK1Xq)|![step 2](https://drive.google.com/uc?export=view&id=1eFJJsgZdvWxDaDUgGWOWPgvPO50Ymxg_)|![step 3](https://drive.google.com/uc?export=view&id=1GX4QJMlUyZwviyF2R-oC3o5YgHWyqg69)|![step 4](https://drive.google.com/uc?export=view&id=1oWbDd1DK68KtwilsuKl3lmkKK5CRMRsy)|
+
+Step 5         | Step 6     | Step 7      |  step 8
+:-------------------------:|:-------------------------:|:-------------------------:|:-------------------------:
+![step 5](https://drive.google.com/uc?export=view&id=13rStFsHhzn36FBHlfzkiYf3Rz79fIiRY)|![step 6](https://drive.google.com/uc?export=view&id=1-7ftRhbKbPLZSTGkeoNcOXCyfl1YY6uX)|![step 7](https://drive.google.com/uc?export=view&id=11_sgfeO1zThVLuApMy3ZwgaoApuDGdiZ)|![step 8](https://drive.google.com/file/d/1uQVbT5gM9Sw819m2a792of7pjAyNx9-E/view?usp=sharing)|
+
+Step 9         | Step 10    | Step 11     |  step 12
+:-------------------------:|:-------------------------:|:-------------------------:|:-------------------------:
+![step 9](https://drive.google.com/uc?export=view&id=1ImCKaOzpu6Fqv8ymdsFUIHynlOxjIyDd)|![step 10](https://drive.google.com/uc?export=view&id=1elzHQk0iDGIRo85a_rcNo9ZUsX7iLBFm)|![step 11](https://drive.google.com/uc?export=view&id=1VWVtc3MsqgjD0o3GnTg9v9YxCIWf_pr6)|![step 12](https://drive.google.com/uc?export=view&id=1OFysCSvCulQ9YBDTx1hw1qjuu8-awora)|
 
 </details>
 
