@@ -2,6 +2,8 @@
 
 Firebase Editor is a mobile application built using Flutter and Firebase. It provides an intuitive interface for managing Firebase databases, collections, and documents. The app also includes advanced features like batch operations, real-time notifications, analytics, and a version control system, making it a powerful tool for developers working with Firebase.
 
+---
+
 ## Features 📃
 
 - **Comprehensive CRUD Operations**
@@ -18,15 +20,15 @@ Firebase Editor is a mobile application built using Flutter and Firebase. It pro
   - Utilizes Google OAuth 2.0 for secure user authentication.
   - Short-lived access tokens ensure enhanced security during data interactions.
   
-- **Advanced Search and Filter**
+- **Search and Filter**
   - Powerful search functionality to quickly locate records across projects, databases, and collections.
   
-- **Data Export and Import**
+- **Data Export**
   - Export data in popular formats such as JSON for external use and backups.
   - Supports bulk data operations with error handling and validation.
   
 - **Data Visualization and Analytics**
-  - Interactive dashboards providing visual insights into your database activities and trends.
+  - Interactive dashboards providing visual insights into your database operations.
   - Monitor key metrics such as user activity, and operation frequencies.
   
 - **Audit Logging and History Tracking**
@@ -41,7 +43,8 @@ Firebase Editor is a mobile application built using Flutter and Firebase. It pro
   - Clean and intuitive design ensuring a smooth user experience across all functionalities.
   - Responsive layouts optimized for various mobile devices and screen sizes.
   - In-app help and documentation to guide users through different features and operations.
-  
+
+---  
 
 ## How the App Works 📲
 
@@ -62,11 +65,13 @@ Users have the right to access, control, and request the deletion of their data.
 ### Notifications
 The app uses Cloud Functions to handle notifications, ensuring real-time updates on Firebase projects.
 
+---
+
 ## How to Use ⚙
 
-### For Detailed Guide, Click the Dropdown
+## For Detailed Guide, Click the Dropdown
 <details>
-<summary>📷 <b>Detailed Guide</b> </summary>
+<summary> 🖥💻 <b>Detailed Guide</b> </summary>
 <br/>
 
 #### If you don't have any project in the Firebase or you want to add a new project in Firebase:
@@ -87,8 +92,24 @@ Step 9         | Step 10    | Step 11     |  step 12
 :-------------------------:|:-------------------------:|:-------------------------:|:-------------------------:
 ![step 9](https://drive.google.com/uc?export=view&id=1ImCKaOzpu6Fqv8ymdsFUIHynlOxjIyDd)|![step 10](https://drive.google.com/uc?export=view&id=1elzHQk0iDGIRo85a_rcNo9ZUsX7iLBFm)|![step 11](https://drive.google.com/uc?export=view&id=1VWVtc3MsqgjD0o3GnTg9v9YxCIWf_pr6)|![step 12](https://drive.google.com/uc?export=view&id=1OFysCSvCulQ9YBDTx1hw1qjuu8-awora)|
 
+#### Steps for how to use App Interface
+
+Step 13        | Step 14    | Step 15     
+:-------------------------:|:-------------------------:|:-------------------------:
+![step 13](https://drive.google.com/uc?export=view&id=1pE5u3ClRfrkwZhFv2fByMzra7n1D1kil)|![step 14](https://drive.google.com/uc?export=view&id=1cQxurTKFdlePekfk1hWEkDqekxEfIYtb)|![step 15](https://drive.google.com/uc?export=view&id=1htqYdnqIUxn0nL5xBuXdPAZdUxhitr8p)|
+
+Step 16     | Step 17          | Step 18  
+:-------------------------:|:-------------------------:|:-------------------------:
+![step 16](https://drive.google.com/uc?export=view&id=1arx_E1CPxu1VUTdpye7NZZI62QngFEN3)|![step 17](https://drive.google.com/uc?export=view&id=1fS3K7VUxxxZLGreSXNTbPd3P50pdFoa0)|![step 18](https://drive.google.com/uc?export=view&id=1xIvSDKPDt8tuqK3aaT1kQvWRwG1lrpQQ)|
+
+
+ Step 19     |  step 20  | Step 21
+ :-------------------------:|:-------------------------:|:-------------------------:
+ ![step 19](https://drive.google.com/uc?export=view&id=1gXd6qcDR-404cpD7PD0qtNsDre1yMDFn)|![step 20](https://drive.google.com/uc?export=view&id=1eMHVdkl_drW6mG8pmKaheIl9bwzS5e1p)|![Step 21](https://drive.google.com/uc?export=view&id=168nMMrZRHi6YOg4GQYEuGUifiWmOmO-N)|
+
 </details>
 
+## Description of App's Features Functionality
 ### Your Projects
 This section lists all the projects associated with the account you are currently signed in to. You can navigate to project details, which lists the databases of that particular project.
 
@@ -111,9 +132,8 @@ You can go to each document to update field values and types, add or delete fiel
 View simple analytics of operations performed in the last 30 days. This feature provides insight into your database activity.
 
 <details>
-<summary>📷 <b>Screenshots</b> </summary>
+<summary> 📷 <b>Screenshots</b> </summary>
 <br/>
-
 
 Onboarding Screen 1          | Onboarding Screen 2      | Onboarding Screen 3      |  Login Screen
 :-------------------------:|:-------------------------:|:-------------------------:|:-------------------------:
@@ -137,7 +157,9 @@ Welcome Screen         |  Home Screen 1        |   Home Screen 2              | 
 
 </details>
 
-## How to Run 📍
+---
+
+## Getting Started 📍
 
 ### Step 1: Fork the Repository
 Start by forking the repository to your own GitHub account. This will allow you to make changes and deploy the app from your own copy of the code.
@@ -154,7 +176,7 @@ Start by forking the repository to your own GitHub account. This will allow you 
   - `https://www.googleapis.com/auth/cloud-platform`
   - `https://www.googleapis.com/auth/firebase.messaging`
 
-### Step 4: Set Up Notifications (Optional but Recommended)
+### Step 4: Set Up Notifications
 - For real-time notifications, you need to set up your own server to manage OAuth 2.0 credentials.
 - In this project, we have used Google Cloud Functions, which is the recommended approach.
 - Set up Cloud Functions in your Firebase project to handle notifications and other server-side operations.
