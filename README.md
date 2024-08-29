@@ -81,7 +81,7 @@ Step 1          | Step 2      | Step 3      |  step 4
 
 Step 5         | Step 6     | Step 7      |  step 8
 :-------------------------:|:-------------------------:|:-------------------------:|:-------------------------:
-![step 5](https://drive.google.com/uc?export=view&id=13rStFsHhzn36FBHlfzkiYf3Rz79fIiRY)|![step 6](https://drive.google.com/uc?export=view&id=1-7ftRhbKbPLZSTGkeoNcOXCyfl1YY6uX)|![step 7](https://drive.google.com/uc?export=view&id=11_sgfeO1zThVLuApMy3ZwgaoApuDGdiZ)|![step 8](https://drive.google.com/file/d/1uQVbT5gM9Sw819m2a792of7pjAyNx9-E/view?usp=sharing)|
+![step 5](https://drive.google.com/uc?export=view&id=13rStFsHhzn36FBHlfzkiYf3Rz79fIiRY)|![step 6](https://drive.google.com/uc?export=view&id=1-7ftRhbKbPLZSTGkeoNcOXCyfl1YY6uX)|![step 7](https://drive.google.com/uc?export=view&id=11_sgfeO1zThVLuApMy3ZwgaoApuDGdiZ)|![step 8](https://drive.google.com/uc?export=view&id=1uQVbT5gM9Sw819m2a792of7pjAyNx9-E)|
 
 Step 9         | Step 10    | Step 11     |  step 12
 :-------------------------:|:-------------------------:|:-------------------------:|:-------------------------:
