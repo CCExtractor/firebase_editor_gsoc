@@ -80,23 +80,31 @@ The app uses Cloud Functions to handle notifications, ensuring real-time updates
 
 #### If you already have a project in Firebase you want to use, you can skip Step 1 to Step 12.
 
-Step 1          | Step 2      | Step 3      |  step 4
-:-------------------------:|:-------------------------:|:-------------------------:|:-------------------------:
-![step 1](https://drive.google.com/uc?export=view&id=1utx8qu9HsLy09y69QtLVUgAi0BaiK1Xq)|![step 2](https://drive.google.com/uc?export=view&id=1eFJJsgZdvWxDaDUgGWOWPgvPO50Ymxg_)|![step 3](https://drive.google.com/uc?export=view&id=1GX4QJMlUyZwviyF2R-oC3o5YgHWyqg69)|![step 4](https://drive.google.com/uc?export=view&id=1oWbDd1DK68KtwilsuKl3lmkKK5CRMRsy)|
+Step 1          | Step 2      | Step 3      
+:-------------------------:|:-------------------------:|:-------------------------:
+![step 1](https://drive.google.com/uc?export=view&id=1utx8qu9HsLy09y69QtLVUgAi0BaiK1Xq)|![step 2](https://drive.google.com/uc?export=view&id=1eFJJsgZdvWxDaDUgGWOWPgvPO50Ymxg_)|![step 3](https://drive.google.com/uc?export=view&id=1GX4QJMlUyZwviyF2R-oC3o5YgHWyqg69)|
 
-Step 5         | Step 6     | Step 7      |  step 8
-:-------------------------:|:-------------------------:|:-------------------------:|:-------------------------:
-![step 5](https://drive.google.com/uc?export=view&id=13rStFsHhzn36FBHlfzkiYf3Rz79fIiRY)|![step 6](https://drive.google.com/uc?export=view&id=1-7ftRhbKbPLZSTGkeoNcOXCyfl1YY6uX)|![step 7](https://drive.google.com/uc?export=view&id=11_sgfeO1zThVLuApMy3ZwgaoApuDGdiZ)|![step 8](https://drive.google.com/uc?export=view&id=1uQVbT5gM9Sw819m2a792of7pjAyNx9-E)|
 
-Step 9         | Step 10    | Step 11     |  step 12
-:-------------------------:|:-------------------------:|:-------------------------:|:-------------------------:
-![step 9](https://drive.google.com/uc?export=view&id=1ImCKaOzpu6Fqv8ymdsFUIHynlOxjIyDd)|![step 10](https://drive.google.com/uc?export=view&id=1elzHQk0iDGIRo85a_rcNo9ZUsX7iLBFm)|![step 11](https://drive.google.com/uc?export=view&id=1VWVtc3MsqgjD0o3GnTg9v9YxCIWf_pr6)|![step 12](https://drive.google.com/uc?export=view&id=1OFysCSvCulQ9YBDTx1hw1qjuu8-awora)|
+Step 4          | Step 5       | Step 6    
+:-------------------------:|:-------------------------:|:-------------------------:
+![step 4](https://drive.google.com/uc?export=view&id=1oWbDd1DK68KtwilsuKl3lmkKK5CRMRsy)|![step 5](https://drive.google.com/uc?export=view&id=13rStFsHhzn36FBHlfzkiYf3Rz79fIiRY)|![step 6](https://drive.google.com/uc?export=view&id=1-7ftRhbKbPLZSTGkeoNcOXCyfl1YY6uX)|
+
+
+Step 7           | Step 8       | Step 9        
+:-------------------------:|:-------------------------:|:-------------------------:
+![step 7](https://drive.google.com/uc?export=view&id=11_sgfeO1zThVLuApMy3ZwgaoApuDGdiZ)|![step 8](https://drive.google.com/uc?export=view&id=1uQVbT5gM9Sw819m2a792of7pjAyNx9-E)|![step 9](https://drive.google.com/uc?export=view&id=1ImCKaOzpu6Fqv8ymdsFUIHynlOxjIyDd)|
+
+
+Step 10           | Step 11       | Step 12       
+:-------------------------:|:-------------------------:|:-------------------------:
+![step 10](https://drive.google.com/uc?export=view&id=1elzHQk0iDGIRo85a_rcNo9ZUsX7iLBFm)|![step 11](https://drive.google.com/uc?export=view&id=1VWVtc3MsqgjD0o3GnTg9v9YxCIWf_pr6)|![step 12](https://drive.google.com/uc?export=view&id=1OFysCSvCulQ9YBDTx1hw1qjuu8-awora)|
 
 #### Steps for how to use App Interface
 
 Step 13        | Step 14    | Step 15     
 :-------------------------:|:-------------------------:|:-------------------------:
 ![step 13](https://drive.google.com/uc?export=view&id=1pE5u3ClRfrkwZhFv2fByMzra7n1D1kil)|![step 14](https://drive.google.com/uc?export=view&id=1cQxurTKFdlePekfk1hWEkDqekxEfIYtb)|![step 15](https://drive.google.com/uc?export=view&id=1htqYdnqIUxn0nL5xBuXdPAZdUxhitr8p)|
+
 
 Step 16     | Step 17          | Step 18  
 :-------------------------:|:-------------------------:|:-------------------------:
