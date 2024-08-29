@@ -64,6 +64,18 @@ The app uses Cloud Functions to handle notifications, ensuring real-time updates
 
 ## How to Use ⚙
 
+### For Detailed Guide, Click the Dropdown
+<details>
+<summary>📷 <b>Detailed Guide</b> </summary>
+<br/>
+
+
+Step 1          | Step 2      | Step 3      |  step 4
+:-------------------------:|:-------------------------:|:-------------------------:|:-------------------------:
+![step 1](https://drive.google.com/uc?export=view&id=1utx8qu9HsLy09y69QtLVUgAi0BaiK1Xq)|![step 2](https://drive.google.com/uc?export=view&id=1eFJJsgZdvWxDaDUgGWOWPgvPO50Ymxg_)|![step 3](https://drive.google.com/uc?export=view&id=1GX4QJMlUyZwviyF2R-oC3o5YgHWyqg69)|![step 4](https://drive.google.com/uc?export=view&id=1oWbDd1DK68KtwilsuKl3lmkKK5CRMRsy)|
+
+</details>
+
 ### Your Projects
 This section lists all the projects associated with the account you are currently signed in to. You can navigate to project details, which lists the databases of that particular project.
 
@@ -84,6 +96,7 @@ You can go to each document to update field values and types, add or delete fiel
 
 ### Analytics (Exclusive Feature)
 View simple analytics of operations performed in the last 30 days. This feature provides insight into your database activity.
+
 <details>
 <summary>📷 <b>Screenshots</b> </summary>
 <br/>
