@@ -109,30 +109,8 @@ Step 16     | Step 17          | Step 18
 
 </details>
 
-### Description of App's Features Functionality
-### Your Projects
-This section lists all the projects associated with the account you are currently signed in to. You can navigate to project details, which lists the databases of that particular project.
-
-### Adding Collections
-After selecting a database, you can add collections. The collection name should exactly match the collection name in your Firebase project (case sensitive). In the collections, you can view the documents, create new documents, delete existing documents, and perform batch operations.
-
-### Batch Operations (Exclusive Feature)
-Batch operations allow you to add or delete fields from multiple documents at once. You can even download the document data (single or multiple) in JSON format and use it in your other applications.
-
-### Version Control System (Exclusive Feature)
-This app has a version control system that keeps track of updates in the database, listing details such as project ID, database ID, collection ID, document ID, the field that is updated, operation type (update, add, delete), time and date of the update, and the user who updated it. This ensures transparency, a feature that is not present in the Firebase console.
-
-### Real-time Notifications (Exclusive Feature)
-Real-time notifications are sent to all users when a record is updated, a feature that is not available in the Firebase console.
-
-### Document Operations
-You can go to each document to update field values and types, add or delete fields, and more.
-
-### Analytics (Exclusive Feature)
-View simple analytics of operations performed in the last 30 days. This feature provides insight into your database activity.
-
 <details>
-<summary> 📷 <b>Screenshots</b> </summary>
+<summary> 📷 <b>Screenshots of APP UI </b> </summary>
 <br/>
 
 Onboarding Screen 1          | Onboarding Screen 2      | Onboarding Screen 3      |  Login Screen
@@ -156,6 +134,28 @@ Welcome Screen         |  Home Screen 1        |   Home Screen 2              | 
 ![edit_field_type](https://drive.google.com/uc?export=view&id=1ylkfJdy6mhwFd-njxECJN0j15lzXauRr)|![edit_field_value](https://drive.google.com/uc?export=view&id=1zPhG_hEvddfezZwX2fC9o5Cr77ZbYGK8)|![add_field_view](https://drive.google.com/uc?export=view&id=1nYy6qt-N_VXIOV_dzdewFhc3FJ2j5BjQ)|![history_screen](https://drive.google.com/uc?export=view&id=1QjjoGB85o8SWrvvgu_7Mt1nu8Ohv_zfJ)|
 
 </details>
+
+### Description of App's Features Functionality
+### Your Projects
+This section lists all the projects associated with the account you are currently signed in to. You can navigate to project details, which lists the databases of that particular project.
+
+### Adding Collections
+After selecting a database, you can add collections. The collection name should exactly match the collection name in your Firebase project (case sensitive). In the collections, you can view the documents, create new documents, delete existing documents, and perform batch operations.
+
+### Batch Operations (Exclusive Feature)
+Batch operations allow you to add or delete fields from multiple documents at once. You can even download the document data (single or multiple) in JSON format and use it in your other applications.
+
+### Version Control System (Exclusive Feature)
+This app has a version control system that keeps track of updates in the database, listing details such as project ID, database ID, collection ID, document ID, the field that is updated, operation type (update, add, delete), time and date of the update, and the user who updated it. This ensures transparency, a feature that is not present in the Firebase console.
+
+### Real-time Notifications (Exclusive Feature)
+Real-time notifications are sent to all users when a record is updated, a feature that is not available in the Firebase console.
+
+### Document Operations
+You can go to each document to update field values and types, add or delete fields, and more.
+
+### Analytics (Exclusive Feature)
+View simple analytics of operations performed in the last 30 days. This feature provides insight into your database activity.
 
 ---
 
