@@ -1,37 +1,45 @@
 {
   "project_info": {
-    "project_number": "211384953661",
-    "project_id": "gsoc-24-3f4d1",
-    "storage_bucket": "gsoc-24-3f4d1.appspot.com"
+    "project_number": "124506192389",
+    "project_id": "arya-30631",
+    "storage_bucket": "arya-30631.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:211384953661:android:14233d29467afa30317354",
+        "mobilesdk_app_id": "1:124506192389:android:3b5d15df5a5c4ce2c33a6c",
         "android_client_info": {
           "package_name": "com.example.firebase_editor_gsoc"
         }
       },
       "oauth_client": [
         {
-          "client_id": "211384953661-sac152s9j9uif0asf1772jkc9nr5le8t.apps.googleusercontent.com",
+          "client_id": "124506192389-u63mabk5mu5j8uiecnfk5rmpq874orsk.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.firebase_editor_gsoc",
+            "certificate_hash": "ef9611c769de4c139ac9d28b61f2f9fbcb80acb0"
+          }
+        },
+        {
+          "client_id": "124506192389-d33edk5jiu8len9u7dgptfon6gc64tdb.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyAO1F8fTW1EG88fnnTTFRJiKXH4I-MHlbI"
+          "current_key": "AIzaSyCUpHP6uGWzHKCtu5_vPmI1vcI7ph_Ihvk"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "211384953661-sac152s9j9uif0asf1772jkc9nr5le8t.apps.googleusercontent.com",
+              "client_id": "124506192389-d33edk5jiu8len9u7dgptfon6gc64tdb.apps.googleusercontent.com",
               "client_type": 3
             },
             {
-              "client_id": "211384953661-9hkosute6of7qapl18kjacl04m6f14ko.apps.googleusercontent.com",
+              "client_id": "124506192389-32s8la4ndjd5q30phqj8cnsbrht2gp67.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
                 "bundle_id": "com.example.firebaseEditorGsoc"

@@ -13,6 +13,9 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart'; // Import the intl package for date formatting
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:firebase_editor_gsoc/utils/theme_provider.dart';
 
 /// The HomeScreen widget is the main screen of the application.
 /// It displays user information, recent entries, and a bar chart of operations analysis.
@@ -93,9 +96,25 @@ class _HomeScreenState extends State<HomeScreen> {
   /// The build method defines the UI of the HomeScreen.
   @override
   Widget build(BuildContext context) {
+    // Access the ThemeProvider here:
+    final themeProvider = Provider.of<ThemeProvider>(context);
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Home'),
+        // ADDING THE DARK-MODE TOGGLE ICON BUTTON
+        actions: [
+          IconButton(
+            // Switch the icon based on the current theme
+            icon: Icon(
+              themeProvider.isDarkMode ? Icons.dark_mode : Icons.light_mode,
+            ),
+            onPressed: () {
+              // Toggle the theme when pressed
+              themeProvider.toggleTheme();
+            },
+          ),
+        ],
       ),
       drawer: CustomDrawer(), // Custom navigation drawer
       body: SingleChildScrollView(
@@ -144,9 +163,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       ],
                     ),
-                    const SizedBox(
-                      width: 20.0,
-                    ),
+                    const SizedBox(width: 20.0),
                     // User display name and email
                     Column(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -175,9 +192,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ],
                 ),
               ),
-              const SizedBox(
-                height: 16,
-              ),
+              const SizedBox(height: 16),
               // Container with quick access buttons for Projects, Profile, and Help
               Container(
                 decoration: BoxDecoration(
@@ -236,9 +251,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ),
               ),
-              const SizedBox(
-                height: 20.0,
-              ),
+              const SizedBox(height: 20.0),
+
               // Bar chart displaying operations data
               Stack(
                 children: [
@@ -256,24 +270,27 @@ class _HomeScreenState extends State<HomeScreen> {
                             color: Colors.white,
                             borderRadius: BorderRadius.circular(15.0),
                             border: Border.all(
-                                color: Colors.blueAccent, width: 4.0),
+                              color: Colors.blueAccent,
+                              width: 4.0,
+                            ),
                           ),
                           child: Padding(
                             padding: const EdgeInsets.all(8.0),
                             child: _chartData.isEmpty
                                 ? const Center(
-                                child: Text(
-                                  "No operations data available!",
-                                  style: TextStyle(
-                                    fontSize: 18.0,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.grey,
-                                  ),
-                                )) // Displayed if no chart data is available
+                              child: Text(
+                                "No operations data available!",
+                                style: TextStyle(
+                                  fontSize: 18.0,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.grey,
+                                ),
+                              ),
+                            ) // Displayed if no chart data is available
                                 : BarChart(
                               BarChartData(
                                 alignment: BarChartAlignment.spaceAround,
-                                maxY: _getMaxY(), // Calculate the max value for the y-axis
+                                maxY: _getMaxY(), // Calculate max for the y-axis
                                 barGroups: _chartData.entries.map((entry) {
                                   return BarChartGroupData(
                                     x: entry.key.hashCode,
@@ -296,17 +313,18 @@ class _HomeScreenState extends State<HomeScreen> {
                                           fontSize: 14,
                                           fontWeight: FontWeight.bold),
                                     ),
-                                    axisNameSize: 30, // Space for the x-axis title
+                                    axisNameSize: 30, // Space for x-axis title
                                     sideTitles: SideTitles(
                                       showTitles: true,
                                       getTitlesWidget: (value, meta) {
                                         return SideTitleWidget(
                                           axisSide: meta.axisSide,
                                           child: Text(
-                                            _chartData.keys.elementAt(value.toInt() %
-                                                _chartData.length),
+                                            _chartData.keys.elementAt(
+                                                value.toInt() % _chartData.length),
                                             style: const TextStyle(
-                                                fontSize: 10),
+                                              fontSize: 10,
+                                            ),
                                           ),
                                         );
                                       },
@@ -314,12 +332,12 @@ class _HomeScreenState extends State<HomeScreen> {
                                   ),
                                   leftTitles: AxisTitles(
                                     axisNameWidget: const Text(
-                                      'Operations Count', // Title for the y-axis
+                                      'Operations Count', // Title for y-axis
                                       style: TextStyle(
                                           fontSize: 14,
                                           fontWeight: FontWeight.bold),
                                     ),
-                                    axisNameSize: 30, // Space for the y-axis title
+                                    axisNameSize: 30, // Space for y-axis title
                                     sideTitles: SideTitles(
                                       showTitles: true,
                                       reservedSize: 40,
@@ -329,7 +347,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                           child: Text(
                                             value.toInt().toString(),
                                             style: const TextStyle(
-                                                fontSize: 10),
+                                              fontSize: 10,
+                                            ),
                                           ),
                                         );
                                       },
@@ -346,8 +365,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                 borderData: FlBorderData(
                                   show: true,
                                   border: Border.all(
-                                      color: const Color(0xff37434d),
-                                      width: 1),
+                                    color: Color(0xff37434d),
+                                    width: 1,
+                                  ),
                                 ),
                               ),
                             ),
@@ -358,9 +378,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ],
               ),
-              const SizedBox(
-                height: 20.0,
-              ),
+              const SizedBox(height: 20.0),
+
               // Container displaying the Recently Accessed header
               Container(
                 decoration: BoxDecoration(
@@ -400,7 +419,8 @@ class _HomeScreenState extends State<HomeScreen> {
                         children: [
                           _buildTextTile(
                             title: entry['projectName'] ?? 'Unknown Project',
-                            subtitle: 'Database: ${entry['databaseName'] ?? 'Unknown'}\n'
+                            subtitle:
+                            'Database: ${entry['databaseName'] ?? 'Unknown'}\n'
                                 'Collection: ${entry['collectionName'] ?? 'Unknown'}\n'
                                 'Update Time: ${formatDateTime(entry['updateTime'])}',
                           ),
@@ -449,9 +469,10 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
           const SizedBox(height: 8), // Space between icon and text
+          // Use bodyMedium from the theme for the label text
           Text(
             label,
-            style: const TextStyle(fontSize: 14, color: Colors.black),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontSize: 14),
           ),
         ],
       ),
@@ -488,6 +509,7 @@ class _HomeScreenState extends State<HomeScreen> {
             style: const TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,
+              // If you prefer dynamic color, remove the color or apply theme here
             ),
           ),
           const SizedBox(height: 8), // Space between title and subtitle
