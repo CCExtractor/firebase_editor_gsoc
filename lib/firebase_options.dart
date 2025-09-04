@@ -7,7 +7,7 @@ import 'package:flutter/foundation.dart'
 /// Default [FirebaseOptions] for use with your Firebase apps.
 ///
 /// Example:
-/// ```dart
+/// ```
 /// import 'firebase_options.dart';
 /// // ...
 /// await Firebase.initializeApp(
@@ -28,10 +28,7 @@ class DefaultFirebaseOptions {
       case TargetPlatform.iOS:
         return ios;
       case TargetPlatform.macOS:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for macos - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
+        return macos; // Fixed: Now returns macOS config
       case TargetPlatform.windows:
         throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for windows - '
@@ -67,4 +64,14 @@ class DefaultFirebaseOptions {
     iosBundleId: 'com.example.firebaseEditorGsoc',
   );
 
+  // Added macOS configuration (using iOS config as base)
+  static const FirebaseOptions macos = FirebaseOptions(
+    apiKey: 'AIzaSyAfe7Be2vESlx3uSGQs_zZ12QWN-EdBgGs',
+    appId: '1:211384953661:ios:007f4e6da5f618ea317354', 
+    messagingSenderId: '211384953661',
+    projectId: 'gsoc-24-3f4d1',
+    storageBucket: 'gsoc-24-3f4d1.appspot.com',
+    iosClientId: '211384953661-9hkosute6of7qapl18kjacl04m6f14ko.apps.googleusercontent.com',
+    iosBundleId: 'com.example.firebaseEditorGsoc',
+  );
 }

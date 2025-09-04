@@ -1,0 +1,87 @@
+platform :osx, '10.15'
+
+ENV['COCOAPODS_DISABLE_STATS'] = 'true'
+
+project 'Runner', {
+  'Debug' => :debug,
+  'Profile' => :release,
+  'Release' => :release,
+}
+
+def flutter_root
+  generated_xcode_build_settings_path = File.expand_path(File.join('..', 'Flutter', 'ephemeral', 'Flutter-Generated.xcconfig'), __FILE__)
+  unless File.exist?(generated_xcode_build_settings_path)
+    raise "#{generated_xcode_build_settings_path} must exist. If you're running pod install manually, make sure \"flutter pub get\" is executed first"
+  end
+
+  File.foreach(generated_xcode_build_settings_path) do |line|
+    matches = line.match(/FLUTTER_ROOT\=(.*)/)
+    return matches[1].strip if matches
+  end
+  raise "FLUTTER_ROOT not found in #{generated_xcode_build_settings_path}. Try deleting Flutter-Generated.xcconfig, then run \"flutter pub get\""
+end
+
+require File.expand_path(File.join('packages', 'flutter_tools', 'bin', 'podhelper'), flutter_root)
+
+flutter_macos_podfile_setup
+
+target 'Runner' do
+  use_frameworks!
+  use_modular_headers!
+
+  flutter_install_all_macos_pods File.dirname(File.realpath(__FILE__))
+
+  target 'RunnerTests' do
+    inherit! :search_paths
+  end
+end
+
+# ULTIMATE SOLUTION: Fixes -G flag, ARM64 assembly, and c-ares header issues
+post_install do |installer|
+  installer.pods_project.targets.each do |target|
+    target.build_configurations.each do |config|
+      config.build_settings['MACOSX_DEPLOYMENT_TARGET'] = '10.15'
+      
+      # NUKE ALL -G FLAG SOURCES
+      config.build_settings.delete('GCC_WARN_INHIBIT_ALL_WARNINGS')
+      config.build_settings['GCC_WARN_INHIBIT_ALL_WARNINGS'] = 'NO'
+      config.build_settings['WARNING_CFLAGS'] = ['$(inherited)', '-Wno-everything']
+      config.build_settings['OTHER_CFLAGS'] = ['$(inherited)', '-Wno-everything']
+      config.build_settings['OTHER_CPLUSPLUSFLAGS'] = ['$(inherited)', '-Wno-everything', '-std=c++17']
+      
+      # FIX ARM64 ASSEMBLY SYMBOLS FOR BoringSSL-GRPC
+      if target.name == 'BoringSSL-GRPC'
+        config.build_settings['OTHER_CFLAGS'] = ['$(inherited)', '-Wno-everything', '-DOPENSSL_NO_ASM']
+        config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] = ['$(inherited)', 'OPENSSL_NO_ASM=1', 'COCOAPODS=1']
+      end
+      
+      # FIX C-ARES HEADER ISSUES FOR gRPC-Core
+      if target.name == 'gRPC-Core'
+        config.build_settings['WARNING_CFLAGS'] = ['-Wno-everything']
+        config.build_settings['OTHER_CFLAGS'] = ['-Wno-everything', '-DGRPC_ARES=0']
+        config.build_settings['OTHER_CPLUSPLUSFLAGS'] = ['-Wno-everything', '-std=c++17', '-DGRPC_ARES=0']
+        config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] = ['$(inherited)', 'GRPC_ARES=0', 'COCOAPODS=1']
+        config.build_settings['GCC_WARN_INHIBIT_ALL_WARNINGS'] = 'NO'
+      end
+      
+      # ADDITIONAL FIXES FOR OTHER PROBLEMATIC PODS
+      if ['gRPC-C++', 'abseil'].include?(target.name)
+        config.build_settings['WARNING_CFLAGS'] = ['-Wno-everything']
+        config.build_settings['OTHER_CFLAGS'] = ['-Wno-everything']
+        config.build_settings['OTHER_CPLUSPLUSFLAGS'] = ['-Wno-everything', '-std=c++17']
+        config.build_settings['GCC_WARN_INHIBIT_ALL_WARNINGS'] = 'NO'
+      end
+    end
+    
+    # REMOVE FLAGS FROM SOURCE FILES (nuclear cleanup)
+    if ['BoringSSL-GRPC', 'gRPC-Core'].include?(target.name)
+      target.source_build_phase.files.each do |file|
+        if file.settings
+          file.settings.delete('COMPILER_FLAGS')
+        end
+      end
+    end
+    
+    flutter_additional_macos_build_settings(target)
+  end
+end
